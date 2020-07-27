@@ -1,0 +1,11 @@
+C:\Users\estev\Documents\GitHub\EvllyEngine\EvllyEngine\bin\Release\EvllyEngine.exe.config
+C:\Users\estev\Documents\GitHub\EvllyEngine\EvllyEngine\bin\Release\EvllyEngine.exe
+C:\Users\estev\Documents\GitHub\EvllyEngine\EvllyEngine\bin\Release\EvllyEngine.pdb
+C:\Users\estev\Documents\GitHub\EvllyEngine\EvllyEngine\bin\Release\OpenTK.dll
+C:\Users\estev\Documents\GitHub\EvllyEngine\EvllyEngine\bin\Release\OpenTK.pdb
+C:\Users\estev\Documents\GitHub\EvllyEngine\EvllyEngine\bin\Release\OpenTK.xml
+C:\Users\estev\Documents\GitHub\EvllyEngine\EvllyEngine\obj\Release\EvllyEngine.csprojAssemblyReference.cache
+C:\Users\estev\Documents\GitHub\EvllyEngine\EvllyEngine\obj\Release\EvllyEngine.csproj.CoreCompileInputs.cache
+C:\Users\estev\Documents\GitHub\EvllyEngine\EvllyEngine\obj\Release\EvllyEngine.csproj.CopyComplete
+C:\Users\estev\Documents\GitHub\EvllyEngine\EvllyEngine\obj\Release\EvllyEngine.exe
+C:\Users\estev\Documents\GitHub\EvllyEngine\EvllyEngine\obj\Release\EvllyEngine.pdb

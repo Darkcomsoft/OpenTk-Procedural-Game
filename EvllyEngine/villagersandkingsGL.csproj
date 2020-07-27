@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\SharpFont.4.0.1\build\SharpFont.props" Condition="Exists('..\packages\SharpFont.4.0.1\build\SharpFont.props')" />
+  <Import Project="..\packages\SharpFont.Dependencies.2.6\build\SharpFont.Dependencies.props" Condition="Exists('..\packages\SharpFont.Dependencies.2.6\build\SharpFont.Dependencies.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{133E8A7E-B33E-4B30-BBC3-BF860EB70D0E}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>ProjectEvlly</RootNamespace>
+    <AssemblyName>ProjectEvlly</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup>
+    <NoWin32Manifest>true</NoWin32Manifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="OpenTK.dll.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="src\Dimension\Dimension.cs" />
+    <Compile Include="src\Dimension\MainMenuDimension.cs" />
+    <Compile Include="src\Dimension\MidleWorld.cs" />
+    <Compile Include="src\Engine\AssetsManager.cs" />
+    <Compile Include="src\Engine\Collada\ColladaProcessor.cs" />
+    <Compile Include="src\Engine\Components\BoxCollider.cs" />
+    <Compile Include="src\Engine\Components\Camera.cs" />
+    <Compile Include="src\Engine\Components\MeshCollider.cs" />
+    <Compile Include="src\Engine\Components\MeshRender.cs" />
+    <Compile Include="src\Engine\Components\RigidBody.cs" />
+    <Compile Include="src\Engine\Components\ScriptBase.cs" />
+    <Compile Include="src\Engine\Components\Transform.cs" />
+    <Compile Include="src\Engine\Debug.cs" />
+    <Compile Include="src\Engine\Element.cs" />
+    <Compile Include="src\Engine\Engine.cs" />
+    <Compile Include="src\Engine\GameObject.cs" />
+    <Compile Include="src\Engine\Input.cs" />
+    <Compile Include="src\Engine\Physics.cs" />
+    <Compile Include="src\Engine\Render\Material.cs" />
+    <Compile Include="src\Engine\Render\Mesh.cs" />
+    <Compile Include="src\Engine\Render\Shader.cs" />
+    <Compile Include="src\Engine\Render\Texture.cs" />
+    <Compile Include="src\Engine\Scene.cs" />
+    <Compile Include="src\Engine\SplashScreen.cs" />
+    <Compile Include="src\Engine\UIManager.cs" />
+    <Compile Include="src\Entitys\Entity.cs" />
+    <Compile Include="src\Entitys\EntityLiving.cs" />
+    <Compile Include="src\Net\Network.cs" />
+    <Compile Include="src\Utility\GCollector.cs" />
+    <Compile Include="src\World\Chunk.cs" />
+    <Compile Include="src\Entitys\PlayerEntity.cs" />
+    <Compile Include="src\World\FastNoise.cs" />
+    <Compile Include="src\World\ScriptTest.cs" />
+    <Compile Include="src\World\World.cs" />
+    <Compile Include="src\Main.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="BulletSharp, Version=2.87.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\BulletSharp\x86\BulletSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Lidgren.Network, Version=3.7.1.189, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Lidgren.Network\Lidgren.Network.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK, Version=3.2.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\OpenTK.3.2\lib\net20\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationFramework" />
+    <Reference Include="QuickFont, Version=4.5.7053.25687, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\QuickFont.Desktop.4.5.7053.25687\lib\net45\QuickFont.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpFont, Version=4.0.1.200, Culture=neutral, PublicKeyToken=48add4c483071cdf, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpFont.4.0.1\lib\net45\SharpFont.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="OpenTK.dll" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\SharpFont.Dependencies.2.6\build\SharpFont.Dependencies.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SharpFont.Dependencies.2.6\build\SharpFont.Dependencies.props'))" />
+    <Error Condition="!Exists('..\packages\SharpFont.4.0.1\build\SharpFont.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SharpFont.4.0.1\build\SharpFont.props'))" />
+  </Target>
+</Project>
