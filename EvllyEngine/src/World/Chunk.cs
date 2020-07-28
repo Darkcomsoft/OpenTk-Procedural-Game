@@ -1,5 +1,8 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
+using ProjectEvlly;
+using ProjectEvlly.src.World;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,38 +12,31 @@ using System.Threading.Tasks;
 
 namespace EvllyEngine
 {
-    public class Chunk : ScriptBase
+    public class Chunk
     {
-        public Vector3 chunkPosition;
-        public MeshRender _MeshRender;
+        public Transform transform;
         private double ChunkSeed;
         public Block[,] Blocks;
 
-        public override void Start()
-        {
+        public MeshRender _meshRender;
+        private MeshCollider _meshCollider;
 
-            base.Start();
-        }
+        private List<Tree> _trees = new List<Tree>();
 
-        public override void OnDestroy()
+        public Chunk(Vector3 position)
         {
-            Blocks = null;
-            _MeshRender = null;
-            base.OnDestroy();
-        }
+            transform = new Transform();
 
-        public void StartUpChunk()
-        {
+            transform.Position = position;
+
             Blocks = new Block[World.ChunkSize, World.ChunkSize];
-
-            chunkPosition = gameObject._transform.Position;
 
             System.Random rand = new System.Random();
 
             double a = rand.NextDouble();
             double b = rand.NextDouble();
 
-            ChunkSeed = chunkPosition.X * a + chunkPosition.Z * b + 0;
+            ChunkSeed = transform.Position.X * a + transform.Position.Z * b + 0;
 
             /*Thread PopVoxelThread = new Thread(new ThreadStart(ThreadPopulateVoxel));
             PopVoxelThread.Start();*/
@@ -50,6 +46,44 @@ namespace EvllyEngine
             //UpdateMeshChunk();
             //StartCoroutine(QueeObjects());
             //Game.World.LoadNewChunks(this);
+
+            Engine.Instance.UpdateFrame += Update;
+            Engine.Instance.DrawUpdate += Draw;
+            Engine.Instance.TransparentDrawUpdate += DrawT;
+        }
+
+        public void Update(object ob, FrameEventArgs e)
+        {
+            
+        }
+
+        public void Draw(FrameEventArgs e)
+        {
+            _meshRender.Draw(e);
+        }
+
+        public void DrawT(FrameEventArgs e)
+        {
+            for (int i = 0; i < _trees.Count; i++)
+            {
+                _trees[i].Draw(e);
+            }
+        }
+
+        public void OnDestroy()
+        {
+            _meshRender.OnDestroy();
+
+            Engine.Instance.UpdateFrame -= Update;
+            Engine.Instance.DrawUpdate -= Draw;
+            Engine.Instance.TransparentDrawUpdate -= DrawT;
+
+            _meshCollider.OnDestroy();
+            _meshRender.OnDestroy();
+
+            _meshRender = null;
+            _meshCollider = null;
+            Blocks = null;
         }
 
         #region ThreadRegion
@@ -60,9 +94,20 @@ namespace EvllyEngine
             {
                 for (int z = 0; z < World.ChunkSize; z++)
                 {
-                    Blocks[x, z] = new Block(x + (int)chunkPosition.X, z + (int)chunkPosition.Z, new Vector3(chunkPosition), World.globalNoise.GetPerlin(x + (int)chunkPosition.X, z + (int)chunkPosition.Z) * 20);
+                    Blocks[x, z] = new Block(x + (int)transform.Position.X, z + (int)transform.Position.Z, new Vector3(transform.Position), World.globalNoise.GetPerlin(x + (int)transform.Position.X, z + (int)transform.Position.Z) * 20);
                     Blocks[x, z].index = index;
                     index++;
+                }
+            }
+
+            for (int x = 0; x < World.ChunkSize; x++)
+            {
+                for (int z = 0; z < World.ChunkSize; z++)
+                {
+                    if (Blocks[x, z].treeType != TreeType.none)
+                    {
+                        _trees.Add(new Tree(new Vector3(Blocks[x, z].x, Blocks[x, z].hight, Blocks[x, z].z)));
+                    }
                 }
             }
 
@@ -84,15 +129,15 @@ namespace EvllyEngine
 
             //mesh.RecalculateNormals();
 
-            gameObject.AddMeshRender(new MeshRender(gameObject, mesh, World.instance.Shader));
-            gameObject.AddMeshCollider();
+            _meshRender = new MeshRender(transform, mesh, World.instance.Shader);
+            _meshCollider = new MeshCollider(_meshRender);
+
+            //gameObject.AddMeshCollider();
 
             data._vertices.Clear();
             data._triangles.Clear();
             data._UVs.Clear();
             data._colors.Clear();
-
-            data = null;
         }
         #endregion
 
@@ -114,6 +159,7 @@ namespace EvllyEngine
         public int z;
 
         public TypeBlock Type;
+        public TreeType treeType;
 
         public Block(int _x, int _z, Vector3 chunkPosition, float _density)
         {
@@ -124,6 +170,12 @@ namespace EvllyEngine
             hight = _density;
 
             Type = TypeBlock.Grass;
+            treeType = TreeType.none;
+
+            if (rand.Next(0, 20) == 0)
+            {
+                treeType = TreeType.Oak;
+            }
         }
     }
 
@@ -312,4 +364,9 @@ public enum TypeBlock : byte
     Rock, DirtGrass, Sand,
     Bloco, Dirt, DirtRoad, IceWater, Snow, LightBlockON,
     BeachSand, WaterFloor, JungleGrass, WasteSand
+}
+
+public enum TreeType : byte
+{
+    none, Oak
 }

@@ -19,7 +19,7 @@ namespace EvllyEngine
         {
             Debug.Log("Start Dimensionnnnnn");
             Engine.Instance.UpdateFrame += OnUpdate;
-            //Engine.Instance.DrawUpdate += Draw;
+            Engine.Instance.DrawUpdate += Draw;
         }
 
         public virtual void OnUpdate(object obj, FrameEventArgs e)
@@ -33,11 +33,21 @@ namespace EvllyEngine
             }
         }
 
+        public virtual void Draw(FrameEventArgs e)
+        {
+           
+        }
+
+        public virtual void OnUnloadDimension()
+        {
+
+        }
+
         public void AddEntity(Entity entity)
         {
             Entitys.Add(entity);
         }
-       
+
         public void RemoveEntity(Entity entity)
         {
             if (!ToUnloadEntitys.Contains(entity))
@@ -47,9 +57,11 @@ namespace EvllyEngine
             }
         }
 
-        public void OnUnloadDimension()
+        public void UnloadDimension()
         {
             int c = 0;
+
+            OnUnloadDimension();
 
             for (int i = 0; i < Entitys.Count; i++)
             {
@@ -73,7 +85,7 @@ namespace EvllyEngine
             ToUnloadEntitys = null;
 
             Engine.Instance.UpdateFrame -= OnUpdate;
-            //Engine.Instance.DrawUpdate -= Draw;
+            Engine.Instance.DrawUpdate -= Draw;
 
             ///Garbage Collector
             Debug.Log("Destroyed : " + c + " GameObject's");

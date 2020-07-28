@@ -16,6 +16,7 @@ using System.Threading;
 using ProjectEvlly;
 using ProjectEvlly.src.Utility;
 using ProjectEvlly.src.Net;
+using ProjectEvlly.src.UI;
 
 namespace EvllyEngine
 {
@@ -29,6 +30,7 @@ namespace EvllyEngine
         private Physics _physics;
         private SplashScreen _SplashScreen;
         private Network _Network;
+        private GUI _GUI;
 
         public Action<FrameEventArgs> DrawUpdate;
         public Action<FrameEventArgs> TransparentDrawUpdate;
@@ -40,7 +42,7 @@ namespace EvllyEngine
         private Dictionary<string, Dimension> _Dimensions;
         private Queue<Dimension> _ToUnloadDimension;
 
-        public List<GameObject> GameObjects = new List<GameObject>();
+        public MeshRender _meshRender;
 
         protected override void OnLoad(EventArgs e)
         {
@@ -52,7 +54,6 @@ namespace EvllyEngine
 
             GL.ClearColor(Color4.DeepSkyBlue);
             GL.Enable(EnableCap.DepthTest);
-            GL.CullFace(CullFaceMode.Front);
             GL.Viewport(0, 0, Width, Height);
 
             //Load the Engine Stuff//
@@ -61,34 +62,24 @@ namespace EvllyEngine
             _UIManager = new UIManager();
             _physics = new Physics();
             _Network = new Network();
+            _GUI = new GUI();
 
             _Dimensions = new Dictionary<string, Dimension>();
             _ToUnloadDimension = new Queue<Dimension>();
 
             Debug.Log("Finished Loading Game!");
 
-            _Dimensions.Add("VAK:MAINMENU", new MainMenuDimension());
+            _Dimensions.Add("VAK:MidleWorld", new MidleWorld("VAK:MidleWorld"));
 
-            SceneManager.LoadDontDestroyScene();
-            SceneManager.LoadDefaultScene();
-            
-            GameObject Player = GameObject.Instantiate("Player", 1);
-            Player._transform.Position = new Vector3(0, 50, 0);
-            Player.AddRigidBody();
-            Player.AddScript(new PlayerEntity());
+            Transform tra = new Transform();
+            _meshRender = new MeshRender(tra, new Mesh(), new Shader(AssetsManager.instance.GetShader("Default")));
 
-            GameObject camobj = GameObject.Instantiate("Camera", 1);
-            camobj._transform.Position = new Vector3(0,1,0);
-            camobj.AddCamera();
-
-            camobj._transform.SetChild(Player._transform);
-
-            GameObject World = GameObject.Instantiate(new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 0), 1);
+            /*GameObject World = GameObject.Instantiate(new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 0), 1);
             World.AddScript(new World());
 
             GameObject obj2 = GameObject.Instantiate(new Vector3(0, 20, 0), new Quaternion(-90,0,0,0), 1);
             MeshRender mesh2 = obj2.AddMeshRender(new MeshRender(obj2, _assetsManager.GetErrorMesh, new Shader(AssetsManager.instance.GetShader("Default"))));
-            mesh2._shader.AddTexture(new Texture(AssetsManager.instance.GetTexture("RedTexture", "png")));
+            mesh2._shader.AddTexture(new Texture(AssetsManager.instance.GetTexture("RedTexture", "png")));*/
 
             EngineReady = true;
             base.OnLoad(e);
@@ -104,19 +95,11 @@ namespace EvllyEngine
                 {
                     Dimension dime = _ToUnloadDimension.Dequeue();
                     dime.OnUnloadDimension();
-
-                    _Dimensions[dime._DimensionID] = null;
-                    _Dimensions.Remove(dime._DimensionID);
                 }
-
-                if (Input.GetKey(Key.C))
+                if (Camera.Main != null)
                 {
-                    GameObject monkeyRigid = GameObject.Instantiate(Camera.Main.gameObject._transform.Position, new Quaternion(0, 0, 0, 0), 1);
-                    ///monkeyRigid.AddScript(new ScriptTest());
-                    MeshRender meshLaucherPed = monkeyRigid.AddMeshRender(new MeshRender(monkeyRigid, new Mesh(AssetsManager.instance.GetMesh("Monkey")), new Shader(AssetsManager.instance.GetShader("Default"))));
-                    meshLaucherPed._shader.AddTexture(new Texture(AssetsManager.instance.GetTexture("woodplank01", "png")));
-                    RigidBody body = monkeyRigid.AddRigidBody();
-                    meshLaucherPed.Transparency = true;
+                    _UIManager.Text = "FPS: " + FPS + " UPS: " + UPS + " Tick: " + Time._Tick % 60 + " Objects: " + 0 + " PlayerPosition: " + Camera.Main._transformParent.Position.ToString() + " CameraRotation: " + Camera.Main._transformParent.Rotation.ToString();
+
                 }
 
                 if (Input.GetKeyDown(Key.F11))
@@ -135,7 +118,6 @@ namespace EvllyEngine
                 {
                     Exit();
                 }
-                _UIManager.Text = "FPS: " + FPS + " UPS: " + UPS + " Tick: " + Time._Tick % 60 + " Objects: " + GameObjects.Count + " CameraPosition: " + Camera.Main.gameObject._transform.Position.ToString() + " CameraRotation: " + Camera.Main.gameObject._transform.Rotation.ToString();
 
                 _physics.UpdatePhisics((float)e.Time);
 
@@ -152,6 +134,8 @@ namespace EvllyEngine
                     GCollector.Collect();
                     Time._Tick = 0;
                 }
+
+                CheckGLError();
             }
             catch (OutOfMemoryException memoryEx)
             {
@@ -169,16 +153,23 @@ namespace EvllyEngine
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.Enable(EnableCap.CullFace);
-                FPS = (int)(1f / e.Time);
-                DrawUpdate.Invoke(e);//Draw all opaque objects
-                //TransparentDrawUpdate.Invoke(e);//Draw all transparency Objects
-            GL.Disable(EnableCap.CullFace);
-                if (EngineReady)
-                {
-                    //_UIManager.DrawUI();
-                }
+
+            FPS = (int)(1f / e.Time);
+
+            DrawUpdate.Invoke(e);//Draw all opaque objects
+
+            _meshRender.Draw(e);
+
+            TransparentDrawUpdate.Invoke(e);
+
+            if (EngineReady)
+            {
+                _UIManager.DrawUI();
+            }
+
             SwapBuffers();
+
+            CheckGLError();
             base.OnRenderFrame(e);
         }
 
@@ -208,31 +199,35 @@ namespace EvllyEngine
             base.OnMouseMove(e);
         }
 
+        private void CheckGLError()
+        {
+            ErrorCode error = GL.GetError();
+            if (error != ErrorCode.NoError)
+            {
+                Debug.LogError("GL_ERROR: " + error.ToString());
+            }
+        }
+
         protected override void OnUnload(EventArgs e)
         {
-            for (int i = 0; i < SceneManager.GetSceneArray.Count; i++)
+            foreach (var item in _Dimensions)
             {
-                SceneManager.GetSceneArray[i].OnUnloadScene();
+                _ToUnloadDimension.Enqueue(item.Value);
             }
+
+            while (_ToUnloadDimension.Count > 0)
+            {
+                Dimension dime = _ToUnloadDimension.Dequeue();
+                dime.OnUnloadDimension();
+            }
+
+            _Dimensions.Clear();
+            _ToUnloadDimension.Clear();
 
             _assetsManager.UnloadAll();
             _UIManager.Dispose();
             _physics.Dispose();
             base.OnUnload(e);
-        }
-
-        public void RemoveObject(GameObject obj)
-        {
-            if (GameObjects.Contains(obj))
-            {
-                obj.OnDestroy();
-                GameObjects.Remove(obj);
-                obj = null;
-            }
-        }
-        public void AddObject(GameObject obj)
-        {
-            GameObjects.Add(obj);
         }
 
         public void LoadDimension(string dimensionID, Dimension dimension)
@@ -243,6 +238,7 @@ namespace EvllyEngine
         public void UnloadDimension(Dimension dimension)
         {
             _ToUnloadDimension.Enqueue(dimension);
+            _Dimensions.Remove(dimension._DimensionID);
         }
 
         public int GetFPS { get { return FPS; } }
@@ -281,4 +277,9 @@ namespace EvllyEngine
             }
         }
     }
+}
+
+public enum CullType : byte
+{
+    Front, Back, Both
 }

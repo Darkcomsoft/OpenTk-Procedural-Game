@@ -72,17 +72,18 @@
     <Compile Include="src\Engine\Render\Mesh.cs" />
     <Compile Include="src\Engine\Render\Shader.cs" />
     <Compile Include="src\Engine\Render\Texture.cs" />
-    <Compile Include="src\Engine\Scene.cs" />
     <Compile Include="src\Engine\SplashScreen.cs" />
     <Compile Include="src\Engine\UIManager.cs" />
     <Compile Include="src\Entitys\Entity.cs" />
     <Compile Include="src\Entitys\EntityLiving.cs" />
     <Compile Include="src\Net\Network.cs" />
+    <Compile Include="src\UI\GUI.cs" />
     <Compile Include="src\Utility\GCollector.cs" />
     <Compile Include="src\World\Chunk.cs" />
     <Compile Include="src\Entitys\PlayerEntity.cs" />
     <Compile Include="src\World\FastNoise.cs" />
     <Compile Include="src\World\ScriptTest.cs" />
+    <Compile Include="src\World\Tree.cs" />
     <Compile Include="src\World\World.cs" />
     <Compile Include="src\Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -91,6 +92,12 @@
     <Reference Include="BulletSharp, Version=2.87.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\BulletSharp\x86\BulletSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Gwen">
+      <HintPath>..\packages\Gwen\Gwen.dll</HintPath>
+    </Reference>
+    <Reference Include="Gwen.Renderer.OpenTK">
+      <HintPath>..\packages\Gwen\Gwen.Renderer.OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="Lidgren.Network, Version=3.7.1.189, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

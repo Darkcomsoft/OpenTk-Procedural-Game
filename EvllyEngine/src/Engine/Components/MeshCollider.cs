@@ -10,7 +10,6 @@ namespace EvllyEngine
 {
     public class MeshCollider
     {
-        public GameObject gameObject;
         private TriangleMeshShape _shape;
         private CollisionObject _collisionObject;
         private StridingMeshInterface meshInter;
@@ -23,15 +22,13 @@ namespace EvllyEngine
         List<Vector3> MeshVertices = new List<Vector3>();
         List<int> MeshIndices = new List<int>();
 
-        public MeshCollider(GameObject obj)
+        public MeshCollider(MeshRender meshRender)
         {
-            gameObject = obj;
+            MeshIndices.AddRange(meshRender._mesh._indices);
 
-            MeshIndices.AddRange(gameObject.GetMeshRender()._mesh._indices);
-
-            for (int i = 0; i < gameObject.GetMeshRender()._mesh._vertices.Length; i+=3)
+            for (int i = 0; i < meshRender._mesh._vertices.Length; i += 3)
             {
-                Vector3 pos = new Vector3(gameObject.GetMeshRender()._mesh._vertices[i], gameObject.GetMeshRender()._mesh._vertices[i+1], gameObject.GetMeshRender()._mesh._vertices[i+2]);
+                Vector3 pos = new Vector3(meshRender._mesh._vertices[i], meshRender._mesh._vertices[i + 1], meshRender._mesh._vertices[i + 2]);
                 MeshVertices.Add(pos);
             }
             //ANTIGO ANTIGO ANTIGO
@@ -47,9 +44,8 @@ namespace EvllyEngine
             triangleMeshShape = new BvhTriangleMeshShape(indexVertexArray2, true);
 
             _collisionObject = new CollisionObject();
-            _collisionObject.WorldTransform = gameObject._transform.RotationMatrix * gameObject._transform.PositionMatrix * Matrix4.CreateScale(gameObject._transform.Size);
+            _collisionObject.WorldTransform = meshRender.transform.RotationMatrix * meshRender.transform.PositionMatrix * Matrix4.CreateScale(meshRender.transform.Size);
             _collisionObject.CollisionShape = triangleMeshShape;
-            _collisionObject.UserObject = "Ground Test";
 
             //TestTriangleArray(indexVertexArray);
             //TestTriangleArray(indexVertexArray2);

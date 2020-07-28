@@ -11,17 +11,22 @@ namespace EvllyEngine
 {
     public class MeshRender
     {
-        public GameObject gameObject;
         public Mesh _mesh;
         public Shader _shader;
         private int IBO;
         private int VAO;
 
+        public CullFaceMode _cullType;
         public bool Transparency = false;
 
-        public MeshRender(GameObject obj, Mesh mesh, Shader shader)
+        public Transform transform;
+
+        public MeshRender(Transform transformParent,Mesh mesh, Shader shader)
         {
-            gameObject = obj;
+            _cullType = CullFaceMode.Front;
+
+            transform = transformParent;
+
             _mesh = mesh;
             _shader = shader;
 
@@ -65,20 +70,32 @@ namespace EvllyEngine
                 GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One);
                 GL.Enable(EnableCap.Blend);
             }
-            
+
+            GL.CullFace(_cullType);
+
+            if (_cullType != CullFaceMode.FrontAndBack)
+            {
+                GL.Enable(EnableCap.CullFace);
+            }
+
             GL.BindVertexArray(VAO);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, IBO);
 
             _shader.GetTexture.Use();
             _shader.Use();
 
-            _shader.SetMatrix4("world", gameObject._transform.GetTransformWorld);
+            _shader.SetMatrix4("world", transform.GetTransformWorld);
             _shader.SetMatrix4("view", Camera.Main.viewMatrix);
             _shader.SetMatrix4("projection", Camera.Main._projection);
 
             GL.DrawElements(BeginMode.Triangles, _mesh._indices.Length, DrawElementsType.UnsignedInt, 0);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
             GL.BindVertexArray(0);
+
+            if (_cullType != CullFaceMode.FrontAndBack)
+            {
+                GL.Disable(EnableCap.CullFace);
+            }
 
             if (Transparency)
             {
@@ -101,6 +118,7 @@ namespace EvllyEngine
 
             _mesh = null;
             _shader = null;
+            transform = null;
         }
     }
 }

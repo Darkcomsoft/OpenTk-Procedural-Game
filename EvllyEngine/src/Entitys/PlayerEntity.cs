@@ -12,21 +12,63 @@ namespace EvllyEngine
 {
     public class PlayerEntity : EntityLiving
     {
-        public RigidBody body;
         public float MoveSpeed = 0.6f;
         private bool isOnGround;
 
+        #region Camera
+        public Camera _PlayerCamera;
+        #endregion
+
+        #region RigidBody
+        public float _Mass;
+        public bool _Static;
+        private BulletSharp.RigidBody rigidBodyObject;
+        public CollisionShape _Shape;
+        #endregion
+
+        public Vector3 finalTarget;
+        public Vector3 target;
+        public Vector3 mouseRotationBuffer;
+        public bool MouseLook = true;
+
+        private Vector2 _lastPos;
+        private bool _firstMove;
+        private float sensitivity = 0.2f;
+
+        public float Yaw { get; private set; }
+        public float Pitch { get; private set; }
+
         public override void OnStart()
         {
-            body = gameObject.GetRigidBody();
+            _PlayerCamera = new Camera(transform);
+
+            transform.Position = new Vector3(0,100,0);
+
+            _Mass = 1;
+            _Static = false;
+            _Shape = new CapsuleShape(0.5f, 1);
+            rigidBodyObject = LocalCreateRigidBody(_Mass, Matrix4.CreateTranslation(transform.Position), _Shape);
+            rigidBodyObject.CollisionFlags = CollisionFlags.CharacterObject;
+            rigidBodyObject.Friction = 0.1f;
+            rigidBodyObject.SetDamping(0, 0);
+
             base.OnStart();
         }
 
-        public override void OnUpdate()
+        public override void OnUpdate(object obj, FrameEventArgs e)
         {
             var moveVector = new Vector3(0, 0, 0);
 
-            if (Physics.RayCast(gameObject._transform.Position, gameObject._transform.Position + new Vector3(0, -1.5f, 0), out ClosestRayResultCallback hit))
+            rigidBodyObject.Activate();
+            _PlayerCamera.UpdateCamera();
+
+            /*Vector3 cameraTarget = Vector3.Zero;
+            Vector3 cameraDirection = Vector3.Normalize(gameObject._transform._Position - cameraTarget);
+            Vector3 up = Vector3.UnitY;
+            Vector3 cameraRight = Vector3.Normalize(Vector3.Cross(up, cameraDirection));
+            Vector3 cameraUp = Vector3.Cross(cameraDirection, cameraRight);*/
+
+            if (Physics.RayCast(transform.Position, transform.Position + new Vector3(0, -1.5f, 0), out ClosestRayResultCallback hit))
             {
                 //Debug.Log("RayCast Hited: " + hit.CollisionObject.UserObject);
                 isOnGround = true;
@@ -35,6 +77,48 @@ namespace EvllyEngine
             {
                 isOnGround = false;
             }
+
+            #region CameraLook
+            if (Input.GetKeyDown(Key.P))
+            {
+                if (MouseCursor.MouseLocked)
+                {
+                    MouseCursor.UnLockCursor();
+                }
+                else
+                {
+                    MouseCursor.LockCursor();
+                }
+            }
+
+            if (MouseCursor.MouseLocked)
+            {
+                var mouse = Mouse.GetState();
+
+                if (_firstMove) // this bool variable is initially set to true
+                {
+                    _lastPos = new Vector2(mouse.X, mouse.Y);
+                    _firstMove = false;
+                }
+                else
+                {
+                    // Calculate the offset of the mouse position
+                    var deltaX = mouse.X - _lastPos.X;
+                    var deltaY = mouse.Y - _lastPos.Y;
+                    _lastPos = new Vector2(mouse.X, mouse.Y);
+
+                    // Apply the camera pitch and yaw (we clamp the pitch in the camera class)
+                    Yaw -= deltaX * sensitivity * Time._Time;
+                    Pitch -= deltaY * sensitivity * Time._Time; // reversed since y-coordinates range from bottom to top
+                }
+
+                mouseRotationBuffer.X = Yaw;
+                mouseRotationBuffer.Y = Pitch;
+
+                _PlayerCamera._cameraTrnasform.Rotation = new Quaternion(-MathHelper.Clamp(mouseRotationBuffer.Y, MathHelper.DegreesToRadians(-75.0f), MathHelper.DegreesToRadians(75.0f)), 0, 0, 0);
+                transform.Rotation = new Quaternion(0, WrapAngle(mouseRotationBuffer.X), 0, 0);
+            }
+            #endregion
 
             if (Input.GetKey(Key.W))
             {
@@ -70,49 +154,67 @@ namespace EvllyEngine
             {
                 MoveSpeed = 3;
             }
+
             if (isOnGround)
             {
-                AddToCameraPosition(moveVector, false);
+                MovePlayer(moveVector, false);
             }
             else
             {
-                AddToCameraPosition(moveVector, true);
+                MovePlayer(moveVector, true);
             }
-            base.OnUpdate();
+            transform.Position = rigidBodyObject.WorldTransform.ExtractTranslation();
+
+            World.instance.PlayerPos = transform.Position;
         }
 
-        private Vector3 moveVector;
-        private Vector3 inputDirection;
-
-        public Vector3 Move(Vector3 directionVector)
+        public BulletSharp.RigidBody LocalCreateRigidBody(float mass, Matrix4 startTransform, CollisionShape shape)
         {
-            inputDirection = directionVector;
-            if (directionVector != Vector3.Zero)
+            bool isDynamic = (mass != 0.0f);
+
+            Vector3 localInertia = Vector3.Zero;
+            if (isDynamic || _Static == false)
             {
-                var directionLength = directionVector.Length;
-                directionVector = directionVector / directionLength;
-                directionLength = Math.Min(1, directionLength);
-                directionLength = directionLength * directionLength;
-                directionVector = directionVector * directionLength;
+                shape.CalculateLocalInertia(mass, out localInertia);
             }
 
-            Quaternion rotation = gameObject._transform.Rotation;
+            DefaultMotionState myMotionState = new DefaultMotionState(startTransform);
 
-            /*Vector3 angle = rotation.eulerAngles;
-            angle.X = 0;
-            angle.Z = 0;
-            MathHelper.DegreesToRadians
-            rotation.eulerAngles = angle;*/
-            return rotation * directionVector;
+            RigidBodyConstructionInfo rbInfo = new RigidBodyConstructionInfo(mass, myMotionState, shape, localInertia);
+            BulletSharp.RigidBody body = new BulletSharp.RigidBody(rbInfo);
+
+            Physics.AddRigidBody(body);
+
+            return body;
         }
 
-        private void AddToCameraPosition(Vector3 moveVector, bool gravity)
+        /// <summary>
+        /// this is for moving the rigidbody with Physics, the rigidbody whill interact with collision
+        /// </summary>
+        /// <param name="direction"></param>
+        public void Move(Vector3 direction, bool gravity)
         {
-            var camRotation = Matrix3.CreateRotationX(gameObject._transform.Rotation.X) * Matrix3.CreateRotationY(gameObject._transform.Rotation.Y) * Matrix3.CreateRotationZ(gameObject._transform.Rotation.Z);
+            if (gravity)
+            {
+                rigidBodyObject.LinearVelocity = new Vector3(direction.X, rigidBodyObject.Gravity.Y, direction.Z);
+            }
+            else
+            {
+                rigidBodyObject.LinearVelocity = direction;
+            }
+            rigidBodyObject.AngularFactor = Vector3.Zero;
+            rigidBodyObject.AngularVelocity = Vector3.Zero;
+
+            //rigidBodyObject.WorldTransform = gameObject._transform.RotationMatrix * rigidBodyObject.WorldTransform * Matrix4.CreateScale(gameObject._transform._Size);
+        }
+
+        private void MovePlayer(Vector3 moveVector, bool gravity)
+        {
+            var camRotation = Matrix3.CreateRotationX(transform.Rotation.X) * Matrix3.CreateRotationY(transform.Rotation.Y) * Matrix3.CreateRotationZ(transform.Rotation.Z);
             var rotatedVector = Vector3.Transform(moveVector, camRotation);
             //gameObject.GetRigidBody().Move(rotatedVector * moveSpeed);
 
-            body.Move(rotatedVector * MoveSpeed, gravity);
+            Move(rotatedVector * MoveSpeed, gravity);
         }
 
         public static float WrapAngle(float angle)
@@ -129,6 +231,13 @@ namespace EvllyEngine
 
         public override void OnDestroy()
         {
+            _PlayerCamera.OnDestroy();
+            _PlayerCamera = null;
+
+            Physics.RemoveRigidBody(rigidBodyObject);
+            _Shape.Dispose();
+            _Shape = null;
+
             base.OnDestroy();
         }
     }
