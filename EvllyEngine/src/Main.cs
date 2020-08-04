@@ -1,4 +1,5 @@
-﻿using OpenTK.Graphics;
+﻿using OpenTK;
+using OpenTK.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,13 +13,14 @@ namespace EvllyEngine
     {
         public static void Main()
         {
-            using (Engine game = new Engine(1000, 600, "ProjectEvlly"))
+            using (Window game = new Window(1000, 600, "ProjectEvlly"))
             {
                 game.RenderFrame += (sender, e) =>
                 {
-                    Thread.Sleep(15);
+                    Thread.Sleep(10);
                 };
-                game.Run(60);
+                
+                game.Run();
             }
         }
     }

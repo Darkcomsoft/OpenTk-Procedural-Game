@@ -43,9 +43,9 @@ namespace EvllyEngine
             };
 
             _Colors = new float[] {
-                0.0f,1.0f,0.0f,1.0f,
-                1.0f,0.0f,0.0f,1.0f,
-                0.0f,0.0f,1.0f,1.0f
+                1.0f,1.0f,1.0f,1.0f,
+                1.0f,1.0f,1.0f,1.0f,
+                1.0f,1.0f,1.0f,1.0f
             };
 
             _texCoords = new float[] {
@@ -65,6 +65,14 @@ namespace EvllyEngine
         {
             _vertices = vertices;
             _indices = indices;
+        }
+
+        public Mesh(float[] vertices, float[] textures, float[] colors, int[] indices)
+        {
+            _vertices = vertices;
+            _indices = indices;
+            _texCoords = textures;
+            _Colors = colors;
         }
 
         public Mesh(float[] vertices, Vector3[] normals, float[] textures, float[] colors, int[] indices)

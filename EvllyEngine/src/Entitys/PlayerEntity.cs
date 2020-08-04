@@ -7,11 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Shell;
 
 namespace EvllyEngine
 {
     public class PlayerEntity : EntityLiving
     {
+        public static PlayerEntity Instance;
         public float MoveSpeed = 0.6f;
         private bool isOnGround;
 
@@ -35,21 +37,28 @@ namespace EvllyEngine
         private bool _firstMove;
         private float sensitivity = 0.2f;
 
+        private bool Jump = false;
+
         public float Yaw { get; private set; }
         public float Pitch { get; private set; }
 
+        public Block CcurrentBlock;
+
         public override void OnStart()
         {
-            _PlayerCamera = new Camera(transform);
+            Instance = this;
 
-            transform.Position = new Vector3(0,100,0);
+            _PlayerCamera = new Camera(transform);
+            _PlayerCamera._cameraTrnasform.Position = new Vector3(0, 0.5f,0);//Set the position of the camera
+
+            transform.Position = new Vector3(0, 5, 0);
 
             _Mass = 1;
             _Static = false;
             _Shape = new CapsuleShape(0.5f, 1);
             rigidBodyObject = LocalCreateRigidBody(_Mass, Matrix4.CreateTranslation(transform.Position), _Shape);
             rigidBodyObject.CollisionFlags = CollisionFlags.CharacterObject;
-            rigidBodyObject.Friction = 0.1f;
+            rigidBodyObject.Friction = 1.0f;
             rigidBodyObject.SetDamping(0, 0);
 
             base.OnStart();
@@ -62,23 +71,20 @@ namespace EvllyEngine
             rigidBodyObject.Activate();
             _PlayerCamera.UpdateCamera();
 
-            /*Vector3 cameraTarget = Vector3.Zero;
-            Vector3 cameraDirection = Vector3.Normalize(gameObject._transform._Position - cameraTarget);
-            Vector3 up = Vector3.UnitY;
-            Vector3 cameraRight = Vector3.Normalize(Vector3.Cross(up, cameraDirection));
-            Vector3 cameraUp = Vector3.Cross(cameraDirection, cameraRight);*/
-
-            if (Physics.RayCast(transform.Position, transform.Position + new Vector3(0, -1.5f, 0), out ClosestRayResultCallback hit))
+            if (Physics.RayCast(transform.Position, transform.Position + new Vector3(0, -1.05f, 0), out ClosestRayResultCallback hit))
             {
                 //Debug.Log("RayCast Hited: " + hit.CollisionObject.UserObject);
                 isOnGround = true;
+                if (Jump)
+                {
+                    Jump = false;
+                }
             }
             else
             {
                 isOnGround = false;
             }
 
-            #region CameraLook
             if (Input.GetKeyDown(Key.P))
             {
                 if (MouseCursor.MouseLocked)
@@ -117,52 +123,72 @@ namespace EvllyEngine
 
                 _PlayerCamera._cameraTrnasform.Rotation = new Quaternion(-MathHelper.Clamp(mouseRotationBuffer.Y, MathHelper.DegreesToRadians(-75.0f), MathHelper.DegreesToRadians(75.0f)), 0, 0, 0);
                 transform.Rotation = new Quaternion(0, WrapAngle(mouseRotationBuffer.X), 0, 0);
-            }
-            #endregion
 
-            if (Input.GetKey(Key.W))
-            {
-                moveVector.Z += MoveSpeed;
-            }
-            if (Input.GetKey(Key.S))
-            {
-                moveVector.Z -= MoveSpeed;
-            }
-            if (Input.GetKey(Key.A))
-            {
-                moveVector.X += MoveSpeed;
-            }
-            if (Input.GetKey(Key.D))
-            {
-                moveVector.X -= MoveSpeed;
+                ///////////////////////////////////////////////////////////////////////////////////////
+
+                if (Input.GetKey(Key.W))
+                {
+                    moveVector.Z += MoveSpeed;
+                }
+                if (Input.GetKey(Key.S))
+                {
+                    moveVector.Z -= MoveSpeed;
+                }
+                if (Input.GetKey(Key.A))
+                {
+                    moveVector.X += MoveSpeed;
+                }
+                if (Input.GetKey(Key.D))
+                {
+                    moveVector.X -= MoveSpeed;
+                }
+
+                if (isOnGround)
+                {
+                    if (Input.GetKeyDown(Key.Space))
+                    {
+                        Jump = true;
+                    }
+                }
+
+                if (Input.GetKey(Key.Q))
+                {
+                    moveVector.Y -= MoveSpeed;
+                }
+                if (Input.GetKey(Key.E))
+                {
+                    moveVector.Y += MoveSpeed;
+                }
+
+                if (Input.GetKey(Key.ShiftLeft))
+                {
+                    MoveSpeed = 5;
+                }
+                else
+                {
+                    MoveSpeed = 3;
+                }
             }
 
-            if (Input.GetKey(Key.Q))
-            {
-                moveVector.Y -= MoveSpeed;
-            }
-            if (Input.GetKey(Key.E))
-            {
-                moveVector.Y += MoveSpeed;
-            }
-
-            if (Input.GetKey(Key.ShiftLeft))
-            {
-                MoveSpeed = 5;
-            }
-            else
-            {
-                MoveSpeed = 3;
-            }
+            CcurrentBlock = World.instance.GetTileAt((int)transform.Position.X, (int)transform.Position.Z);
 
             if (isOnGround)
             {
-                MovePlayer(moveVector, false);
+                if (Jump)
+                {
+                    moveVector.Y += 10;
+                    MovePlayer(moveVector, false);
+                }
+                else
+                {
+                    MovePlayer(moveVector, false);
+                }
             }
             else
             {
                 MovePlayer(moveVector, true);
             }
+
             transform.Position = rigidBodyObject.WorldTransform.ExtractTranslation();
 
             World.instance.PlayerPos = transform.Position;
@@ -236,7 +262,6 @@ namespace EvllyEngine
 
             Physics.RemoveRigidBody(rigidBodyObject);
             _Shape.Dispose();
-            _Shape = null;
 
             base.OnDestroy();
         }

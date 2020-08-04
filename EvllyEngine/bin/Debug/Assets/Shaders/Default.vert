@@ -1,5 +1,5 @@
-#version 330 core
-layout (location = 0) in vec3 position;
+#version 400 core
+layout (location = 0) in vec4 position;
 layout (location = 1) in vec4 colors;
 layout (location = 2) in vec2 aTexCoord;
 
@@ -12,8 +12,11 @@ uniform mat4 projection;
 
 void main()
 {
-	gl_Position = vec4(position, 1.0) * world * view * projection;
+	vec4 worldPosition = world * position;
+	vec4 posRelativeCamera = view * worldPosition;
 
 	frag_colors = colors;
 	texCoord = aTexCoord;
+	
+	gl_Position = position * world * view * projection;
 }

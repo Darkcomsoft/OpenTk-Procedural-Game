@@ -1,0 +1,2 @@
+C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\obj\x64\Debug\villagersandkingsGL.csprojAssemblyReference.cache
+C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\obj\x64\Debug\villagersandkingsGL.csproj.CoreCompileInputs.cache

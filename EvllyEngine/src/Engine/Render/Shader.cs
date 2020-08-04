@@ -10,7 +10,6 @@ namespace EvllyEngine
 {
     public class Shader
     {
-        private Texture _Texture;
         public int _shaderProgram;
         private bool IsValid = true;
 
@@ -19,21 +18,11 @@ namespace EvllyEngine
         public Shader(ShaderFile fileShader) 
         {
             _uniformLocations = new Dictionary<string, int>();
-            _Texture = new Texture(AssetsManager.instance.GetTexture("devTexture", "jpg"));
-            CompileShader(fileShader);
-        }
-
-        public Shader(ShaderFile fileShader, Texture tex0)
-        {
-            _uniformLocations = new Dictionary<string, int>();
-            _Texture = tex0;
             CompileShader(fileShader);
         }
 
         public void Delete()
         {
-            _Texture.Delete();
-            _Texture = null;
             if (IsValid)
             {
                 GL.DeleteProgram(_shaderProgram);
@@ -87,11 +76,6 @@ namespace EvllyEngine
             return program;
         }
 
-        public void AddTexture(Texture texture)
-        {
-            _Texture = texture;
-        }
-
         /// <summary>
         /// Set a uniform int on this shader.
         /// </summary>
@@ -99,7 +83,7 @@ namespace EvllyEngine
         /// <param name="data">The data to set</param>
         public void SetInt(string name, int data)
         {
-            GL.UseProgram(_shaderProgram);
+            //GL.UseProgram(_shaderProgram);
             GL.Uniform1(_uniformLocations[name], data);
         }
 
@@ -110,7 +94,7 @@ namespace EvllyEngine
         /// <param name="data">The data to set</param>
         public void SetFloat(string name, float data)
         {
-            GL.UseProgram(_shaderProgram);
+            //GL.UseProgram(_shaderProgram);
             GL.Uniform1(_uniformLocations[name], data);
         }
 
@@ -126,7 +110,7 @@ namespace EvllyEngine
         /// </remarks>
         public void SetMatrix4(string name, Matrix4 data)
         {
-            GL.UseProgram(_shaderProgram);
+            //GL.UseProgram(_shaderProgram);
             GL.UniformMatrix4(_uniformLocations[name], true, ref data);
         }
 
@@ -137,10 +121,8 @@ namespace EvllyEngine
         /// <param name="data">The data to set</param>
         public void SetVector3(string name, Vector3 data)
         {
-            GL.UseProgram(_shaderProgram);
+            //GL.UseProgram(_shaderProgram);
             GL.Uniform3(_uniformLocations[name], data);
         }
-
-        public Texture GetTexture { get { return _Texture; } }
     }
 }

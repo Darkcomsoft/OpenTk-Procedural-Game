@@ -18,8 +18,8 @@ namespace EvllyEngine
         public Dimension()
         {
             Debug.Log("Start Dimensionnnnnn");
-            Engine.Instance.UpdateFrame += OnUpdate;
-            Engine.Instance.DrawUpdate += Draw;
+            Game.Instance.UpdateFrame += OnUpdate;
+            Game.Instance.DrawUpdate += Draw;
         }
 
         public virtual void OnUpdate(object obj, FrameEventArgs e)
@@ -84,8 +84,8 @@ namespace EvllyEngine
             Entitys = null;
             ToUnloadEntitys = null;
 
-            Engine.Instance.UpdateFrame -= OnUpdate;
-            Engine.Instance.DrawUpdate -= Draw;
+            Game.Instance.UpdateFrame -= OnUpdate;
+            Game.Instance.DrawUpdate -= Draw;
 
             ///Garbage Collector
             Debug.Log("Destroyed : " + c + " GameObject's");

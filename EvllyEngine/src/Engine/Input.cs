@@ -12,6 +12,17 @@ namespace EvllyEngine
         private static List<Key> keyToggleList = new List<Key>();
 
         public static MouseMoveEventArgs GetMouse;
+        public static int MouseWheelDelta;
+
+        public static int GetMouseWheelDelta 
+        { 
+            get 
+            {
+                int f = MouseWheelDelta;
+                MouseWheelDelta = 0;
+                return f; 
+            } 
+        }
 
         public static bool GetKeyDown(Key key)
         {

@@ -22,13 +22,12 @@ namespace EvllyEngine
 
         public UIManager()
         {
-            Debug.Log(Engine.Instance.ClientRectangle.Top.ToString());
-            Debug.Log(Engine.Instance.Width / 2 + " : "+ Engine.Instance.Height / 2);
             _drawing = new QFontDrawing();
-            _myFont = new QFont("OpenSans.ttf", 15 / (Engine.Instance.Width / Engine.Instance.Height), new QFontBuilderConfiguration(true));
-            RendeTextOption = new QFontRenderOptions { 
-                WordWrap = true, 
-                Colour = Color.White, DropShadowActive = false
+            _myFont = new QFont("OpenSans.ttf", 10 / (Game.Instance.Width / Game.Instance.Height), new QFontBuilderConfiguration(true));
+            RendeTextOption = new QFontRenderOptions {
+                WordWrap = true,
+                Colour = Color.White, DropShadowActive = false,
+                CharacterSpacing = 0.1f
             };
 
             /*
@@ -53,7 +52,7 @@ namespace EvllyEngine
 
         public void DrawUI()
         {
-            if (Engine.Instance != null)
+            if (Game.Instance != null)
             {
                 if (_drawing != null)
                 {
@@ -62,8 +61,8 @@ namespace EvllyEngine
                         if (RendeTextOption != null)
                         {
                             _drawing.DrawingPrimitives.Clear();
-                            _drawing.ProjectionMatrix = Matrix4.CreateOrthographicOffCenter(Engine.Instance.ClientRectangle.X, Engine.Instance.ClientRectangle.Width, Engine.Instance.ClientRectangle.Y, Engine.Instance.ClientRectangle.Height, 0f, 5.0f);
-                            _drawing.Print(_myFont, Text, new Vector3(Engine.Instance.Width / 2, Engine.Instance.ClientRectangle.Bottom - 25, 0), new SizeF(Engine.Instance.ClientRectangle.Width, Engine.Instance.ClientRectangle.Height), QFontAlignment.Centre, RendeTextOption);
+                            _drawing.ProjectionMatrix = Matrix4.CreateOrthographicOffCenter(Game.Instance.ClientRectangle.X, Game.Instance.ClientRectangle.Width, Game.Instance.ClientRectangle.Y, Game.Instance.ClientRectangle.Height, 0f, 5.0f);
+                            _drawing.Print(_myFont, Text, new Vector3(Game.Instance.Width / 2, Game.Instance.ClientRectangle.Bottom - 25, 0), new SizeF(Game.Instance.ClientRectangle.Width, Game.Instance.ClientRectangle.Height), QFontAlignment.Centre, RendeTextOption);
                             _drawing.RefreshBuffers();
                             _drawing.Draw();
                         }

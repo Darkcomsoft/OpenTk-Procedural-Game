@@ -14,9 +14,9 @@ namespace ProjectEvlly
 
         public Entity()
         {
-            Engine.Instance.UpdateFrame += OnUpdate;
-            Engine.Instance.DrawUpdate += OnDrawOpaque;
-            Engine.Instance.TransparentDrawUpdate += OnDrawT;
+            Game.Instance.UpdateFrame += OnUpdate;
+            Game.Instance.DrawUpdate += OnDrawOpaque;
+            Game.Instance.TransparentDrawUpdate += OnDrawT;
 
             transform = new Transform();
             OnConstruc();
@@ -55,9 +55,9 @@ namespace ProjectEvlly
 
         public virtual void OnDestroy()
         {
-            Engine.Instance.UpdateFrame -= OnUpdate;
-            Engine.Instance.DrawUpdate -= OnDrawOpaque;
-            Engine.Instance.TransparentDrawUpdate -= OnDrawT;
+            Game.Instance.UpdateFrame -= OnUpdate;
+            Game.Instance.DrawUpdate -= OnDrawOpaque;
+            Game.Instance.TransparentDrawUpdate -= OnDrawT;
         }
     }
 }

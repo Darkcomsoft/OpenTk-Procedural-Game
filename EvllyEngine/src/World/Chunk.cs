@@ -2,7 +2,6 @@
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using ProjectEvlly;
-using ProjectEvlly.src.World;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,9 +46,9 @@ namespace EvllyEngine
             //StartCoroutine(QueeObjects());
             //Game.World.LoadNewChunks(this);
 
-            Engine.Instance.UpdateFrame += Update;
-            Engine.Instance.DrawUpdate += Draw;
-            Engine.Instance.TransparentDrawUpdate += DrawT;
+            Game.Instance.UpdateFrame += Update;
+            Game.Instance.DrawUpdate += Draw;
+            Game.Instance.TransparentDrawUpdate += DrawT;
         }
 
         public void Update(object ob, FrameEventArgs e)
@@ -64,26 +63,29 @@ namespace EvllyEngine
 
         public void DrawT(FrameEventArgs e)
         {
-            for (int i = 0; i < _trees.Count; i++)
+            /*for (int i = 0; i < _trees.Count; i++)
             {
                 _trees[i].Draw(e);
-            }
+            }*/
         }
 
         public void OnDestroy()
         {
             _meshRender.OnDestroy();
 
-            Engine.Instance.UpdateFrame -= Update;
-            Engine.Instance.DrawUpdate -= Draw;
-            Engine.Instance.TransparentDrawUpdate -= DrawT;
+            for (int i = 0; i < _trees.Count; i++)
+            {
+                _trees[i].OnDestroy();
+            }
+
+            _trees.Clear();
+
+            Game.Instance.UpdateFrame -= Update;
+            Game.Instance.DrawUpdate -= Draw;
+            Game.Instance.TransparentDrawUpdate -= DrawT;
 
             _meshCollider.OnDestroy();
             _meshRender.OnDestroy();
-
-            _meshRender = null;
-            _meshCollider = null;
-            Blocks = null;
         }
 
         #region ThreadRegion
@@ -106,7 +108,7 @@ namespace EvllyEngine
                 {
                     if (Blocks[x, z].treeType != TreeType.none)
                     {
-                        _trees.Add(new Tree(new Vector3(Blocks[x, z].x, Blocks[x, z].hight, Blocks[x, z].z)));
+                        _trees.Add(new Tree(new Vector3(Blocks[x, z].x, Blocks[x, z].hight - 0.2f, Blocks[x, z].z)));
                     }
                 }
             }
@@ -118,21 +120,8 @@ namespace EvllyEngine
         {
             MeshData data = new MeshData(Blocks);
 
-            Mesh mesh = new Mesh();
-
-            mesh.Clear();
-
-            mesh._vertices = data._vertices.ToArray();
-            mesh._indices = data._triangles.ToArray();
-            mesh._texCoords = data._UVs.ToArray();
-            mesh._Colors = data._colors.ToArray();
-
-            //mesh.RecalculateNormals();
-
-            _meshRender = new MeshRender(transform, mesh, World.instance.Shader);
+            _meshRender = new MeshRender(transform, new Mesh(data._vertices.ToArray(), data._UVs.ToArray(), data._colors.ToArray(), data._triangles.ToArray()), AssetsManager.GetShader("Default"), AssetsManager.GetTexture("TileAtlas"));
             _meshCollider = new MeshCollider(_meshRender);
-
-            //gameObject.AddMeshCollider();
 
             data._vertices.Clear();
             data._triangles.Clear();
@@ -169,13 +158,26 @@ namespace EvllyEngine
             System.Random rand = new System.Random(0 + x * z);
             hight = _density;
 
-            Type = TypeBlock.Grass;
+            if (rand.Next(0, 20) == 10)
+            {
+                Type = TypeBlock.Dirt;
+            }
+            else
+            {
+                Type = TypeBlock.Grass;
+            }
+
             treeType = TreeType.none;
 
-            if (rand.Next(0, 20) == 0)
+            if (rand.Next(0,20) == 1)
             {
                 treeType = TreeType.Oak;
             }
+        }
+
+        public string ToString()
+        {
+            return "Hight: " + hight + ", Index: " + index + ", Type: " + Type;
         }
     }
 
@@ -203,11 +205,6 @@ namespace EvllyEngine
                 {
                     if (tile[x, z].Type != TypeBlock.Air)
                     {
-                        if (tile[x, z].Type == TypeBlock.WaterFloor)
-                        {
-                            _HaveWater = true;
-                        }
-
                         int xB = tile[x, z].x;
                         int zB = tile[x, z].z;
 
@@ -216,7 +213,7 @@ namespace EvllyEngine
                         float FrenteLeft = GetTile(xB + 1, zB + 1, tile[x, z].hight, tile);
 
                         _vertices.Add(x);
-                        _vertices.Add(World.globalNoise.GetPerlin(xB,zB) * 20);
+                        _vertices.Add(World.globalNoise.GetPerlin(xB, zB) * 20);
                         _vertices.Add(z);
                         
 
@@ -264,17 +261,19 @@ namespace EvllyEngine
                         _colors.Add(1);
                         _colors.Add(1);
 
-                        _UVs.Add(0);
-                        _UVs.Add(0.05f);
+                        _UVs.AddRange(AssetsManager.GetTileUV(tile[x, z].Type.ToString()));
 
-                        _UVs.Add(0);
-                        _UVs.Add(0);
+                        /*_UVs.Add(0.15f);
+                        _UVs.Add(0.066667f);
 
-                        _UVs.Add(0.05f);
-                        _UVs.Add(0.05f);
+                        _UVs.Add(0.15f);
+                        _UVs.Add(0f);
 
-                        _UVs.Add(0.05f);
-                        _UVs.Add(0);
+                        _UVs.Add(0.2f);
+                        _UVs.Add(0.066667f);
+
+                        _UVs.Add(0.2f);
+                        _UVs.Add(0f);*/
 
                         //_UVs.AddRange(Game.AssetsManager.GetTileUVs(tile[x, z]));
                     }
@@ -347,10 +346,7 @@ namespace EvllyEngine
         {
             Block block = World.instance.GetTileAt(x, z);
 
-            if (block.Type != TypeBlock.Air)
-            {
-                return block.hight;
-            }
+            return block.hight;
 
             return hDeafult;
         }
@@ -359,11 +355,7 @@ namespace EvllyEngine
 
 public enum TypeBlock : byte
 {
-    Air, RockGround, RockHole,
-    Grass, Water, GoldStone, IronStone,
-    Rock, DirtGrass, Sand,
-    Bloco, Dirt, DirtRoad, IceWater, Snow, LightBlockON,
-    BeachSand, WaterFloor, JungleGrass, WasteSand
+    Air, Grass, Dirt
 }
 
 public enum TreeType : byte

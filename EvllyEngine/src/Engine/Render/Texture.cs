@@ -30,19 +30,19 @@ namespace EvllyEngine
 
             GL.TexImage2D(_TextureTarget, 0, _PixelInternalFormat, _Width, _Height, 0, _PixelFormat, PixelType.UnsignedByte, imageData._ImgData);
 
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.NearestMipmapLinear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
 
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
 
         public void Use()
         {
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, Handle);
+            GL.BindTexture(_TextureTarget, Handle);
         }
 
         public void Delete()

@@ -14,74 +14,58 @@ using System.Runtime.Serialization;
 using System.Runtime.InteropServices;
 using System.Threading;
 using ProjectEvlly;
-using ProjectEvlly.src.Utility;
 using ProjectEvlly.src.Net;
 using ProjectEvlly.src.UI;
+using ProjectEvlly.src.Utility;
+using System.Drawing;
+using ProjectEvlly.src;
 
 namespace EvllyEngine
 {
-    public class Engine : GameWindow
+    public class Window : GameWindow
     {
-        public Engine(int width, int height, string title) : base(width, height, GraphicsMode.Default, title) { Instance = this; }
+        public Window(int width, int height, string title) : base(width, height, GraphicsMode.Default, title) {
+            Instance = this; 
+        }
 
-        public static Engine Instance;
+        public static Window Instance;
+
+        public Game OGame;
+
         private AssetsManager _assetsManager;
-        private UIManager _UIManager;
         private Physics _physics;
         private SplashScreen _SplashScreen;
         private Network _Network;
         private GUI _GUI;
 
-        public Action<FrameEventArgs> DrawUpdate;
-        public Action<FrameEventArgs> TransparentDrawUpdate;
+        private Sky _Sky;
 
         private int FPS;
         private int UPS;
-        public bool EngineReady;
-
-        private Dictionary<string, Dimension> _Dimensions;
-        private Queue<Dimension> _ToUnloadDimension;
-
-        public MeshRender _meshRender;
 
         protected override void OnLoad(EventArgs e)
         {
-            _SplashScreen = new SplashScreen();
-
             //Load the Window/pre Graphics Stuff//
             VSync = VSyncMode.Off;
             WindowBorder = WindowBorder.Resizable;
 
-            GL.ClearColor(Color4.DeepSkyBlue);
-            GL.Enable(EnableCap.DepthTest);
-            GL.Viewport(0, 0, Width, Height);
+            gl.ClearColor(Color4.DeepSkyBlue);
 
             //Load the Engine Stuff//
+            _SplashScreen = new SplashScreen();
+
             Debug.Log("Start Loading Game...");
             _assetsManager = new AssetsManager();
-            _UIManager = new UIManager();
+            _assetsManager.LoadAssets();//Load All Assets
+
             _physics = new Physics();
             _Network = new Network();
-            _GUI = new GUI();
+            _GUI = new GUI(Width, Height);
 
-            _Dimensions = new Dictionary<string, Dimension>();
-            _ToUnloadDimension = new Queue<Dimension>();
+
+            //_Sky = new Sky(AssetsManager.GetShader("Default"), AssetsManager.GetTexture("devTexture2"));
 
             Debug.Log("Finished Loading Game!");
-
-            _Dimensions.Add("VAK:MidleWorld", new MidleWorld("VAK:MidleWorld"));
-
-            Transform tra = new Transform();
-            _meshRender = new MeshRender(tra, new Mesh(), new Shader(AssetsManager.instance.GetShader("Default")));
-
-            /*GameObject World = GameObject.Instantiate(new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 0), 1);
-            World.AddScript(new World());
-
-            GameObject obj2 = GameObject.Instantiate(new Vector3(0, 20, 0), new Quaternion(-90,0,0,0), 1);
-            MeshRender mesh2 = obj2.AddMeshRender(new MeshRender(obj2, _assetsManager.GetErrorMesh, new Shader(AssetsManager.instance.GetShader("Default"))));
-            mesh2._shader.AddTexture(new Texture(AssetsManager.instance.GetTexture("RedTexture", "png")));*/
-
-            EngineReady = true;
             base.OnLoad(e);
         }
 
@@ -91,16 +75,7 @@ namespace EvllyEngine
             {
                 UPS = (int)(1f / e.Time);
 
-                while (_ToUnloadDimension.Count > 0)
-                {
-                    Dimension dime = _ToUnloadDimension.Dequeue();
-                    dime.OnUnloadDimension();
-                }
-                if (Camera.Main != null)
-                {
-                    _UIManager.Text = "FPS: " + FPS + " UPS: " + UPS + " Tick: " + Time._Tick % 60 + " Objects: " + 0 + " PlayerPosition: " + Camera.Main._transformParent.Position.ToString() + " CameraRotation: " + Camera.Main._transformParent.Rotation.ToString();
-
-                }
+                _GUI.Tick();
 
                 if (Input.GetKeyDown(Key.F11))
                 {
@@ -119,12 +94,12 @@ namespace EvllyEngine
                     Exit();
                 }
 
-                _physics.UpdatePhisics((float)e.Time);
-
                 if (Focused) // check to see if the window is focused  
                 {
                     MouseCursor.CursorLockPosition();
                 }
+
+                _physics.UpdatePhisics((float)e.Time);
 
                 Time._Time = (float)e.Time;
                 Time._Tick++;
@@ -134,8 +109,6 @@ namespace EvllyEngine
                     GCollector.Collect();
                     Time._Tick = 0;
                 }
-
-                CheckGLError();
             }
             catch (OutOfMemoryException memoryEx)
             {
@@ -149,96 +122,89 @@ namespace EvllyEngine
             }
             base.OnUpdateFrame(e);
         }
-
+        
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
             FPS = (int)(1f / e.Time);
 
-            DrawUpdate.Invoke(e);//Draw all opaque objects
-
-            _meshRender.Draw(e);
-
-            TransparentDrawUpdate.Invoke(e);
-
-            if (EngineReady)
-            {
-                _UIManager.DrawUI();
-            }
-
+            gl.Clear();//Clear Buffer
+            gl.Enable(EnableCap.DepthTest);
+                OGame.Draw(e);
+            gl.Disable(EnableCap.DepthTest);
+                _GUI.DrawUI();
             SwapBuffers();
-
-            CheckGLError();
+            Utilitys.CheckGLError("Final Of Draw Frame");
             base.OnRenderFrame(e);
         }
 
         protected override void OnResize(EventArgs e)
         {
-            GL.Viewport(0, 0, Width, Height);
+            gl.Viewport(0, 0, Width, Height);
+
+            _GUI.OnResize();
             base.OnResize(e);
         }
+
+        protected override void OnKeyDown(KeyboardKeyEventArgs e)
+        {
+            _GUI.OnKeyDown(e);
+            base.OnKeyDown(e);
+        }
+
+        protected override void OnKeyUp(KeyboardKeyEventArgs e)
+        {
+            _GUI.OnKeyUp(e);
+            base.OnKeyUp(e);
+        }
+
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
-            Console.WriteLine("MousePressed: "+ e.Button);
+            _GUI.OnMouseDown(e);
             base.OnMouseDown(e);
         }
         protected override void OnMouseUp(MouseButtonEventArgs e)
         {
-            Console.WriteLine("MouseUnPressed: " + e.Button);
+            _GUI.OnMouseUp(e);
             base.OnMouseUp(e);
         }
         protected override void OnMouseWheel(MouseWheelEventArgs e)
         {
-            Console.WriteLine("MouseWheel: " + e.Delta);
+            Input.MouseWheelDelta = e.Delta;
+            _GUI.OnMouseWheel(e);
             base.OnMouseWheel(e);
         }
         protected override void OnMouseMove(MouseMoveEventArgs e)
         {
             Input.GetMouse = e;
+            _GUI.OnMouseMove(e);
             base.OnMouseMove(e);
         }
 
-        private void CheckGLError()
+        private void ApplyFog()
         {
-            ErrorCode error = GL.GetError();
-            if (error != ErrorCode.NoError)
-            {
-                Debug.LogError("GL_ERROR: " + error.ToString());
-            }
+            gl.Enable(EnableCap.Fog);
+
+            // Fog
+            float[] colors = { 230, 230, 230 };
+            GL.Fog(FogParameter.FogMode, (int)FogMode.Linear);
+            GL.Hint(HintTarget.FogHint, HintMode.DontCare);
+            GL.Fog(FogParameter.FogColor, colors);
+
+            GL.Fog(FogParameter.FogStart, (float)1000 / 100.0f);
+            GL.Fog(FogParameter.FogEnd, 250.0f);
         }
 
         protected override void OnUnload(EventArgs e)
         {
-            foreach (var item in _Dimensions)
-            {
-                _ToUnloadDimension.Enqueue(item.Value);
-            }
+            //_Sky.OnDestroy();
 
-            while (_ToUnloadDimension.Count > 0)
-            {
-                Dimension dime = _ToUnloadDimension.Dequeue();
-                dime.OnUnloadDimension();
-            }
-
-            _Dimensions.Clear();
-            _ToUnloadDimension.Clear();
+            OGame.Dispose();
 
             _assetsManager.UnloadAll();
-            _UIManager.Dispose();
             _physics.Dispose();
+
+            _GUI.Dispose();
             base.OnUnload(e);
-        }
-
-        public void LoadDimension(string dimensionID, Dimension dimension)
-        {
-            _Dimensions.Add(dimensionID, dimension);
-        }
-
-        public void UnloadDimension(Dimension dimension)
-        {
-            _ToUnloadDimension.Enqueue(dimension);
-            _Dimensions.Remove(dimension._DimensionID);
         }
 
         public int GetFPS { get { return FPS; } }
@@ -259,21 +225,21 @@ namespace EvllyEngine
 
         public static void LockCursor()
         {
+            Window.Instance.CursorVisible = false;
             _isLocked = true;
-            Engine.Instance.CursorVisible = false;
         }
 
         public static void UnLockCursor()
         {
             _isLocked = false;
-            Engine.Instance.CursorVisible = true;
+            Window.Instance.CursorVisible = true;
         }
 
         public static void CursorLockPosition()
         {
             if (_isLocked)
             {
-                Mouse.SetPosition(Engine.Instance.X + Engine.Instance.Width / 2f, Engine.Instance.Y + Engine.Instance.Height / 2f);
+                Mouse.SetPosition(Window.Instance.X + Window.Instance.Width / 2f, Window.Instance.Y + Window.Instance.Height / 2f);
             }
         }
     }

@@ -20,7 +20,7 @@ namespace EvllyEngine
 
         public float _fildOfView = 60;
         public float _nearPlane = 0.1f;
-        public float _farPlane = 1000;
+        public float _farPlane = 100;
 
         private float _aspectRatio;
 
@@ -35,10 +35,10 @@ namespace EvllyEngine
         {
             Main = this;
 
-            _cameraTrnasform = new Transform(new Vector3(0, 1.5f, 0));
+            _cameraTrnasform = new Transform();
             _transformParent = transformParent;
 
-            _aspectRatio = (float)Engine.Instance.Width / (float)Engine.Instance.Height;
+            _aspectRatio = (float)Game.Instance.Width / (float)Game.Instance.Height;
             _projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(_fildOfView), _aspectRatio, _nearPlane, _farPlane);
 
             UpdateViewMatrix();
@@ -46,7 +46,7 @@ namespace EvllyEngine
 
         public void UpdateCamera()
         {
-            _aspectRatio = (float)Engine.Instance.Width / (float)Engine.Instance.Height;
+            _aspectRatio = (float)Game.Instance.Width / (float)Game.Instance.Height;
             _projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(_fildOfView), _aspectRatio, _nearPlane, _farPlane);
 
             /*Vector3 cameraTarget = Vector3.Zero;

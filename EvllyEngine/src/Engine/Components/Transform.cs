@@ -41,12 +41,12 @@ namespace EvllyEngine
         }
 
         public Matrix4 PositionMatrix { get { return Matrix4.CreateTranslation(_Position); } }
-        public Matrix4 RotationMatrix { get { return Matrix4.CreateRotationX(MathHelper.DegreesToRadians(_Rotation.X)) * Matrix4.CreateRotationY(MathHelper.DegreesToRadians(_Rotation.Y)) * Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(_Rotation.Z)); } }
+        public Matrix4 RotationMatrix { get { return Matrix4.CreateRotationX(_Rotation.X) * Matrix4.CreateRotationY(_Rotation.Y) * Matrix4.CreateRotationZ(_Rotation.Z); } }
         public Matrix4 GetTransformWorld 
         { 
             get 
             {
-                return RotationMatrix * PositionMatrix * Matrix4.CreateScale(_Size);
+                return Matrix4.CreateScale(_Size) * RotationMatrix * PositionMatrix;
             } 
         }
 

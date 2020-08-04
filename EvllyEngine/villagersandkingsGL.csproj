@@ -18,25 +18,25 @@
     </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;Client</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;Client</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
@@ -44,10 +44,84 @@
   <PropertyGroup>
     <NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ServerDebug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ServerDebug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;Server</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ServerRelease|AnyCPU'">
+    <OutputPath>bin\ServerRelease\</OutputPath>
+    <DefineConstants>TRACE;Server</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;Client</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE;Client</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ServerDebug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\ServerDebug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;Server</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ServerRelease|x64'">
+    <OutputPath>bin\x64\ServerRelease\</OutputPath>
+    <DefineConstants>TRACE;Server</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+    <None Include="src\UI\Shaders\fragmentShader.fs" />
+    <None Include="src\UI\Shaders\vertexShader.vs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\Dimension\Dimension.cs" />
@@ -72,13 +146,51 @@
     <Compile Include="src\Engine\Render\Mesh.cs" />
     <Compile Include="src\Engine\Render\Shader.cs" />
     <Compile Include="src\Engine\Render\Texture.cs" />
+    <Compile Include="src\Engine\Sky.cs" />
     <Compile Include="src\Engine\SplashScreen.cs" />
     <Compile Include="src\Engine\UIManager.cs" />
     <Compile Include="src\Entitys\Entity.cs" />
     <Compile Include="src\Entitys\EntityLiving.cs" />
+    <Compile Include="src\Game.cs" />
+    <Compile Include="src\UI\Gwen.UnitTest\Button.cs" />
+    <Compile Include="src\UI\Gwen.UnitTest\CheckBox.cs" />
+    <Compile Include="src\UI\Gwen.UnitTest\CollapsibleList.cs" />
+    <Compile Include="src\UI\Gwen.UnitTest\ColorPickers.cs" />
+    <Compile Include="src\UI\Gwen.UnitTest\ComboBox.cs" />
+    <Compile Include="src\UI\Gwen.UnitTest\CrossSplitter.cs" />
+    <Compile Include="src\UI\Gwen.UnitTest\Docking.cs" />
+    <Compile Include="src\UI\Gwen.UnitTest\GroupBox.cs" />
+    <Compile Include="src\UI\Gwen.UnitTest\GUnit.cs" />
+    <Compile Include="src\UI\Gwen.UnitTest\ImagePanel.cs" />
+    <Compile Include="src\UI\Gwen.UnitTest\Label.cs" />
+    <Compile Include="src\UI\Gwen.UnitTest\ListBox.cs" />
+    <Compile Include="src\UI\Gwen.UnitTest\Menu.cs" />
+    <Compile Include="src\UI\Gwen.UnitTest\NumericUpDown.cs" />
+    <Compile Include="src\UI\Gwen.UnitTest\ProgressBar.cs" />
+    <Compile Include="src\UI\Gwen.UnitTest\Properties.cs" />
+    <Compile Include="src\UI\Gwen.UnitTest\RadioButton.cs" />
+    <Compile Include="src\UI\Gwen.UnitTest\RichLabel.cs" />
+    <Compile Include="src\UI\Gwen.UnitTest\ScrollControl.cs" />
+    <Compile Include="src\UI\Gwen.UnitTest\Slider.cs" />
+    <Compile Include="src\UI\Gwen.UnitTest\StatusBar.cs" />
+    <Compile Include="src\UI\Gwen.UnitTest\TabControl.cs" />
+    <Compile Include="src\UI\Gwen.UnitTest\TextBox.cs" />
+    <Compile Include="src\UI\Gwen.UnitTest\TreeControl.cs" />
+    <Compile Include="src\UI\Gwen.UnitTest\UnitTest.cs" />
+    <Compile Include="src\UI\Gwen.UnitTest\Window.cs" />
+    <Compile Include="src\Input\OpenTK.cs" />
+    <Compile Include="src\Input\OpenTKAlternative.cs" />
     <Compile Include="src\Net\Network.cs" />
+    <Compile Include="src\UI\Renderer\GLShader.cs" />
+    <Compile Include="src\UI\Renderer\OpenTK.cs" />
+    <Compile Include="src\UI\Renderer\StringCache.cs" />
     <Compile Include="src\UI\GUI.cs" />
     <Compile Include="src\Utility\GCollector.cs" />
+    <Compile Include="src\Utility\gl.cs" />
+    <Compile Include="src\Utility\GLUtility.cs" />
+    <Compile Include="src\Utility\Mathf.cs" />
+    <Compile Include="src\Utility\Random.cs" />
+    <Compile Include="src\Utility\Utilitys.cs" />
     <Compile Include="src\World\Chunk.cs" />
     <Compile Include="src\Entitys\PlayerEntity.cs" />
     <Compile Include="src\World\FastNoise.cs" />
@@ -94,18 +206,15 @@
       <HintPath>..\packages\BulletSharp\x86\BulletSharp.dll</HintPath>
     </Reference>
     <Reference Include="Gwen">
-      <HintPath>..\packages\Gwen\Gwen.dll</HintPath>
-    </Reference>
-    <Reference Include="Gwen.Renderer.OpenTK">
-      <HintPath>..\packages\Gwen\Gwen.Renderer.OpenTK.dll</HintPath>
+      <HintPath>..\packages\Gwen.Renderer.OpenTK\Gwen.dll</HintPath>
     </Reference>
     <Reference Include="Lidgren.Network, Version=3.7.1.189, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Lidgren.Network\Lidgren.Network.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK, Version=3.2.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\OpenTK.3.2\lib\net20\OpenTK.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="PresentationFramework" />
     <Reference Include="QuickFont, Version=4.5.7053.25687, Culture=neutral, processorArchitecture=MSIL">

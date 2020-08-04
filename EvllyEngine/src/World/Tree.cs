@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProjectEvlly.src.World
+namespace EvllyEngine
 {
     public class Tree
     {
@@ -14,6 +14,7 @@ namespace ProjectEvlly.src.World
         public int HP, MaxHP;
 
         private MeshRender _meshRender;
+        private BoxCollider _boxCollider;
 
         public Tree(Vector3 position)
         {
@@ -21,10 +22,26 @@ namespace ProjectEvlly.src.World
             MaxHP = 100;
 
             transform = new Transform();
-            transform.Position = position;
 
-            _meshRender = new MeshRender(transform, new Mesh(), new Shader(AssetsManager.instance.GetShader("Default")));
+            System.Random rand = new System.Random();
+
+            float a = (float)rand.NextDouble();
+            float b = (float)rand.NextDouble();
+
+            float ChunkSeed = position.X * a + position.Z * b + Time._Time;
+
+            transform.Position = position;
+            transform.Rotation = new Quaternion(MathHelper.DegreesToRadians((float)new System.Random((int)ChunkSeed).Next(0, 10)), MathHelper.DegreesToRadians((float)new System.Random((int)ChunkSeed).Next(0,90)), MathHelper.DegreesToRadians((float)new System.Random((int)ChunkSeed).Next(0, 5)));
+
+            transform.Size = new Vector3(ProjectEvlly.src.Utility.Random.Range(1.5f, 2f, (int)ChunkSeed), ProjectEvlly.src.Utility.Random.Range(1.5f, 2f, (int)ChunkSeed), ProjectEvlly.src.Utility.Random.Range(1.5f, 2f, (int)ChunkSeed));
+
+            _meshRender = new MeshRender(transform, AssetsManager.GetMesh("oak"), AssetsManager.GetShader("Default"), AssetsManager.GetTexture("SpritesTreeHigt"));
+            //_meshRender.Transparency = true;
             _meshRender._cullType = OpenTK.Graphics.OpenGL.CullFaceMode.FrontAndBack;
+
+            //_boxCollider = new BoxCollider(transform, new Vector3(1,1,1));
+
+            Game.Instance.TransparentDrawUpdate += Draw;
         }
 
         public void Draw(FrameEventArgs e)
@@ -34,10 +51,10 @@ namespace ProjectEvlly.src.World
 
         public void OnDestroy()
         {
-            _meshRender.OnDestroy();
+            Game.Instance.TransparentDrawUpdate -= Draw;
 
-            transform = null;
-            _meshRender = null;
+            //_boxCollider.OnDestroy();
+            _meshRender.OnDestroy();
         }
     }
 }

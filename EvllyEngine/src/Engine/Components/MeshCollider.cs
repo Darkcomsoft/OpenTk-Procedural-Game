@@ -47,6 +47,8 @@ namespace EvllyEngine
             _collisionObject.WorldTransform = meshRender.transform.RotationMatrix * meshRender.transform.PositionMatrix * Matrix4.CreateScale(meshRender.transform.Size);
             _collisionObject.CollisionShape = triangleMeshShape;
 
+            _collisionObject.CollisionFlags = CollisionFlags.StaticObject;
+
             //TestTriangleArray(indexVertexArray);
             //TestTriangleArray(indexVertexArray2);
 

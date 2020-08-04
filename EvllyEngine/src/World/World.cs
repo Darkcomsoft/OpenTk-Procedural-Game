@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using ProjectEvlly.src.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,6 @@ namespace EvllyEngine
 
         private Dictionary<Vector3, Chunk> chunkMap = new Dictionary<Vector3, Chunk>();
 
-        public Shader Shader;
         public static FastNoise globalNoise;
 
         public World()
@@ -26,9 +26,6 @@ namespace EvllyEngine
 
             globalNoise = new FastNoise(0);
             globalNoise.SetFrequency(0.005f);
-
-            Shader = new Shader(AssetsManager.instance.GetShader("Default"));
-            Shader.AddTexture(new Texture(AssetsManager.instance.GetTexture("TileAtlas", "png")));
         }
 
         public void UpdateWorld()
@@ -44,21 +41,19 @@ namespace EvllyEngine
             }*/
         }
 
+        
         public Vector2 GetChunkCoordFromVector3(Vector3 pos)
         {
-            int x = (int)FloorToInt(pos.X / ChunkSize);
-            int z = (int)FloorToInt(pos.Z / ChunkSize);
+            int x = (int)Mathf.FloorToInt(pos.X / ChunkSize);
+            int z = (int)Mathf.FloorToInt(pos.Z / ChunkSize);
             return new Vector2(x, z);
         }
-
-        public static int FloorToInt(float value) => (int)Math.Floor(value);
-        public static float Round(float value) => (float)Math.Round(value);
 
         Queue<Vector3> ToRemove = new Queue<Vector3>();
 
         public void CheckViewDistance()
         {
-            Vector3 PlayerP = new Vector3((int)(Round(PlayerPos.X / ChunkSize) * ChunkSize), 0, (int)(Round(PlayerPos.Z / ChunkSize) * ChunkSize));
+            Vector3 PlayerP = new Vector3((int)(Mathf.Round(PlayerPos.X / ChunkSize) * ChunkSize), 0, (int)(Mathf.Round(PlayerPos.Z / ChunkSize) * ChunkSize));
             int minX = (int)PlayerP.X - renderDistance;
             int maxX = (int)PlayerP.X + renderDistance;
 
@@ -71,18 +66,15 @@ namespace EvllyEngine
                 chunkMap.Remove(vec);
             }
 
-            lock (chunkMap)
+            foreach (var item in chunkMap)
             {
-                foreach (var item in chunkMap)
+                if (item.Value.transform.Position.X > maxX || item.Value.transform.Position.X < minX || item.Value.transform.Position.Z > maxZ || item.Value.transform.Position.Z < minZ)
                 {
-                    if (item.Value.transform.Position.X > maxX || item.Value.transform.Position.X < minX || item.Value.transform.Position.Z > maxZ || item.Value.transform.Position.Z < minZ)
+                    if (chunkMap.ContainsKey(item.Value.transform.Position))
                     {
-                        if (chunkMap.ContainsKey(item.Value.transform.Position))
-                        {
-                            chunkMap[item.Value.transform.Position].OnDestroy();
+                        chunkMap[item.Value.transform.Position].OnDestroy();
 
-                            ToRemove.Enqueue(item.Value.transform.Position);
-                        }
+                        ToRemove.Enqueue(item.Value.transform.Position);
                     }
                 }
             }
@@ -95,10 +87,7 @@ namespace EvllyEngine
 
                     if (!chunkMap.ContainsKey(vector))
                     {
-                        lock (chunkMap)
-                        {
-                            chunkMap.Add(vector, new Chunk(vector));
-                        }
+                        chunkMap.Add(vector, new Chunk(vector));
                     }
                 }
             }
@@ -113,8 +102,6 @@ namespace EvllyEngine
 
             chunkMap.Clear();
             ToRemove.Clear();
-
-            Shader.Delete();
         }
 
         public Block GetTileAt(int x, int z)
@@ -123,7 +110,6 @@ namespace EvllyEngine
 
             if (chunk != null)
             {
-
                 return chunk.Blocks[x - (int)chunk.transform.Position.X, z - (int)chunk.transform.Position.Z];
             }
             return new Block();
@@ -143,8 +129,8 @@ namespace EvllyEngine
 
         public Block GetTileAt(float x, float z)
         {
-            int mx = (int)Math.Floor(x);
-            int mz = (int)Math.Floor(z);
+            int mx = (int)Mathf.FloorToInt(x);
+            int mz = (int)Mathf.FloorToInt(z);
 
             Chunk chunk = GetChunkAt(mx, mz);
 
@@ -157,17 +143,14 @@ namespace EvllyEngine
 
         public Chunk GetChunkAt(int xx, int zz)
         {
-            Vector3 chunkpos = new Vector3((int)Math.Floor(xx / (float)ChunkSize) * ChunkSize, 0, (int)Math.Floor(zz / (float)ChunkSize) * ChunkSize);
-            lock (chunkMap)
+            Vector3 chunkpos = new Vector3(Mathf.FloorToInt(xx / ChunkSize) * ChunkSize, 0, Mathf.FloorToInt(zz / ChunkSize) * ChunkSize);
+            if (chunkMap.ContainsKey(chunkpos))
             {
-                if (chunkMap.ContainsKey(chunkpos))
-                {
-                    return chunkMap[chunkpos];
-                }
-                else
-                {
-                    return null;
-                }
+                return chunkMap[chunkpos];
+            }
+            else
+            {
+                return null;
             }
         }
     }
