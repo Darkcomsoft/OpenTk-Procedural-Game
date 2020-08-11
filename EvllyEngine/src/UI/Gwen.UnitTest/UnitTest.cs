@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 using Gwen.Control;
 using Gwen.Control.Layout;
 
@@ -9,7 +8,6 @@ namespace Gwen.UnitTest
     {
         private Control.Base m_LastControl;
         private readonly Control.StatusBar m_StatusBar;
-        private readonly Control.Label m_Label;
         private readonly Control.ListBox m_TextOutput;
         private Control.TabButton m_Button;
         private readonly Control.CollapsibleList m_List;
@@ -22,14 +20,15 @@ namespace Gwen.UnitTest
         public UnitTest(Base parent) : base(parent)
         {
             Dock = Pos.Fill;
+            SetSize(1024, 768);
             m_List = new Control.CollapsibleList(this);
 
-            /*LeftDock.TabControl.AddPage("Unit tests", m_List);
-            LeftDock.Width = 150;*/
+            LeftDock.TabControl.AddPage("Unit tests", m_List);
+            LeftDock.Width = 150;
 
-            /*m_TextOutput = new Control.ListBox(BottomDock);
+            m_TextOutput = new Control.ListBox(BottomDock);
             m_Button = BottomDock.TabControl.AddPage("Output", m_TextOutput);
-            BottomDock.Height = 200;*/
+            BottomDock.Height = 200;
 
             m_DebugCheck = new Control.LabeledCheckBox(m_List);
             m_DebugCheck.Text = "Debug outlines";
@@ -38,14 +37,6 @@ namespace Gwen.UnitTest
             m_StatusBar = new Control.StatusBar(this);
             m_StatusBar.Dock = Pos.Bottom;
             m_StatusBar.AddControl(m_DebugCheck, true);
-
-            m_Label = new Control.Label(this);
-            m_Label.Dock = Pos.Top;
-            m_Label.SetPosition(5,5);
-            m_Label.Text = "ProjectEvlly InDev V:0.0.1";
-            m_Label.TextColor = Color.White;
-            m_Label.MouseInputEnabled = true;
-            m_Label.SetToolTipText("Hi iam a tooltip!");
 
             m_Center = new Center(this);
             m_Center.Dock = Pos.Fill;
@@ -118,7 +109,6 @@ namespace Gwen.UnitTest
                 {
                     test = new CollapsibleList(m_Center);
                     RegisterUnitTest("CollapsibleList", cat, test);
-                    //test.Show();
                     test = new ColorPickers(m_Center);
                     RegisterUnitTest("Color pickers", cat, test);
                 }
@@ -160,8 +150,8 @@ namespace Gwen.UnitTest
 
         public void PrintText(string str)
         {
-            /*m_TextOutput.AddRow(str);
-			m_TextOutput.ScrollToBottom();*/
+            m_TextOutput.AddRow(str);
+            m_TextOutput.ScrollToBottom();
         }
 
         protected override void Layout(Skin.Base skin)

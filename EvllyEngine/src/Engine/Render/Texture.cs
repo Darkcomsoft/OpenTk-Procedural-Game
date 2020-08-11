@@ -39,6 +39,26 @@ namespace EvllyEngine
             //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
 
+        public Texture(ImageFile imageData, TextureMinFilter textureMinFilter, TextureMagFilter textureMagFilter)
+        {
+            _Width = imageData._width;
+            _Height = imageData._height;
+
+            Handle = GL.GenTexture();
+
+            Use();
+
+            GL.TexImage2D(_TextureTarget, 0, _PixelInternalFormat, _Width, _Height, 0, _PixelFormat, PixelType.UnsignedByte, imageData._ImgData);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)textureMinFilter);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)textureMagFilter);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+
+            //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+        }
+
         public void Use()
         {
             GL.ActiveTexture(TextureUnit.Texture0);

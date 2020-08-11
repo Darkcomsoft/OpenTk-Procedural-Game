@@ -12,6 +12,8 @@ using System.Xml;
 using ProjectEvlly.src.Utility;
 using OpenTK;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using ProjectEvlly;
 
 namespace EvllyEngine
 {
@@ -39,16 +41,17 @@ namespace EvllyEngine
 
         public void LoadAssets()
         {
-            Debug.Log("Staring Loading Assets!");
-
+            SplashScreen.SetState("Loading Error Model", SplashScreenStatus.Loading);
             Engine_Error = LoadModel("Assets/Models/", "error");
 
             //Load Mesh
+            SplashScreen.SetState("Loading Models", SplashScreenStatus.Loading);
             _Models.Add("oak", LoadModel("Assets/Models/", "oak"));
             _Models.Add("Cube", LoadModel("Assets/Models/", "Cube"));
             _Models.Add("SkySphere", LoadModel("Assets/Models/", "SkySphere"));
 
             //Load Textures
+            SplashScreen.SetState("Loading Textures", SplashScreenStatus.Loading);
             _Textures.Add("devTexture", new Texture(AssetsManager.LoadImage("Assets/Texture/", "devTexture", "jpg")));
             _Textures.Add("devTexture2", new Texture(AssetsManager.LoadImage("Assets/Texture/", "devTexture2", "png")));
             _Textures.Add("TileAtlas", new Texture(AssetsManager.LoadImage("Assets/Texture/", "TileAtlas", "png")));
@@ -56,10 +59,12 @@ namespace EvllyEngine
             _Textures.Add("Water", new Texture(AssetsManager.LoadImage("Assets/Texture/", "Water", "png")));
 
             //Load Shaders
+            SplashScreen.SetState("Loading Shaders", SplashScreenStatus.Loading);
             _Shaders.Add("Default", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "Default")));
             _Shaders.Add("UI", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "UI")));
 
             //Load TileUvs
+            SplashScreen.SetState("Loading Tile UVs", SplashScreenStatus.Loading);
             AddTileUv("Grass", new Vector2(0.15f, 0.066667f), new Vector2(0.15f, 0f), new Vector2(0.2f, 0.066667f), new Vector2(0.2f, 0f));
             AddTileUv("Dirt", new Vector2(0.55f, 0.066667f), new Vector2(0.55f, 0f), new Vector2(0.6f, 0.066667f), new Vector2(0.6f, 0f));
         }

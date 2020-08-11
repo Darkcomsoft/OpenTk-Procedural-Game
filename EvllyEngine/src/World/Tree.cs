@@ -1,5 +1,6 @@
 ﻿using EvllyEngine;
 using OpenTK;
+using ProjectEvlly.src;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,7 +42,7 @@ namespace EvllyEngine
 
             //_boxCollider = new BoxCollider(transform, new Vector3(1,1,1));
 
-            Game.Instance.TransparentDrawUpdate += Draw;
+            Game.Game.TransparentDrawUpdate += Draw;
         }
 
         public void Draw(FrameEventArgs e)
@@ -51,7 +52,7 @@ namespace EvllyEngine
 
         public void OnDestroy()
         {
-            Game.Instance.TransparentDrawUpdate -= Draw;
+            Game.Game.TransparentDrawUpdate -= Draw;
 
             //_boxCollider.OnDestroy();
             _meshRender.OnDestroy();

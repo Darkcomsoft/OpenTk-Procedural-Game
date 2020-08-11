@@ -64,7 +64,7 @@ namespace EvllyEngine
             base.OnStart();
         }
 
-        public override void OnUpdate(object obj, FrameEventArgs e)
+        public override void OnUpdate()
         {
             var moveVector = new Vector3(0, 0, 0);
 
@@ -113,13 +113,25 @@ namespace EvllyEngine
                     var deltaY = mouse.Y - _lastPos.Y;
                     _lastPos = new Vector2(mouse.X, mouse.Y);
 
+
                     // Apply the camera pitch and yaw (we clamp the pitch in the camera class)
                     Yaw -= deltaX * sensitivity * Time._Time;
                     Pitch -= deltaY * sensitivity * Time._Time; // reversed since y-coordinates range from bottom to top
                 }
 
+
                 mouseRotationBuffer.X = Yaw;
                 mouseRotationBuffer.Y = Pitch;
+
+                if (Pitch < MathHelper.DegreesToRadians(-75.0f))
+                {
+                    Pitch = mouseRotationBuffer.Y - (mouseRotationBuffer.Y - MathHelper.DegreesToRadians(-75.0f));
+                }
+
+                if (Pitch > MathHelper.DegreesToRadians(75.0f))
+                {
+                    Pitch = mouseRotationBuffer.Y - (mouseRotationBuffer.Y - MathHelper.DegreesToRadians(75.0f));
+                }
 
                 _PlayerCamera._cameraTrnasform.Rotation = new Quaternion(-MathHelper.Clamp(mouseRotationBuffer.Y, MathHelper.DegreesToRadians(-75.0f), MathHelper.DegreesToRadians(75.0f)), 0, 0, 0);
                 transform.Rotation = new Quaternion(0, WrapAngle(mouseRotationBuffer.X), 0, 0);
@@ -170,7 +182,7 @@ namespace EvllyEngine
                 }
             }
 
-            CcurrentBlock = World.instance.GetTileAt((int)transform.Position.X, (int)transform.Position.Z);
+            CcurrentBlock = MidleWorld.instance.GetTileAt((int)transform.Position.X, (int)transform.Position.Z);
 
             if (isOnGround)
             {
@@ -191,7 +203,7 @@ namespace EvllyEngine
 
             transform.Position = rigidBodyObject.WorldTransform.ExtractTranslation();
 
-            World.instance.PlayerPos = transform.Position;
+            MidleWorld.instance.PlayerPos = transform.Position;
         }
 
         public BulletSharp.RigidBody LocalCreateRigidBody(float mass, Matrix4 startTransform, CollisionShape shape)

@@ -78,7 +78,7 @@ namespace ProjectEvlly
 
                 _shader.SetMatrix4("world", Matrix4.CreateScale(500, 500, 500) * Camera.Main._transformParent.PositionMatrix);
                 _shader.SetMatrix4("view", Camera.Main.viewMatrix);
-                _shader.SetMatrix4("projection", Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(Camera.Main._fildOfView), (float)Game.Instance.Width / (float)Game.Instance.Height, 1, 10000));
+                _shader.SetMatrix4("projection", Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(Camera.Main._fildOfView), (float)Window.Instance.Width / (float)Window.Instance.Height, 1, 10000));
 
                 GL.DrawElements(BeginMode.Triangles, _mesh._indices.Length, DrawElementsType.UnsignedInt, 0);
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);

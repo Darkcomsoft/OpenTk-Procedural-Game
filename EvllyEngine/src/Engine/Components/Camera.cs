@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using ProjectEvlly;
+using ProjectEvlly.src;
 
 namespace EvllyEngine
 {
@@ -38,7 +39,7 @@ namespace EvllyEngine
             _cameraTrnasform = new Transform();
             _transformParent = transformParent;
 
-            _aspectRatio = (float)Game.Instance.Width / (float)Game.Instance.Height;
+            _aspectRatio = (float)Window.Instance.Width / (float)Window.Instance.Height;
             _projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(_fildOfView), _aspectRatio, _nearPlane, _farPlane);
 
             UpdateViewMatrix();
@@ -46,7 +47,7 @@ namespace EvllyEngine
 
         public void UpdateCamera()
         {
-            _aspectRatio = (float)Game.Instance.Width / (float)Game.Instance.Height;
+            _aspectRatio = (float)Window.Instance.Width / (float)Window.Instance.Height;
             _projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(_fildOfView), _aspectRatio, _nearPlane, _farPlane);
 
             /*Vector3 cameraTarget = Vector3.Zero;

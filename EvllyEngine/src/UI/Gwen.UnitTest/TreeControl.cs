@@ -81,7 +81,6 @@ namespace Gwen.UnitTest
 				ctrl.Selected += NodeSelected;
 				ctrl.Expanded += NodeExpanded;
 				ctrl.Collapsed += NodeCollapsed;
-
 			}
 
 			/* Normal Tree Control (without using the AddNode function */

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ProjectEvlly;
+using ProjectEvlly.src;
 
 namespace EvllyEngine
 {
@@ -18,11 +19,11 @@ namespace EvllyEngine
         public Dimension()
         {
             Debug.Log("Start Dimensionnnnnn");
-            Game.Instance.UpdateFrame += OnUpdate;
-            Game.Instance.DrawUpdate += Draw;
+            Game.Game.TickEvent += OnUpdate;
+            Game.Game.DrawUpdate += Draw;
         }
 
-        public virtual void OnUpdate(object obj, FrameEventArgs e)
+        public virtual void OnUpdate()
         {
             while (ToUnloadEntitys.Count > 0)
             {
@@ -84,8 +85,8 @@ namespace EvllyEngine
             Entitys = null;
             ToUnloadEntitys = null;
 
-            Game.Instance.UpdateFrame -= OnUpdate;
-            Game.Instance.DrawUpdate -= Draw;
+            Game.Game.TickEvent -= OnUpdate;
+            Game.Game.DrawUpdate -= Draw;
 
             ///Garbage Collector
             Debug.Log("Destroyed : " + c + " GameObject's");

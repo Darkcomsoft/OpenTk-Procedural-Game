@@ -35,7 +35,6 @@ namespace EvllyEngine
         private AssetsManager _assetsManager;
         private Physics _physics;
         private SplashScreen _SplashScreen;
-        private Network _Network;
         private GUI _GUI;
 
         private Sky _Sky;
@@ -43,29 +42,18 @@ namespace EvllyEngine
         private int FPS;
         private int UPS;
 
-        protected override void OnLoad(EventArgs e)
+        private bool GameLoaded = false;
+        private bool EngineIsReady = false;
+        private int crashTimeOut = 0;
+
+        protected override void OnLoad(EventArgs e)//Load the Window, but not the systems, importantem only the splash screen
         {
-            //Load the Window/pre Graphics Stuff//
+            gl.ClearColor(Color4.DeepSkyBlue);
+
             VSync = VSyncMode.Off;
             WindowBorder = WindowBorder.Resizable;
 
-            gl.ClearColor(Color4.DeepSkyBlue);
-
-            //Load the Engine Stuff//
             _SplashScreen = new SplashScreen();
-
-            Debug.Log("Start Loading Game...");
-            _assetsManager = new AssetsManager();
-            _assetsManager.LoadAssets();//Load All Assets
-
-            _physics = new Physics();
-            _Network = new Network();
-            _GUI = new GUI(Width, Height);
-
-
-            //_Sky = new Sky(AssetsManager.GetShader("Default"), AssetsManager.GetTexture("devTexture2"));
-
-            Debug.Log("Finished Loading Game!");
             base.OnLoad(e);
         }
 
@@ -73,33 +61,24 @@ namespace EvllyEngine
         {
             try
             {
-                UPS = (int)(1f / e.Time);
-
-                _GUI.Tick();
-
-                if (Input.GetKeyDown(Key.F11))
+                if (EngineIsReady)
                 {
-                    if (WindowState == WindowState.Fullscreen)
+                    UPS = (int)(1f / e.Time);
+
+                    _GUI.Tick();
+                    OGame.Tick();
+
+                    if (Focused) // check to see if the window is focused  
                     {
-                        WindowState = WindowState.Normal;
+                        MouseCursor.CursorLockPosition();
                     }
-                    else
-                    {
-                        WindowState = WindowState.Fullscreen;
-                    }
-                }
 
-                if (Input.GetKeyDown(Key.Escape))
+                    _physics.UpdatePhisics((float)e.Time);
+                }
+                else if (!GameLoaded)//first load the window, before load the systems
                 {
-                    Exit();
+                    LoadGame();
                 }
-
-                if (Focused) // check to see if the window is focused  
-                {
-                    MouseCursor.CursorLockPosition();
-                }
-
-                _physics.UpdatePhisics((float)e.Time);
 
                 Time._Time = (float)e.Time;
                 Time._Tick++;
@@ -118,7 +97,17 @@ namespace EvllyEngine
             }
             catch (Exception ex)
             {
-                Debug.LogError("Crash: " + ex.Message);
+                if (crashTimeOut >= 10)
+                {
+                    Debug.Log("We cant start again the game, before the crash! Shutingdown....");
+                    Exit();
+                }
+
+                crashTimeOut++;
+                ReloadGame();
+                Debug.Log("Crashed Trying Yo Start Back!");
+
+                Debug.Log("Crash: " + ex.Message);
             }
             base.OnUpdateFrame(e);
         }
@@ -128,12 +117,23 @@ namespace EvllyEngine
             FPS = (int)(1f / e.Time);
 
             gl.Clear();//Clear Buffer
-            gl.Enable(EnableCap.DepthTest);
+            Utilitys.CheckGLError("GL.Clear");
+
+            if (EngineIsReady)
+            {
+                gl.Enable(EnableCap.DepthTest);
                 OGame.Draw(e);
-            gl.Disable(EnableCap.DepthTest);
+                gl.Disable(EnableCap.DepthTest);
                 _GUI.DrawUI();
+                Utilitys.CheckGLError("Final Of Game Draw Frame");
+            }
+            else
+            {
+
+            }
+
             SwapBuffers();
-            Utilitys.CheckGLError("Final Of Draw Frame");
+            Utilitys.CheckGLError("Window SwapBuffers");
             base.OnRenderFrame(e);
         }
 
@@ -141,43 +141,96 @@ namespace EvllyEngine
         {
             gl.Viewport(0, 0, Width, Height);
 
-            _GUI.OnResize();
+            if (EngineIsReady)
+                _GUI.OnResize();
             base.OnResize(e);
         }
 
         protected override void OnKeyDown(KeyboardKeyEventArgs e)
         {
-            _GUI.OnKeyDown(e);
+            if (EngineIsReady)
+                _GUI.OnKeyDown(e);
             base.OnKeyDown(e);
         }
 
         protected override void OnKeyUp(KeyboardKeyEventArgs e)
         {
-            _GUI.OnKeyUp(e);
+            if (EngineIsReady)
+                _GUI.OnKeyUp(e);
             base.OnKeyUp(e);
         }
 
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
-            _GUI.OnMouseDown(e);
+            if (EngineIsReady)
+                _GUI.OnMouseDown(e);
             base.OnMouseDown(e);
         }
         protected override void OnMouseUp(MouseButtonEventArgs e)
         {
-            _GUI.OnMouseUp(e);
+            if (EngineIsReady)
+                _GUI.OnMouseUp(e);
             base.OnMouseUp(e);
         }
         protected override void OnMouseWheel(MouseWheelEventArgs e)
         {
-            Input.MouseWheelDelta = e.Delta;
-            _GUI.OnMouseWheel(e);
+            if (EngineIsReady)
+            {
+                Input.MouseWheelDelta = e.Delta;
+                _GUI.OnMouseWheel(e);
+            }
             base.OnMouseWheel(e);
         }
         protected override void OnMouseMove(MouseMoveEventArgs e)
         {
-            Input.GetMouse = e;
-            _GUI.OnMouseMove(e);
+            if (EngineIsReady)
+            {
+                Input.GetMouse = e;
+                _GUI.OnMouseMove(e);
+            }
             base.OnMouseMove(e);
+        }
+
+        private void LoadGame()
+        {
+            GameLoaded = true;//let this on the top
+
+            SplashScreen.SetState("Loading Assets...", SplashScreenStatus.Loading);
+            _assetsManager = new AssetsManager();
+            _assetsManager.LoadAssets();//Load All Assets
+
+            SplashScreen.SetState("Starting Physics", SplashScreenStatus.Loading);
+            _physics = new Physics();
+            _GUI = new GUI();
+            SplashScreen.SetState("Starting Game Scripts", SplashScreenStatus.Loading);
+            //_Sky = new Sky(AssetsManager.GetShader("Default"), AssetsManager.GetTexture("devTexture2"));
+
+            OGame = new Game();
+            _GUI.OnResize();//Resize the GUI
+            SplashScreen.SetState("Setting Up OpenGL", SplashScreenStatus.Loading);
+            EngineIsReady = true;
+
+            SplashScreen.SetState("Finished Loading.", SplashScreenStatus.finished);
+        }
+
+        /// <summary>
+        /// This is gona disconnect/quit you from any world or server etc. and unload assets, and other things, this is for reload the game, like the firts time
+        /// </summary>
+        public void ReloadGame()
+        {
+            OGame.Dispose();
+            _physics.Dispose();
+            _GUI.Dispose();
+
+            _assetsManager.UnloadAll();
+
+            _assetsManager = null;
+            _GUI = null;
+            _physics = null;
+            OGame = null;
+
+            GameLoaded = false;
+            EngineIsReady = false;
         }
 
         private void ApplyFog()
@@ -196,14 +249,22 @@ namespace EvllyEngine
 
         protected override void OnUnload(EventArgs e)
         {
-            //_Sky.OnDestroy();
+            if (EngineIsReady)
+            {
+                //_Sky.OnDestroy();
 
-            OGame.Dispose();
+                OGame.Dispose();
+                _assetsManager.UnloadAll();
+                _physics.Dispose();
 
-            _assetsManager.UnloadAll();
-            _physics.Dispose();
+                _GUI.Dispose();
+            }
+            else
+            {
+                Debug.Log("Window is finished, but the game isnt, somthing is not right (:");
+            }
 
-            _GUI.Dispose();
+            _SplashScreen.Dispose();
             base.OnUnload(e);
         }
 

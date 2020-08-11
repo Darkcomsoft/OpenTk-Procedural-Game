@@ -124,9 +124,12 @@
     <None Include="src\UI\Shaders\vertexShader.vs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="src\Dimension\Dimension.cs" />
-    <Compile Include="src\Dimension\MainMenuDimension.cs" />
-    <Compile Include="src\Dimension\MidleWorld.cs" />
     <Compile Include="src\Engine\AssetsManager.cs" />
     <Compile Include="src\Engine\Collada\ColladaProcessor.cs" />
     <Compile Include="src\Engine\Components\BoxCollider.cs" />
@@ -148,10 +151,18 @@
     <Compile Include="src\Engine\Render\Texture.cs" />
     <Compile Include="src\Engine\Sky.cs" />
     <Compile Include="src\Engine\SplashScreen.cs" />
-    <Compile Include="src\Engine\UIManager.cs" />
     <Compile Include="src\Entitys\Entity.cs" />
     <Compile Include="src\Entitys\EntityLiving.cs" />
+    <Compile Include="src\Entitys\PlayerEntityRemote.cs" />
     <Compile Include="src\Game.cs" />
+    <Compile Include="src\MainMenu.cs" />
+    <Compile Include="src\Input\OpenTK.cs" />
+    <Compile Include="src\Input\OpenTKAlternative.cs" />
+    <Compile Include="src\Net\Network.cs" />
+    <Compile Include="src\save\CharSaveInfo.cs" />
+    <Compile Include="src\save\PlayerSaveInfo.cs" />
+    <Compile Include="src\save\SaveManager.cs" />
+    <Compile Include="src\save\WorldSaveInfo.cs" />
     <Compile Include="src\UI\Gwen.UnitTest\Button.cs" />
     <Compile Include="src\UI\Gwen.UnitTest\CheckBox.cs" />
     <Compile Include="src\UI\Gwen.UnitTest\CollapsibleList.cs" />
@@ -178,9 +189,6 @@
     <Compile Include="src\UI\Gwen.UnitTest\TreeControl.cs" />
     <Compile Include="src\UI\Gwen.UnitTest\UnitTest.cs" />
     <Compile Include="src\UI\Gwen.UnitTest\Window.cs" />
-    <Compile Include="src\Input\OpenTK.cs" />
-    <Compile Include="src\Input\OpenTKAlternative.cs" />
-    <Compile Include="src\Net\Network.cs" />
     <Compile Include="src\UI\Renderer\GLShader.cs" />
     <Compile Include="src\UI\Renderer\OpenTK.cs" />
     <Compile Include="src\UI\Renderer\StringCache.cs" />
@@ -196,14 +204,15 @@
     <Compile Include="src\World\FastNoise.cs" />
     <Compile Include="src\World\ScriptTest.cs" />
     <Compile Include="src\World\Tree.cs" />
-    <Compile Include="src\World\World.cs" />
+    <Compile Include="src\World\MidleWorld.cs" />
     <Compile Include="src\Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\World\WorldBase.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="BulletSharp, Version=2.87.0.0, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="BulletSharp, Version=2.87.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\BulletSharp\x86\BulletSharp.dll</HintPath>
+      <HintPath>..\packages\BulletSharp\x64\BulletSharp.dll</HintPath>
     </Reference>
     <Reference Include="Gwen">
       <HintPath>..\packages\Gwen.Renderer.OpenTK\Gwen.dll</HintPath>
@@ -244,7 +253,15 @@
   <ItemGroup>
     <Content Include="OpenTK.dll" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="src\UI\GUITemplate\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

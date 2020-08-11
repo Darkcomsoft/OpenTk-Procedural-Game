@@ -2,6 +2,7 @@
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using ProjectEvlly;
+using ProjectEvlly.src;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,7 @@ namespace EvllyEngine
 
             transform.Position = position;
 
-            Blocks = new Block[World.ChunkSize, World.ChunkSize];
+            Blocks = new Block[MidleWorld.ChunkSize, MidleWorld.ChunkSize];
 
             System.Random rand = new System.Random();
 
@@ -46,12 +47,12 @@ namespace EvllyEngine
             //StartCoroutine(QueeObjects());
             //Game.World.LoadNewChunks(this);
 
-            Game.Instance.UpdateFrame += Update;
-            Game.Instance.DrawUpdate += Draw;
-            Game.Instance.TransparentDrawUpdate += DrawT;
+            Game.Game.TickEvent += Update;
+            Game.Game.DrawUpdate += Draw;
+            Game.Game.TransparentDrawUpdate += DrawT;
         }
 
-        public void Update(object ob, FrameEventArgs e)
+        public void Update()
         {
             
         }
@@ -80,9 +81,9 @@ namespace EvllyEngine
 
             _trees.Clear();
 
-            Game.Instance.UpdateFrame -= Update;
-            Game.Instance.DrawUpdate -= Draw;
-            Game.Instance.TransparentDrawUpdate -= DrawT;
+            Game.Game.TickEvent -= Update;
+            Game.Game.DrawUpdate -= Draw;
+            Game.Game.TransparentDrawUpdate -= DrawT;
 
             _meshCollider.OnDestroy();
             _meshRender.OnDestroy();
@@ -92,19 +93,19 @@ namespace EvllyEngine
         private void ThreadPopulateVoxel()
         {
             byte index = 0;
-            for (int x = 0; x < World.ChunkSize; x++)
+            for (int x = 0; x < MidleWorld.ChunkSize; x++)
             {
-                for (int z = 0; z < World.ChunkSize; z++)
+                for (int z = 0; z < MidleWorld.ChunkSize; z++)
                 {
-                    Blocks[x, z] = new Block(x + (int)transform.Position.X, z + (int)transform.Position.Z, new Vector3(transform.Position), World.globalNoise.GetPerlin(x + (int)transform.Position.X, z + (int)transform.Position.Z) * 20);
+                    Blocks[x, z] = new Block(x + (int)transform.Position.X, z + (int)transform.Position.Z, new Vector3(transform.Position), MidleWorld.globalNoise.GetPerlin(x + (int)transform.Position.X, z + (int)transform.Position.Z) * 20);
                     Blocks[x, z].index = index;
                     index++;
                 }
             }
 
-            for (int x = 0; x < World.ChunkSize; x++)
+            for (int x = 0; x < MidleWorld.ChunkSize; x++)
             {
-                for (int z = 0; z < World.ChunkSize; z++)
+                for (int z = 0; z < MidleWorld.ChunkSize; z++)
                 {
                     if (Blocks[x, z].treeType != TreeType.none)
                     {
@@ -199,9 +200,9 @@ namespace EvllyEngine
 
             int verticesNum = 0;
 
-            for (int x = 0; x < World.ChunkSize; x++)
+            for (int x = 0; x < MidleWorld.ChunkSize; x++)
             {
-                for (int z = 0; z < World.ChunkSize; z++)
+                for (int z = 0; z < MidleWorld.ChunkSize; z++)
                 {
                     if (tile[x, z].Type != TypeBlock.Air)
                     {
@@ -213,22 +214,22 @@ namespace EvllyEngine
                         float FrenteLeft = GetTile(xB + 1, zB + 1, tile[x, z].hight, tile);
 
                         _vertices.Add(x);
-                        _vertices.Add(World.globalNoise.GetPerlin(xB, zB) * 20);
+                        _vertices.Add(MidleWorld.globalNoise.GetPerlin(xB, zB) * 20);
                         _vertices.Add(z);
                         
 
                         _vertices.Add(x + 1);
-                        _vertices.Add(World.globalNoise.GetPerlin(xB + 1, zB) * 20);
+                        _vertices.Add(MidleWorld.globalNoise.GetPerlin(xB + 1, zB) * 20);
                         _vertices.Add(z);
                         
 
                         _vertices.Add(x);
-                        _vertices.Add(World.globalNoise.GetPerlin(xB, zB + 1) * 20);
+                        _vertices.Add(MidleWorld.globalNoise.GetPerlin(xB, zB + 1) * 20);
                         _vertices.Add(z + 1);
                         
 
                         _vertices.Add(x + 1);
-                        _vertices.Add(World.globalNoise.GetPerlin(xB + 1, zB + 1) * 20);
+                        _vertices.Add(MidleWorld.globalNoise.GetPerlin(xB + 1, zB + 1) * 20);
                         _vertices.Add(z + 1);
                         
 
@@ -344,7 +345,7 @@ namespace EvllyEngine
 
         float GetTile(int x, int z, float hDeafult, Block[,] array)
         {
-            Block block = World.instance.GetTileAt(x, z);
+            Block block = MidleWorld.instance.GetTileAt(x, z);
 
             return block.hight;
 

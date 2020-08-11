@@ -17,8 +17,6 @@ namespace ProjectEvlly.src.UI
 {
     public class GUI
     {
-        private int _Width, _Height;
-
         private Gwen.Input.OpenTK input;
         private Gwen.Renderer.OpenTK renderer;
         private Gwen.Skin.Base skin;
@@ -27,33 +25,42 @@ namespace ProjectEvlly.src.UI
 
         private Matrix4 _projectionMatrix;
 
-        public GUI(int Width, int Height)
-        {
-            Width = _Width;
-            Height = _Height;
+        public Gwen.Control.Canvas GetCanvas { get { return canvas; } }
 
+        public GUI()
+        {
+            GameRef.GUI = this;
+
+            SplashScreen.SetState("Loading UI.Render", SplashScreenStatus.Loading);
             renderer = new Gwen.Renderer.OpenTK();
+            SplashScreen.SetState("Loading UI.Skin", SplashScreenStatus.Loading);
             skin = new Gwen.Skin.TexturedBase(renderer, "Assets/UI/DefaultSkin.png");
 
+            SplashScreen.SetState("Loading UI.Fonts", SplashScreenStatus.Loading);
             skin.DefaultFont = new Gwen.Font(renderer, "Arial", 10);
+            SplashScreen.SetState("Starting UI.Canvas", SplashScreenStatus.Loading);
             canvas = new Gwen.Control.Canvas(skin);
 
+            SplashScreen.SetState("Starting UI.Input", SplashScreenStatus.Loading);
             input = new Gwen.Input.OpenTK(Window.Instance);
             input.Initialize(canvas);
 
-            canvas.SetSize(Width, Height);
+            SplashScreen.SetState("Starting UI.SetSize", SplashScreenStatus.Loading);
+            canvas.SetSize(Window.Instance.Width, Window.Instance.Height);
             canvas.ShouldDrawBackground = false;
             canvas.BackgroundColor = Color.FromArgb(255, 150, 170, 170);
 
-            test = new Gwen.UnitTest.UnitTest(canvas);
+            //test = new Gwen.UnitTest.UnitTest(canvas);
+
+            SplashScreen.SetState("Finishe Loading UI!", SplashScreenStatus.Loading);
         }
 
         public void OnResize()
         {
-            _projectionMatrix = Matrix4.CreateTranslation(new Vector3(-_Width / 2.0f, -_Height / 2.0f, 0)) * Matrix4.CreateScale(new Vector3(1, -1, 1)) * Matrix4.CreateOrthographic(_Width, _Height, -1.0f, 1.0f);
+            _projectionMatrix = Matrix4.CreateTranslation(new Vector3(-Window.Instance.Width / 2.0f, -Window.Instance.Height / 2.0f, 0)) * Matrix4.CreateScale(new Vector3(1, -1, 1)) * Matrix4.CreateOrthographic(Window.Instance.Width, Window.Instance.Height, -1.0f, 1.0f);
 
-            renderer.Resize(ref _projectionMatrix, _Width, _Height);
-            canvas.SetSize(_Width, _Height);
+            renderer.Resize(ref _projectionMatrix, Window.Instance.Width, Window.Instance.Height);
+            canvas.SetSize(Window.Instance.Width, Window.Instance.Height);
         }
 
         public void OnKeyDown(KeyboardKeyEventArgs e)
@@ -98,9 +105,9 @@ namespace ProjectEvlly.src.UI
         {
             if ((Time._Tick % 60) == 0)
             {
-                test.Note = String.Format("L1: {0} L2: {3} Invalidates: {4} Duplicate Invalidates: {5} Draw Calls: {1} Vertex Count: {2}", renderer.LevelOneCacheSize, renderer.DrawCallCount,
+                /*test.Note = String.Format("L1: {0} L2: {3} Invalidates: {4} Duplicate Invalidates: {5} Draw Calls: {1} Vertex Count: {2}", renderer.LevelOneCacheSize, renderer.DrawCallCount,
                     renderer.VertexCount, renderer.LevelTwoCacheSize, canvas.InvalidatesThisFrame, canvas.DuplicateInvalidates);
-                test.Fps = Window.Instance.GetFPS;
+                test.Fps = Window.Instance.GetFPS;*/
 
                 if (renderer.TextCacheSize > 1000)
                 { // each cached string is an allocated texture, flush the cache once in a while in your real project
