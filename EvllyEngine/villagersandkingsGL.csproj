@@ -71,7 +71,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;Client</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;Client, Debug</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -95,7 +95,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ServerDebug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x64\ServerDebug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;Server</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;Server, Debug</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -120,8 +120,8 @@
     <None Include="App.config" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
-    <None Include="src\UI\Shaders\fragmentShader.fs" />
-    <None Include="src\UI\Shaders\vertexShader.vs" />
+    <None Include="src\Client\UI\Shaders\fragmentShader.fs" />
+    <None Include="src\Client\UI\Shaders\vertexShader.vs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\Resources.Designer.cs">
@@ -129,85 +129,86 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="src\Dimension\Dimension.cs" />
-    <Compile Include="src\Engine\AssetsManager.cs" />
-    <Compile Include="src\Engine\Collada\ColladaProcessor.cs" />
-    <Compile Include="src\Engine\Components\BoxCollider.cs" />
-    <Compile Include="src\Engine\Components\Camera.cs" />
-    <Compile Include="src\Engine\Components\MeshCollider.cs" />
-    <Compile Include="src\Engine\Components\MeshRender.cs" />
-    <Compile Include="src\Engine\Components\RigidBody.cs" />
-    <Compile Include="src\Engine\Components\ScriptBase.cs" />
-    <Compile Include="src\Engine\Components\Transform.cs" />
-    <Compile Include="src\Engine\Debug.cs" />
-    <Compile Include="src\Engine\Element.cs" />
-    <Compile Include="src\Engine\Engine.cs" />
-    <Compile Include="src\Engine\GameObject.cs" />
-    <Compile Include="src\Engine\Input.cs" />
-    <Compile Include="src\Engine\Physics.cs" />
-    <Compile Include="src\Engine\Render\Material.cs" />
-    <Compile Include="src\Engine\Render\Mesh.cs" />
-    <Compile Include="src\Engine\Render\Shader.cs" />
-    <Compile Include="src\Engine\Render\Texture.cs" />
-    <Compile Include="src\Engine\Sky.cs" />
-    <Compile Include="src\Engine\SplashScreen.cs" />
-    <Compile Include="src\Entitys\Entity.cs" />
-    <Compile Include="src\Entitys\EntityLiving.cs" />
-    <Compile Include="src\Entitys\PlayerEntityRemote.cs" />
-    <Compile Include="src\Game.cs" />
-    <Compile Include="src\MainMenu.cs" />
-    <Compile Include="src\Input\OpenTK.cs" />
-    <Compile Include="src\Input\OpenTKAlternative.cs" />
-    <Compile Include="src\Net\Network.cs" />
-    <Compile Include="src\save\CharSaveInfo.cs" />
-    <Compile Include="src\save\PlayerSaveInfo.cs" />
-    <Compile Include="src\save\SaveManager.cs" />
-    <Compile Include="src\save\WorldSaveInfo.cs" />
-    <Compile Include="src\UI\Gwen.UnitTest\Button.cs" />
-    <Compile Include="src\UI\Gwen.UnitTest\CheckBox.cs" />
-    <Compile Include="src\UI\Gwen.UnitTest\CollapsibleList.cs" />
-    <Compile Include="src\UI\Gwen.UnitTest\ColorPickers.cs" />
-    <Compile Include="src\UI\Gwen.UnitTest\ComboBox.cs" />
-    <Compile Include="src\UI\Gwen.UnitTest\CrossSplitter.cs" />
-    <Compile Include="src\UI\Gwen.UnitTest\Docking.cs" />
-    <Compile Include="src\UI\Gwen.UnitTest\GroupBox.cs" />
-    <Compile Include="src\UI\Gwen.UnitTest\GUnit.cs" />
-    <Compile Include="src\UI\Gwen.UnitTest\ImagePanel.cs" />
-    <Compile Include="src\UI\Gwen.UnitTest\Label.cs" />
-    <Compile Include="src\UI\Gwen.UnitTest\ListBox.cs" />
-    <Compile Include="src\UI\Gwen.UnitTest\Menu.cs" />
-    <Compile Include="src\UI\Gwen.UnitTest\NumericUpDown.cs" />
-    <Compile Include="src\UI\Gwen.UnitTest\ProgressBar.cs" />
-    <Compile Include="src\UI\Gwen.UnitTest\Properties.cs" />
-    <Compile Include="src\UI\Gwen.UnitTest\RadioButton.cs" />
-    <Compile Include="src\UI\Gwen.UnitTest\RichLabel.cs" />
-    <Compile Include="src\UI\Gwen.UnitTest\ScrollControl.cs" />
-    <Compile Include="src\UI\Gwen.UnitTest\Slider.cs" />
-    <Compile Include="src\UI\Gwen.UnitTest\StatusBar.cs" />
-    <Compile Include="src\UI\Gwen.UnitTest\TabControl.cs" />
-    <Compile Include="src\UI\Gwen.UnitTest\TextBox.cs" />
-    <Compile Include="src\UI\Gwen.UnitTest\TreeControl.cs" />
-    <Compile Include="src\UI\Gwen.UnitTest\UnitTest.cs" />
-    <Compile Include="src\UI\Gwen.UnitTest\Window.cs" />
-    <Compile Include="src\UI\Renderer\GLShader.cs" />
-    <Compile Include="src\UI\Renderer\OpenTK.cs" />
-    <Compile Include="src\UI\Renderer\StringCache.cs" />
-    <Compile Include="src\UI\GUI.cs" />
-    <Compile Include="src\Utility\GCollector.cs" />
-    <Compile Include="src\Utility\gl.cs" />
-    <Compile Include="src\Utility\GLUtility.cs" />
-    <Compile Include="src\Utility\Mathf.cs" />
-    <Compile Include="src\Utility\Random.cs" />
-    <Compile Include="src\Utility\Utilitys.cs" />
-    <Compile Include="src\World\Chunk.cs" />
-    <Compile Include="src\Entitys\PlayerEntity.cs" />
-    <Compile Include="src\World\FastNoise.cs" />
-    <Compile Include="src\World\ScriptTest.cs" />
-    <Compile Include="src\World\Tree.cs" />
-    <Compile Include="src\World\MidleWorld.cs" />
-    <Compile Include="src\Main.cs" />
+    <Compile Include="src\Client\Dimension\Dimension.cs" />
+    <Compile Include="src\Client\Engine\AssetsManager.cs" />
+    <Compile Include="src\Client\Engine\Collada\ColladaProcessor.cs" />
+    <Compile Include="src\Client\Engine\Components\BoxCollider.cs" />
+    <Compile Include="src\Client\Engine\Components\Camera.cs" />
+    <Compile Include="src\Client\Engine\Components\MeshCollider.cs" />
+    <Compile Include="src\Client\Engine\Components\MeshRender.cs" />
+    <Compile Include="src\Client\Engine\Components\RigidBody.cs" />
+    <Compile Include="src\Client\Engine\Components\ScriptBase.cs" />
+    <Compile Include="src\Client\Engine\Components\Transform.cs" />
+    <Compile Include="src\Client\Engine\Debug.cs" />
+    <Compile Include="src\Client\Engine\Element.cs" />
+    <Compile Include="src\Client\Engine\Engine.cs" />
+    <Compile Include="src\Client\Engine\GameObject.cs" />
+    <Compile Include="src\Client\Engine\Input.cs" />
+    <Compile Include="src\Client\Engine\Physics.cs" />
+    <Compile Include="src\Client\Engine\Render\Material.cs" />
+    <Compile Include="src\Client\Engine\Render\Mesh.cs" />
+    <Compile Include="src\Client\Engine\Render\Shader.cs" />
+    <Compile Include="src\Client\Engine\Render\Texture.cs" />
+    <Compile Include="src\Client\Engine\Sky.cs" />
+    <Compile Include="src\Client\Engine\SplashScreen.cs" />
+    <Compile Include="src\Client\Entitys\Entity.cs" />
+    <Compile Include="src\Client\Entitys\PlayerEntityRemote.cs" />
+    <Compile Include="src\Client\Entitys\TesteEntityRemote.cs" />
+    <Compile Include="src\Client\Game.cs" />
+    <Compile Include="src\Client\MainMenu.cs" />
+    <Compile Include="src\Client\Input\OpenTK.cs" />
+    <Compile Include="src\Client\Input\OpenTKAlternative.cs" />
+    <Compile Include="src\Client\Net\Network.cs" />
+    <Compile Include="src\Client\save\CharSaveInfo.cs" />
+    <Compile Include="src\Client\save\PlayerSaveInfo.cs" />
+    <Compile Include="src\Client\save\SaveManager.cs" />
+    <Compile Include="src\Client\save\WorldSaveInfo.cs" />
+    <Compile Include="src\Server\Server.cs" />
+    <Compile Include="src\Client\UI\Gwen.UnitTest\Button.cs" />
+    <Compile Include="src\Client\UI\Gwen.UnitTest\CheckBox.cs" />
+    <Compile Include="src\Client\UI\Gwen.UnitTest\CollapsibleList.cs" />
+    <Compile Include="src\Client\UI\Gwen.UnitTest\ColorPickers.cs" />
+    <Compile Include="src\Client\UI\Gwen.UnitTest\ComboBox.cs" />
+    <Compile Include="src\Client\UI\Gwen.UnitTest\CrossSplitter.cs" />
+    <Compile Include="src\Client\UI\Gwen.UnitTest\Docking.cs" />
+    <Compile Include="src\Client\UI\Gwen.UnitTest\GroupBox.cs" />
+    <Compile Include="src\Client\UI\Gwen.UnitTest\GUnit.cs" />
+    <Compile Include="src\Client\UI\Gwen.UnitTest\ImagePanel.cs" />
+    <Compile Include="src\Client\UI\Gwen.UnitTest\Label.cs" />
+    <Compile Include="src\Client\UI\Gwen.UnitTest\ListBox.cs" />
+    <Compile Include="src\Client\UI\Gwen.UnitTest\Menu.cs" />
+    <Compile Include="src\Client\UI\Gwen.UnitTest\NumericUpDown.cs" />
+    <Compile Include="src\Client\UI\Gwen.UnitTest\ProgressBar.cs" />
+    <Compile Include="src\Client\UI\Gwen.UnitTest\Properties.cs" />
+    <Compile Include="src\Client\UI\Gwen.UnitTest\RadioButton.cs" />
+    <Compile Include="src\Client\UI\Gwen.UnitTest\RichLabel.cs" />
+    <Compile Include="src\Client\UI\Gwen.UnitTest\ScrollControl.cs" />
+    <Compile Include="src\Client\UI\Gwen.UnitTest\Slider.cs" />
+    <Compile Include="src\Client\UI\Gwen.UnitTest\StatusBar.cs" />
+    <Compile Include="src\Client\UI\Gwen.UnitTest\TabControl.cs" />
+    <Compile Include="src\Client\UI\Gwen.UnitTest\TextBox.cs" />
+    <Compile Include="src\Client\UI\Gwen.UnitTest\TreeControl.cs" />
+    <Compile Include="src\Client\UI\Gwen.UnitTest\UnitTest.cs" />
+    <Compile Include="src\Client\UI\Gwen.UnitTest\Window.cs" />
+    <Compile Include="src\Client\UI\Renderer\GLShader.cs" />
+    <Compile Include="src\Client\UI\Renderer\OpenTK.cs" />
+    <Compile Include="src\Client\UI\Renderer\StringCache.cs" />
+    <Compile Include="src\Client\UI\GUI.cs" />
+    <Compile Include="src\Client\Utility\GCollector.cs" />
+    <Compile Include="src\Client\Utility\gl.cs" />
+    <Compile Include="src\Client\Utility\GLUtility.cs" />
+    <Compile Include="src\Client\Utility\Mathf.cs" />
+    <Compile Include="src\Client\Utility\Random.cs" />
+    <Compile Include="src\Client\Utility\Utilitys.cs" />
+    <Compile Include="src\Client\World\Chunk.cs" />
+    <Compile Include="src\Client\Entitys\PlayerEntity.cs" />
+    <Compile Include="src\Client\World\FastNoise.cs" />
+    <Compile Include="src\Client\World\ScriptTest.cs" />
+    <Compile Include="src\Client\World\Tree.cs" />
+    <Compile Include="src\Client\World\MidleWorld.cs" />
+    <Compile Include="src\MainApplication.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\World\WorldBase.cs" />
+    <Compile Include="src\Client\World\WorldBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="BulletSharp, Version=2.87.0.0, Culture=neutral, processorArchitecture=x86">
@@ -260,7 +261,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="src\UI\GUITemplate\" />
+    <Folder Include="src\Client\UI\GUITemplate\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
