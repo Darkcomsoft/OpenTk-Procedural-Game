@@ -4,12 +4,14 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using EvllyEngine;
 using Lidgren.Network;
+using OpenTK;
 using ProjectEvlly.src.Entitys;
 
 namespace ProjectEvlly.src.Net
@@ -25,6 +27,8 @@ namespace ProjectEvlly.src.Net
 
         private static bool _ISSERVER = false;
         private static bool _ISCLIENT = false;
+
+        private static Dictionary<long, NetConnection> ConnectionList = new Dictionary<long, NetConnection>();
 
         private static Dictionary<int, Entity> Entitys = new Dictionary<int, Entity>();
         private static Queue<Entity> ToUnloadEntitys = new Queue<Entity>();
@@ -43,11 +47,6 @@ namespace ProjectEvlly.src.Net
 
         public static Action OnServerStart;
         public static Action OnClientStart;
-
-        public Network()
-        {
-
-        }
 
         /// <summary>
         /// Create a server, local server or dedicated server
@@ -210,7 +209,7 @@ namespace ProjectEvlly.src.Net
 
                     om.Write(viewid);
                     om.Write(entity._currentChannelID);
-                    om.WriteVariableInt64(entity._Owner);
+                    om.WriteVariableInt64(MyPeer.UniqueIdentifier);
 
                     //Position
                     om.Write(entity.transform.Position.X);
@@ -222,7 +221,7 @@ namespace ProjectEvlly.src.Net
                     om.Write(entity.transform.Rotation.Y);
                     om.Write(entity.transform.Rotation.Z);
 
-                    //Client.SendMessage(om, DefaultDeliveryMethod);
+                    Client.SendMessage(om, DefaultDeliveryMethod);
                 }
                 else
                 {
@@ -243,7 +242,7 @@ namespace ProjectEvlly.src.Net
 
                     om.Write(viewid);
                     om.Write(entity._currentChannelID);
-                    om.WriteVariableInt64(entity._Owner);
+                    om.WriteVariableInt64(MyPeer.UniqueIdentifier);
 
                     //Position
                     om.Write(entity.transform.Position.X);
@@ -255,19 +254,7 @@ namespace ProjectEvlly.src.Net
                     om.Write(entity.transform.Rotation.Y);
                     om.Write(entity.transform.Rotation.Z);
 
-                    List<NetConnection> listanet = new List<NetConnection>();
-                    if (MyPeer.Connections.Count > 0)
-                    {
-                        for (int i = 0; i < MyPeer.Connections.Count; i++)
-                        {
-                            if (MyPeer.Connections[i].RemoteUniqueIdentifier != MyPeer.UniqueIdentifier)
-                            {
-                                listanet.Add(MyPeer.Connections[i]);
-                            }
-                        }
-
-                        //Server_SendToAll(om, listanet.ToArray(), DefaultDeliveryMethod);
-                    }
+                    Server_SendToAll(om, DefaultDeliveryMethod, MyPeer.UniqueIdentifier);
                 }
             }
         }
@@ -287,23 +274,11 @@ namespace ProjectEvlly.src.Net
                 if (IsClient)
                 {
                     Client.SendMessage(om, DefaultDeliveryMethod);
+                    RemoveEntityList(entity);
                 }
                 else if (IsServer)
                 {
-                    List<NetConnection> listanet = new List<NetConnection>();
-                    if (MyPeer.Connections.Count > 0)
-                    {
-                        for (int i = 0; i < MyPeer.Connections.Count; i++)
-                        {
-                            if (MyPeer.Connections[i].RemoteUniqueIdentifier != MyPeer.UniqueIdentifier)
-                            {
-                                listanet.Add(MyPeer.Connections[i]);
-                            }
-                        }
-
-                        Server_SendToAll(om, listanet.ToArray(), DefaultDeliveryMethod);
-                    }
-
+                    Server_SendToAll(om, DefaultDeliveryMethod);
                     RemoveEntityList(entity);
                 }
             }
@@ -315,7 +290,9 @@ namespace ProjectEvlly.src.Net
 
         private static void AddEntityList(Entity entity)
         {
+            Debug.Log("AddEntity 01");
             Entitys.Add(entity._ViewID, entity);
+            Debug.Log("AddEntity 02");
         }
 
         private static void RemoveEntityList(Entity entity)
@@ -335,7 +312,7 @@ namespace ProjectEvlly.src.Net
                     Entitys.Add(entitySerializer.ViewID, new TesteEntityRemote(entitySerializer));
                     break;
                 case EntityType.PlayerEntity:
-                    Entitys.Add(entitySerializer.ViewID, new PlayerEntityRemote(entitySerializer));
+                    Entitys.Add(entitySerializer.ViewID, new PlayerEntity(entitySerializer));
                     break;
                 default:
                     break;
@@ -348,26 +325,47 @@ namespace ProjectEvlly.src.Net
         /// <param name="entity"></param>
         public static void MoveEntityToRegion(Entity entity, int channelId)
         {
-            RemoveEntityFromRegion(entity);//Firts Remove and move to the new one
+            throw new NotImplementedException("NotImplemented: For now is this disabled!");
+            /*RemoveEntityFromRegion(entity);//Firts Remove and move to the new one
 
-            entity._currentChannelID = channelId;
+            entity._currentChannelID = channelId;*/
         }
-
         public static void RemoveEntityFromRegion(Entity entity)
         {
             //Destroy the entity on the current region
+            throw new NotImplementedException("NotImplemented: For now is this disabled!");
         }
 
-        public static void Server_SendToAll(NetOutgoingMessage msg, NetConnection[] connections, NetDeliveryMethod method)
+        /// <summary>
+        /// Send to everyone only dont to a specifieduser >> param:long ExcludeUniqid
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="method"></param>
+        /// <param name="ExcludeUniqid"></param>
+        public static void Server_SendToAll(NetOutgoingMessage msg, NetDeliveryMethod method, long ExcludeUniqid)
         {
-            if (IsServer)
-            {
-                Server.SendMessage(msg, connections, method, 0);
-            }
-            else
-            {
-                Debug.LogError("Sorry for now, is disable for client");
-            }
+            if (!IsServer) { return; }
+            if (ConnectionList.Count <= 0) { return; }
+
+            NetConnection net = GetConnection(ExcludeUniqid);
+
+            if (net == null) { return; }
+
+            Server.SendToAll(msg, GetConnection(ExcludeUniqid), method, 0);
+        }
+
+        /// <summary>
+        /// Send to everyone in connectted to server
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="method"></param>
+        public static void Server_SendToAll(NetOutgoingMessage msg, NetDeliveryMethod method)
+        {
+            if (!IsServer) { return; }
+
+            if (ConnectionList.Count <= 0) { return; }
+
+            Server.SendToAll(msg, method);
         }
 
         public static EntityType GetEntityType(Entity entity)
@@ -382,6 +380,22 @@ namespace ProjectEvlly.src.Net
             }
         }
 
+        /// <summary>
+        /// Get a connection over the id of the connection
+        /// </summary>
+        /// <param name="uniq"></param>
+        /// <returns></returns>
+        public static NetConnection GetConnection(long uniq)
+        {
+            if (ConnectionList.TryGetValue(uniq, out NetConnection net))
+            {
+                return net;
+            }
+
+            Debug.Log("Dont found this connection: " + uniq);
+            return null;
+        }
+
         public static NetConnection GetMyConnection()
         {
             foreach (var item in MyPeer.Connections)
@@ -391,6 +405,7 @@ namespace ProjectEvlly.src.Net
                     return item;
                 }
             }
+            
             Debug.LogError("Sorry this connection don't exist!");
             return null;
         }
@@ -474,16 +489,12 @@ namespace ProjectEvlly.src.Net
 
                 Entitys.Clear();
                 ToUnloadEntitys.Clear();
-
-                Entitys = null;
-                ToUnloadEntitys = null;
+                ConnectionList.Clear();
 
                 Debug.Log("SERVER-NET: Server is Offline, and memory is clear!");
             }
             else if (IsClient)
             {
-                var om = MyPeer.CreateMessage();
-
                 Client.Disconnect("Disconnect");
 
                 Client = null;
@@ -511,9 +522,7 @@ namespace ProjectEvlly.src.Net
 
                 Entitys.Clear();
                 ToUnloadEntitys.Clear();
-
-                Entitys = null;
-                ToUnloadEntitys = null;
+                ConnectionList.Clear();
             }
         }
 
@@ -594,8 +603,6 @@ namespace ProjectEvlly.src.Net
                                     var om = MyPeer.CreateMessage();
                                     om.Write((byte)DataType.OnConnectData);
 
-                                    om.WriteVariableInt64(inc.SenderConnection.RemoteUniqueIdentifier);
-
                                     foreach (var kvp in Entitys.Values)
                                     {
                                         NetViewSerializer neww = new NetViewSerializer();
@@ -618,14 +625,20 @@ namespace ProjectEvlly.src.Net
 
                                     //Write the data to send when client connect
                                     string data = XMLHelper.ToXML(netvi.ToArray());
-                                    om.Write(CompressString.StringCompressor.CompressString(data));
+                                    string compressed = CompressString.StringCompressor.CompressString(data);
 
+                                    om.Write(compressed);
+
+                                    Debug.Log("ConnectData(XML): " + data);
+                                    Debug.Log("ConnectData(CompressString): " + compressed);
 
                                     Server.SendMessage(om, inc.SenderConnection, DefaultDeliveryMethod);//Send the data to Connection
                                 }
                                 else if (inc.SenderConnection.Status == NetConnectionStatus.RespondedConnect)
                                 {
                                     Debug.Log("This Player : " + NetUtility.ToHexString(inc.SenderConnection.RemoteUniqueIdentifier) + " Are Accepted to server");
+
+                                    ConnectionList.Add(inc.SenderConnection.RemoteUniqueIdentifier, inc.SenderConnection);
                                 }
                                 else if (inc.SenderConnection.Status == NetConnectionStatus.Disconnected)
                                 {
@@ -638,11 +651,15 @@ namespace ProjectEvlly.src.Net
 
                                     for (int i = 0; i < obj.Length; i++)
                                     {
+                                        Debug.Log("Entity : " + obj[i]._Owner);
                                         if (obj[i]._Owner == inc.SenderConnection.RemoteUniqueIdentifier)
                                         {
+                                            Debug.Log("Entity Destroyed: " + obj[i]._Owner);
                                             DestroyEntity(obj[i]);
                                         }
                                     }
+
+                                    ConnectionList.Remove(inc.SenderConnection.RemoteUniqueIdentifier);
 
                                     Debug.Log("Player : " + NetUtility.ToHexString(inc.SenderConnection.RemoteUniqueIdentifier) + " Disconnected!");
                                 }
@@ -718,6 +735,7 @@ namespace ProjectEvlly.src.Net
                                     case NetConnectionStatus.RespondedAwaitingApproval:
                                         break;
                                     case NetConnectionStatus.RespondedConnect:
+                                        ConnectionList.Add(inc.SenderConnection.RemoteUniqueIdentifier, inc.SenderConnection);
                                         Debug.LogError("This Player : " + NetUtility.ToHexString(inc.SenderConnection.RemoteUniqueIdentifier) + " Are Accepted to server");
                                         break;
                                     case NetConnectionStatus.Connected:
@@ -734,13 +752,17 @@ namespace ProjectEvlly.src.Net
 
                                         for (int i = 0; i < obj.Length; i++)
                                         {
+                                            Debug.Log("Entity : " + obj[i]._Owner);
                                             if (obj[i]._Owner == inc.SenderConnection.RemoteUniqueIdentifier)
                                             {
+                                                Debug.Log("Entity Destroyed: " + obj[i]._Owner);
                                                 DestroyEntity(obj[i]);
                                             }
                                         }
 
-                                        Debug.Log("Player Disconnected : " + NetUtility.ToHexString(inc.SenderConnection.RemoteUniqueIdentifier) + " Disconnected! From Server, Reson : ");
+                                        ConnectionList.Remove(inc.SenderConnection.RemoteUniqueIdentifier);
+
+                                        Debug.Log("Player : " + NetUtility.ToHexString(inc.SenderConnection.RemoteUniqueIdentifier) + " Disconnected!");
                                         break;
                                     default:
                                         break;
@@ -756,19 +778,19 @@ namespace ProjectEvlly.src.Net
         private static void ReadServerData(NetIncomingMessage inc)
         {
             DataType type = (DataType)inc.ReadByte();
-            List<NetConnection> listanet = new List<NetConnection>();
 
             switch (type)
             {
                 case DataType.RPC:
                     break;
                 case DataType.RPC_All:
+                    RPC_All(inc);
                     break;
                 case DataType.RPC_AllOwner:
+                    RPC_AllOwner(inc);
                     break;
                 case DataType.RPC_Owner:
-                    break;
-                case DataType.RPC_ALLDimension:
+                    RPC_Owner(inc);
                     break;
                 case DataType.Instantiate:
                     NetViewSerializer instantiateEntity = new NetViewSerializer();
@@ -792,37 +814,30 @@ namespace ProjectEvlly.src.Net
                     AddEntityFromType(instantiateEntity);
 
                     ///Send to all to instantiate///
-
-                    listanet.Clear();
-                    for (int i = 0; i < MyPeer.Connections.Count; i++)
+                    if (MyPeer.Connections.Count > 0)
                     {
-                        if (MyPeer.Connections[i].RemoteUniqueIdentifier != MyPeer.UniqueIdentifier)
-                        {
-                            listanet.Add(MyPeer.Connections[i]);
-                        }
+                        var om = MyPeer.CreateMessage();
+
+                        om.Write((byte)DataType.Instantiate);
+
+                        om.Write((byte)instantiateEntity.EntityType);
+
+                        om.Write(instantiateEntity.ViewID);
+                        om.Write(instantiateEntity.ChannelID);
+                        om.WriteVariableInt64(instantiateEntity.Owner);
+
+                        //Position
+                        om.Write(instantiateEntity.p_x);
+                        om.Write(instantiateEntity.p_y);
+                        om.Write(instantiateEntity.p_z);
+
+                        //Rotation
+                        om.Write(instantiateEntity.r_x);
+                        om.Write(instantiateEntity.r_y);
+                        om.Write(instantiateEntity.r_z);
+
+                        Server_SendToAll(om,DefaultDeliveryMethod, inc.SenderConnection.RemoteUniqueIdentifier);
                     }
-
-                    var om = MyPeer.CreateMessage();
-
-                    om.Write((byte)DataType.Instantiate);
-
-                    om.Write((byte)instantiateEntity.EntityType);
-
-                    om.Write(instantiateEntity.ViewID);
-                    om.Write(instantiateEntity.ChannelID);
-                    om.WriteVariableInt64(instantiateEntity.Owner);
-
-                    //Position
-                    om.Write(instantiateEntity.p_x);
-                    om.Write(instantiateEntity.p_y);
-                    om.Write(instantiateEntity.p_z);
-
-                    //Rotation
-                    om.Write(instantiateEntity.r_x);
-                    om.Write(instantiateEntity.r_y);
-                    om.Write(instantiateEntity.r_z);
-
-                    Server_SendToAll(om, listanet.ToArray(), DefaultDeliveryMethod);
                     break;
                 case DataType.DestroyEntity:
                     int viewid = inc.ReadInt32();
@@ -836,24 +851,10 @@ namespace ProjectEvlly.src.Net
                         destroyMSG.Write((byte)DataType.DestroyEntity);
                         destroyMSG.Write(viewid);
 
-                        listanet.Clear();
-
-                        for (int i = 0; i < MyPeer.Connections.Count; i++)
-                        {
-                            if (MyPeer.Connections[i].RemoteUniqueIdentifier != MyPeer.UniqueIdentifier)
-                            {
-                                listanet.Add(MyPeer.Connections[i]);
-                            }
-                        }
-
-                        Server_SendToAll(destroyMSG, listanet.ToArray(), DefaultDeliveryMethod);
+                        Server_SendToAll(destroyMSG, DefaultDeliveryMethod, inc.SenderConnection.RemoteUniqueIdentifier);
                     }
                     break;
-                case DataType.OnConnectData:
-                    break;
                 case DataType.ExitDimension:
-                    break;
-                case DataType.ServerStop:
                     break;
                 default:
                     break;
@@ -867,14 +868,13 @@ namespace ProjectEvlly.src.Net
             switch (type)
             {
                 case DataType.RPC:
-                    break;
-                case DataType.RPC_All:
-                    break;
-                case DataType.RPC_AllOwner:
-                    break;
-                case DataType.RPC_Owner:
-                    break;
-                case DataType.RPC_ALLDimension:
+                    inc.ReadString(out string funcname);
+                    inc.ReadInt32(out int viewidd);
+
+                    if (Entitys.TryGetValue(viewidd, out Entity Net))
+                    {
+                        Net.Execute(funcname, inc);
+                    }
                     break;
                 case DataType.Instantiate:
                     NetViewSerializer instantiateEntity = new NetViewSerializer();
@@ -902,15 +902,205 @@ namespace ProjectEvlly.src.Net
                     RemoveEntityList(Entitys[viewid]);
                     break;
                 case DataType.OnConnectData:
+
+                    string compressed = inc.ReadString();
+                    string xml = CompressString.StringCompressor.DecompressString(compressed);
+
+                    NetViewSerializer[] entitylist = XMLHelper.FromXML<NetViewSerializer>(xml);
+
+                    foreach (var kvp in entitylist)
+                    {
+                        Debug.Log("EntityReceived: " + kvp.ViewID);
+                        AddEntityFromType(kvp);
+                    }
                     break;
                 case DataType.ExitDimension:
                     break;
                 case DataType.ServerStop:
+                    Debug.Log("Server Stoped!");
+                    Disconnect();
                     break;
                 default:
                     break;
             }
         }
+
+        #region RPC_Type_Receive
+
+        private static void RPC_All(NetIncomingMessage inc)
+        {
+            inc.ReadString(out string funcname);
+            inc.ReadInt32(out int viewidd);
+            //inc.ReadInt32(out int d);
+
+            Entity Net = Entitys[viewidd];
+
+            object[] obj = Net.Execute(funcname, inc);
+
+            var om = Network.MyPeer.CreateMessage();
+            om.Write((byte)DataType.RPC);
+
+            om.Write(funcname);
+            om.Write(viewidd);
+
+            DoData(om, obj);
+
+            Server_SendToAll(om, Net._DefaultNetDeliveryMethod);
+        }
+
+        private static void RPC_AllOwner(NetIncomingMessage inc)
+        {
+            inc.ReadString(out string funcname);
+            inc.ReadInt32(out int viewidd);
+            //inc.ReadInt32(out int d);
+            //inc.ReadInt64();
+
+            Entity Net = Entitys[viewidd];
+
+            object[] obj = Net.Execute(funcname, inc);
+
+            var om = Network.MyPeer.CreateMessage();
+            om.Write((byte)DataType.RPC);
+
+            om.Write(funcname);
+            om.Write(viewidd);
+
+            DoData(om, obj);
+
+            Server_SendToAll(om, Net._DefaultNetDeliveryMethod, Net._Owner);
+        }
+
+        private static void RPC_Owner(NetIncomingMessage inc)
+        {
+            inc.ReadString(out string funcname);
+            inc.ReadInt32(out int viewidd);
+            Entity Net = Entitys[viewidd];
+
+            object[] obj = Net.Execute(funcname, inc);
+
+
+            var om = Network.MyPeer.CreateMessage();
+            om.Write((byte)DataType.RPC);
+
+            om.Write(funcname);
+            om.Write(viewidd);
+
+            DoData(om, obj);
+
+            Server.SendMessage(om, GetConnection(Net._Owner), inc.DeliveryMethod);
+        }
+
+        private static NetOutgoingMessage DoData(NetOutgoingMessage om, object[] param)
+        {
+            for (int i = 0; i < param.Length; i++)
+            {
+                if (param[i].GetType() == typeof(string))
+                {
+                    om.Write((string)param[i]);
+                }
+                else if (param[i].GetType() == typeof(int))
+                {
+                    om.Write((int)param[i]);
+                }
+                else if (param[i].GetType() == typeof(bool))
+                {
+                    om.Write((bool)param[i]);
+                }
+                else if (param[i].GetType() == typeof(float))
+                {
+                    om.Write((float)param[i]);
+                }
+                else if (param[i].GetType() == typeof(Vector3))
+                {
+                    Vector3 vec = (Vector3)param[i];
+
+                    om.Write(vec.X);
+                    om.Write(vec.Y);
+                    om.Write(vec.Z);
+                }
+                else if (param[i].GetType() == typeof(Vector2))
+                {
+                    Vector2 vec = (Vector2)param[i];
+
+                    om.Write(vec.X);
+                    om.Write(vec.Y);
+                }
+                else if (param[i].GetType() == typeof(Quaternion))
+                {
+                    Quaternion vec = (Quaternion)param[i];
+
+                    om.Write(vec.X);
+                    om.Write(vec.Y);
+                    om.Write(vec.Z);
+                }
+            }
+
+            return om;
+        }
+
+        #endregion
+
+        #region RPC_Type_Local
+
+        public static void RPC_All(string funcname, int viewid, object[] param)
+        {
+            Entity Net = Entitys[viewid];
+
+            Net.Execute(funcname, param);
+
+            var om = Network.MyPeer.CreateMessage();
+            om.Write((byte)DataType.RPC);
+
+            om.Write(funcname);
+            om.Write(viewid);
+
+            DoData(om, param);
+
+            Server_SendToAll(om, Net._DefaultNetDeliveryMethod);
+        }
+
+        public static void RPC_AllOwner(string funcname, int viewid, object[] param)
+        {
+            Entity Net = Entitys[viewid];
+
+            if (Net._Owner != MyPeer.UniqueIdentifier)
+            {
+                Net.Execute(funcname, param);
+            }
+
+            var om = Network.MyPeer.CreateMessage();
+            om.Write((byte)DataType.RPC);
+
+            om.Write(funcname);
+            om.Write(viewid);
+
+            DoData(om, param);
+
+            Server_SendToAll(om, Net._DefaultNetDeliveryMethod, Net._Owner);
+        }
+
+        public static void RPC_Owner(string funcname, int viewid, object[] param)
+        {
+            Entity Net = Entitys[viewid];
+
+            var om = Network.MyPeer.CreateMessage();
+            om.Write((byte)DataType.RPC);
+
+            om.Write(funcname);
+            om.Write(viewid);
+
+            DoData(om, param);
+
+            Server.SendMessage(om, GetConnection(Net._Owner), Net._DefaultNetDeliveryMethod);
+        }
+
+        public static void RPC_Server(string funcname, int viewid, object[] param)
+        {
+            Entity Net = Entitys[viewid];
+            Net.Execute(funcname, param);
+        }
+
+        #endregion
     }
 
     [Serializable]
@@ -1068,6 +1258,40 @@ namespace ProjectEvlly.src.Net
         }
     }
 
+    public class RPCALL
+    {
+        public MethodInfo _function;
+        public ParameterInfo[] _parameters;
+        public object _obj = null;
+
+        public object Execute(params object[] paramss)
+        {
+            if (_function == null) return null;
+
+            if (_parameters == null)
+            {
+                _parameters = _function.GetParameters();
+            }
+
+            try
+            {
+                return (_parameters.Length == 1 && _parameters[0].ParameterType == typeof(object[])) ? _function.Invoke(_obj, new object[] { paramss }) : _function.Invoke(_obj, paramss);
+            }
+            catch (System.Exception ex)
+            {
+                if (ex.GetType() == typeof(System.NullReferenceException)) return null;
+                Debug.LogException(ex.ToString());
+                return null;
+            }
+        }
+    }
+
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+    public sealed class RPC : Attribute
+    {
+
+    }
+
     public struct EntityChannel
     {
         public int ViewId;
@@ -1080,13 +1304,89 @@ namespace ProjectEvlly.src.Net
         }
     }
 
+    public static class NetBit
+    {
+        /// <summary>
+        /// RPC Read Vector3
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <returns></returns>
+        public static Vector3 ReadVector3(NetIncomingMessage msg)
+        {
+            Vector3 vec = new Vector3();
+
+            vec.X = msg.ReadFloat();
+            vec.Y = msg.ReadFloat();
+            vec.Z = msg.ReadFloat();
+
+            return vec;
+        }
+
+        /// <summary>
+        /// RPC Read Vector2
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <returns></returns>
+        public static Vector2 ReadVector2(NetIncomingMessage msg)
+        {
+            Vector2 vec = new Vector2();
+
+            vec.X = msg.ReadFloat();
+            vec.Y = msg.ReadFloat();
+
+            return vec;
+        }
+
+        /// <summary>
+        /// RPC Read Quaternion
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <returns></returns>
+        public static Quaternion ReadQuaternion(NetIncomingMessage msg)
+        {
+            Quaternion vec = new Quaternion();
+
+            vec.X = msg.ReadFloat();
+            vec.Y = msg.ReadFloat();
+            vec.Z = msg.ReadFloat();
+            vec.W = 1;
+
+            return vec;
+        }
+    }
+
+    /// <summary>
+    /// Sender class to send rpc back to the sender
+    /// </summary>
+    public struct DNetConnection
+    {
+        /// <summary>
+        /// UniqueId of the sender connection
+        /// </summary>
+        public long unique;
+        /// <summary>
+        /// Get your connection to send a menssage to this connection, if you are the server you can't use this
+        /// </summary>
+        public NetConnection NetConnection;
+
+        public DNetConnection(NetConnection connection)
+        {
+            NetConnection = connection;
+            unique = connection.RemoteUniqueIdentifier;
+        }
+
+        /// <summary>
+        /// Check if you send this messagen for you, if you is the sender, i gone return true.
+        /// </summary>
+        public bool IsMine { get { if (unique == Network.MyPeer.UniqueIdentifier) { return true; } else { return false; } } private set { } }
+    }
+
     public enum DataType : byte
     {
         RPC,
         RPC_All,
         RPC_AllOwner,
         RPC_Owner,
-        RPC_ALLDimension,
 
         Instantiate,
         DestroyEntity,
@@ -1094,6 +1394,11 @@ namespace ProjectEvlly.src.Net
 
         ExitDimension,
         ServerStop
+    }
+
+    public enum RPCMode
+    {
+        All, AllNoOwner, AllNoDimension, Owner, Server
     }
 
     [Serializable]

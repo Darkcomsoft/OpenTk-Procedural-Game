@@ -17,8 +17,6 @@ C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Debug
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Debug\System.Runtime.CompilerServices.Unsafe.dll
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Debug\Gwen.pdb
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Debug\Gwen.xml
-C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Debug\Lidgren.Network.pdb
-C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Debug\Lidgren.Network.xml
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Debug\OpenTK.dll.config
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Debug\QuickFont.xml
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Debug\SharpFont.xml

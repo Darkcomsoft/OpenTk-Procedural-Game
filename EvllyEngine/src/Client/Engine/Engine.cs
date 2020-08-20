@@ -218,6 +218,8 @@ namespace EvllyEngine
         /// </summary>
         public void ReloadGame()
         {
+            Network.Disconnect();
+
             OGame.Dispose();
             _physics.Dispose();
             _GUI.Dispose();

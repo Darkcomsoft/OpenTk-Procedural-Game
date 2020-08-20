@@ -22,7 +22,7 @@ namespace EvllyEngine
 
             collisionConf = new DefaultCollisionConfiguration();
             dispatcher = new CollisionDispatcher(collisionConf);
-
+            
             broadphase = new DbvtBroadphase();
             _World = new DiscreteDynamicsWorld(dispatcher, broadphase, null, collisionConf);
             _World.Gravity = new Vector3(0, -10, 0);
@@ -55,6 +55,16 @@ namespace EvllyEngine
         {
             ClosestRayResultCallback callback = new ClosestRayResultCallback(ref fromPosition, ref toDirection);
             
+            Physics._Main._World.RayTest(fromPosition, toDirection, callback);
+            hit = callback;
+
+            return callback.HasHit;
+        }
+
+        public static bool RayCastSphere(Vector3 fromPosition, Vector3 toDirection, out ClosestRayResultCallback hit)
+        {
+            ClosestRayResultCallback callback = new ClosestRayResultCallback(ref fromPosition, ref toDirection);
+
             Physics._Main._World.RayTest(fromPosition, toDirection, callback);
             hit = callback;
 

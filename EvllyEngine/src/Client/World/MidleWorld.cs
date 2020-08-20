@@ -23,15 +23,17 @@ namespace EvllyEngine
         public Vector3 PlayerPos;
 
         private Dictionary<Vector3, Chunk> chunkMap = new Dictionary<Vector3, Chunk>();
-        
 
         public static FastNoise globalNoise;
 
-        public MidleWorld(CharSaveInfo charSaveInfo)
+        public MidleWorld(string _worldName)
         {
             instance = this;
 
-            WorldName = charSaveInfo.WorldName;
+            WorldName = _worldName;
+
+            globalNoise = new FastNoise(0);
+            globalNoise.SetFrequency(0.005f);
 
             //LoadTheWorld if has a save
             if (SaveManager.LoadWorld())//Have a Save
@@ -40,11 +42,22 @@ namespace EvllyEngine
             }
             else//Dont have a save
             {
-                globalNoise = new FastNoise(0);
-                globalNoise.SetFrequency(0.005f);
+                
+            }
+        }
 
+        public void SpawnPlayer(CharSaveInfo charSaveInfo)
+        {
+#if Client
+            if (Network.IsServer)//is singleplayer
+            {
                 Network.SpawnEntity(new PlayerEntity());
             }
+            else
+            {
+                //Request Spawn to server
+            }
+#endif
         }
 
         public override void Tick()

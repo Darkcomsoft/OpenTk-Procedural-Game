@@ -186,7 +186,7 @@ namespace ProjectEvlly.src
             ipTextInput.Position(Pos.Center, 0, -35);
             portTextInput.Position(Pos.Center, 0, 0);
             ipportConnect.Position(Pos.Center, 0, 35);
-            backDirectConnect.Position(Pos.Center, 0, 55);
+            backDirectConnect.Position(Pos.Center, 0, 70);
 
             SinglePlayerbutton.SetSize(200, 50);
             Quitbutton.SetSize(200, 50);
@@ -371,6 +371,7 @@ namespace ProjectEvlly.src
 
         private void BackDirectConnect_Clicked(Base sender, ClickedEventArgs arguments)
         {
+            
             logoImage.Show();
             SinglePlayerbutton.Show();
             MultiPlayerbutton.Show();
@@ -379,6 +380,7 @@ namespace ProjectEvlly.src
             ipTextInput.Hide();
             portTextInput.Hide();
             ipportConnect.Hide();
+            backDirectConnect.Hide();
         }
 
         private void IpportConnect_Clicked(Base sender, ClickedEventArgs arguments)

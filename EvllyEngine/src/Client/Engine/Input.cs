@@ -18,6 +18,8 @@ namespace EvllyEngine
         { 
             get 
             {
+                if (!Window.Instance.Focused) { return 0; }
+
                 int f = MouseWheelDelta;
                 MouseWheelDelta = 0;
                 return f; 
@@ -26,6 +28,8 @@ namespace EvllyEngine
 
         public static bool GetKeyDown(Key key)
         {
+            if (!Window.Instance.Focused) { return false; }
+
             if (!keyToggleList.Contains(key) && Keyboard.GetState().IsKeyDown(key))
             {
                 keyToggleList.Add(key);
@@ -45,6 +49,8 @@ namespace EvllyEngine
         [Obsolete("Na verdade n esta implementado e n Obisoleto")]
         public static bool GetKeyUp(Key key)
         {
+            if (!Window.Instance.Focused) { return false; }
+
             if (!keyToggleList.Contains(key) && Keyboard.GetState().IsKeyUp(key))
             {
                 keyToggleList.Add(key);
@@ -63,6 +69,8 @@ namespace EvllyEngine
 
         public static bool GetKey(Key key)
         {
+            if (!Window.Instance.Focused) { return false; }
+
             return Keyboard.GetState().IsKeyDown(key);
         }
     }

@@ -170,7 +170,8 @@ namespace ProjectEvlly.src
 
         private void OnServerStart()
         {
-            _MidleWorld = new MidleWorld(_CharacterInfo);
+            _MidleWorld = new MidleWorld(_CharacterInfo.WorldName);
+            _MidleWorld.SpawnPlayer(_CharacterInfo);
             _isPlaying = true;
         }
 
@@ -184,7 +185,8 @@ namespace ProjectEvlly.src
             _MainMenu.Dispose();
             _MainMenu = null;
 
-            _MidleWorld = new MidleWorld(_CharacterInfo);
+            _MidleWorld = new MidleWorld(_CharacterInfo.WorldName);
+            _MidleWorld.SpawnPlayer(_CharacterInfo);
             _isPlaying = true;
         }
     }

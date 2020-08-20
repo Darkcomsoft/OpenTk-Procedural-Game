@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
 using ProjectEvlly.src.Net;
+using ProjectEvlly.src;
 
 public class Server : IDisposable
 {
@@ -16,6 +17,8 @@ public class Server : IDisposable
     private bool running;
 
 	public static Action Tick;
+
+	public MidleWorld _midleWorld;
 
 	private readonly Stopwatch _watchUpdate = new Stopwatch();
 
@@ -49,6 +52,8 @@ public class Server : IDisposable
             _watchUpdate.Restart();
             Thread.Sleep(10);
         }
+
+		OnServerApplication();
     }
 
 	private void OnServerStart()
@@ -56,17 +61,30 @@ public class Server : IDisposable
 
 	}
 
+	private void OnServerApplication()
+	{
+		EvllyEngine.Debug.Log("Server is Stoped!");
+	}
+
+	public void Stop()
+	{
+		Network.Disconnect();
+		running = false;
+	}
+
 	public void Dispose()
     {
-		Network.Disconnect();
-
 		Network.OnServerStart -= OnServerStart;
 
 		ShutdownConsole();
 
 		_watchUpdate.Stop();
-        running = false;
-    }
+
+		if (running != false)
+		{
+			Stop();
+		}
+	}
 
     #region ConsoleWindow
     TextWriter oldOutput;
@@ -155,6 +173,7 @@ public class Server : IDisposable
 
 		System.Console.ForegroundColor = ConsoleColor.Green;
 		System.Console.Write(inputString);
+		System.Console.ForegroundColor = ConsoleColor.White;
 	}
 
 	internal void ConsoleOnBackspace()
@@ -164,8 +183,6 @@ public class Server : IDisposable
 		if (inputString.Length <= 1)
 		{
 			ConsoleClearLine();
-			/*System.Console.ForegroundColor = ConsoleColor.Green;
-			System.Console.WriteLine("> " + inputString);*/
 
 			var strtext = inputString;
 			inputString = "";
@@ -192,8 +209,11 @@ public class Server : IDisposable
 	internal void OnEnter()
 	{
 		ConsoleClearLine();
+
 		System.Console.ForegroundColor = ConsoleColor.Green;
-		System.Console.WriteLine("> " + inputString);
+		string[] textarray = inputString.Split(" "[0]);
+		Commands.ReadInputCommand(textarray);
+		System.Console.ForegroundColor = ConsoleColor.White;
 
 		var strtext = inputString;
 		inputString = "";

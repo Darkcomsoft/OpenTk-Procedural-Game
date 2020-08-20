@@ -1,3 +1,7 @@
+C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\obj\x64\ServerDebug\villagersandkingsGL.csprojAssemblyReference.cache
+C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\obj\x64\ServerDebug\ProjectEvlly.Properties.Resources.resources
+C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\obj\x64\ServerDebug\villagersandkingsGL.csproj.GenerateResource.cache
+C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\obj\x64\ServerDebug\villagersandkingsGL.csproj.CoreCompileInputs.cache
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\ServerDebug\SharpFont.dll.config
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\ServerDebug\freetype6.dll
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\ServerDebug\ProjectEvlly.exe.config
@@ -5,7 +9,6 @@ C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Serve
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\ServerDebug\ProjectEvlly.pdb
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\ServerDebug\BulletSharp.dll
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\ServerDebug\Gwen.dll
-C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\ServerDebug\Lidgren.Network.dll
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\ServerDebug\OpenTK.dll
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\ServerDebug\QuickFont.dll
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\ServerDebug\SharpFont.dll
@@ -15,8 +18,6 @@ C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Serve
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\ServerDebug\System.Runtime.CompilerServices.Unsafe.dll
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\ServerDebug\Gwen.pdb
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\ServerDebug\Gwen.xml
-C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\ServerDebug\Lidgren.Network.pdb
-C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\ServerDebug\Lidgren.Network.xml
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\ServerDebug\OpenTK.dll.config
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\ServerDebug\QuickFont.xml
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\ServerDebug\SharpFont.xml
@@ -24,10 +25,7 @@ C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Serve
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\ServerDebug\System.Memory.xml
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\ServerDebug\System.Numerics.Vectors.xml
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\ServerDebug\System.Runtime.CompilerServices.Unsafe.xml
-C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\obj\x64\ServerDebug\villagersandkingsGL.csprojAssemblyReference.cache
-C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\obj\x64\ServerDebug\ProjectEvlly.Properties.Resources.resources
-C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\obj\x64\ServerDebug\villagersandkingsGL.csproj.GenerateResource.cache
-C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\obj\x64\ServerDebug\villagersandkingsGL.csproj.CoreCompileInputs.cache
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\obj\x64\ServerDebug\villagersandkingsGL.csproj.CopyComplete
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\obj\x64\ServerDebug\ProjectEvlly.exe
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\obj\x64\ServerDebug\ProjectEvlly.pdb
+C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\ServerDebug\Lidgren.Network.dll
