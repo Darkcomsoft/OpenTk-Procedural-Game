@@ -48,8 +48,11 @@ public class Server : IDisposable
 				Tick();
 			}
 
-			SetTitleConsole("ProjectEvllyn-Server Tick: " + (int)(1f / _watchUpdate.Elapsed.TotalSeconds));
-            _watchUpdate.Restart();
+			SetTitleConsole("ProjectEvllyn-Server FPS: " + (int)(1f / _watchUpdate.Elapsed.TotalSeconds));
+			Time._Time = (float)_watchUpdate.Elapsed.TotalSeconds;
+			Time._Tick++;
+
+			_watchUpdate.Restart();
             Thread.Sleep(10);
         }
 

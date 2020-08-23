@@ -29,11 +29,11 @@ namespace ProjectEvlly.src.UI
 
         public GUI()
         {
-            GameRef.GUI = this;
+            Game.GUI = this;
 
             SplashScreen.SetState("Loading UI.Render", SplashScreenStatus.Loading);
             renderer = new Gwen.Renderer.OpenTK();
-            SplashScreen.SetState("Loading UI.Skin", SplashScreenStatus.Loading);
+            SplashScreen.SetState("Loading UI.Skin's", SplashScreenStatus.Loading);
             skin = new Gwen.Skin.TexturedBase(renderer, "Assets/UI/DefaultSkin.png");
 
             SplashScreen.SetState("Loading UI.Fonts", SplashScreenStatus.Loading);
@@ -45,13 +45,12 @@ namespace ProjectEvlly.src.UI
             input = new Gwen.Input.OpenTK(Window.Instance);
             input.Initialize(canvas);
 
-            SplashScreen.SetState("Starting UI.SetSize", SplashScreenStatus.Loading);
+            SplashScreen.SetState("Setting-UP UI", SplashScreenStatus.Loading);
             canvas.SetSize(Window.Instance.Width, Window.Instance.Height);
             canvas.ShouldDrawBackground = false;
             canvas.BackgroundColor = Color.FromArgb(255, 150, 170, 170);
 
             //test = new Gwen.UnitTest.UnitTest(canvas);
-
             SplashScreen.SetState("Finishe Loading UI!", SplashScreenStatus.Loading);
         }
 

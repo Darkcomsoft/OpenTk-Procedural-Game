@@ -2,7 +2,7 @@
 using OpenTK;
 using OpenTK.Input;
 using ProjectEvlly;
-using ProjectEvlly.src.Client;
+using ProjectEvlly.src;
 using ProjectEvlly.src.Net;
 using System;
 using System.Collections.Generic;
@@ -64,11 +64,11 @@ namespace EvllyEngine
 
             if (isMine)//if this is my
             {
-
+                RPC("RPC_MouseLock", ProjectEvlly.src.Net.RPCMode.AllNoOwner, transform.Position, transform.Rotation);
             }
             else
             {
-                RPC("RPC_MouseLock", ProjectEvlly.src.Net.RPCMode.AllNoOwner, transform.Position, transform.Rotation);
+                
             }
 #elif Server
 

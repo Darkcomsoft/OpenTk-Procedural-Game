@@ -19,8 +19,8 @@ namespace EvllyEngine
         public Dimension()
         {
             Debug.Log("Start Dimensionnnnnn");
-            Game.Game.TickEvent += OnUpdate;
-            Game.Game.DrawUpdate += Draw;
+            Game.Client.TickEvent += OnUpdate;
+            Game.Client.DrawUpdate += Draw;
         }
 
         public virtual void OnUpdate()
@@ -85,8 +85,8 @@ namespace EvllyEngine
             Entitys = null;
             ToUnloadEntitys = null;
 
-            Game.Game.TickEvent -= OnUpdate;
-            Game.Game.DrawUpdate -= Draw;
+            Game.Client.TickEvent -= OnUpdate;
+            Game.Client.DrawUpdate -= Draw;
 
             ///Garbage Collector
             Debug.Log("Destroyed : " + c + " GameObject's");

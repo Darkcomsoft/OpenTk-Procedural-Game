@@ -132,14 +132,14 @@ namespace ProjectEvlly.src
             _copyText.TextColor = Color.White;
 
             _Label = new Gwen.Control.Label(this);
-            _Label.Text = "ProjectEvlly InDev V:0.0.1";
+            _Label.Text = MainApplication.AppName + " " + MainApplication.Version;
             _Label.MouseInputEnabled = true;
             _Label.SetToolTipText("Hi iam a tooltip!");
             _Label.Position(Pos.Top | Pos.Left, 10, 10);
             _Label.TextColor = Color.White;
 
-            GameRef.GUI.GetCanvas.ShouldDrawBackground = true;
-            GameRef.GUI.GetCanvas.BackgroundColor = Color.Black;
+            Game.GUI.GetCanvas.ShouldDrawBackground = true;
+            Game.GUI.GetCanvas.BackgroundColor = Color.Black;
 
             OnResize();
         }
@@ -318,7 +318,7 @@ namespace ProjectEvlly.src
 
         private void OnButtomCreateClicked(Base control, EventArgs args)
         {
-            GameRef.Game.CreateWorldAndPlay(new CharSaveInfo(CharNameTextBox.Text, "WorldName"));
+            Game.Client.CreateWorldAndPlay(new CharSaveInfo(CharNameTextBox.Text, "WorldName"));
         }
 
         private void OnCharNameChange(Base sender, EventArgs arguments)
@@ -341,15 +341,15 @@ namespace ProjectEvlly.src
         private void OnDeleteItemClciked(Base control, EventArgs args)
         {
             CharSaveInfo save = (CharSaveInfo)control.UserData;
-            GameRef.Game.DeleteCharAndWorld(save);
+            Game.Client.DeleteCharAndWorld(save);
             PlayButtomClick(control, args);
         }
 
         private void OnPlayItemClciked(Base control, EventArgs args)
         {
             CharSaveInfo save = (CharSaveInfo)control.UserData;
-            GameRef.GUI.GetCanvas.ShouldDrawBackground = false;
-            GameRef.Game.PlaySingleWorld(save);
+            Game.GUI.GetCanvas.ShouldDrawBackground = false;
+            Game.Client.PlaySingleWorld(save);
         }
 
         private void PlayMultiPlayerClick(Base control, EventArgs args)
@@ -400,7 +400,7 @@ namespace ProjectEvlly.src
             backDirectConnect.Clicked -= BackDirectConnect_Clicked;
             ipportConnect.Clicked -= IpportConnect_Clicked;
 
-            GameRef.GUI.GetCanvas.ShouldDrawBackground = false;
+            Game.GUI.GetCanvas.ShouldDrawBackground = false;
 
             if (CharCreate != null)
             {

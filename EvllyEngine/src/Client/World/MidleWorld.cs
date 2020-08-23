@@ -3,6 +3,7 @@ using ProjectEvlly;
 using ProjectEvlly.src;
 using ProjectEvlly.src.Net;
 using ProjectEvlly.src.save;
+using ProjectEvlly.src.UI;
 using ProjectEvlly.src.Utility;
 using ProjectEvlly.src.World;
 using System;
@@ -26,9 +27,19 @@ namespace EvllyEngine
 
         public static FastNoise globalNoise;
 
+#if Client
+#elif Server
+#endif
+
         public MidleWorld(string _worldName)
         {
             instance = this;
+
+#if Client
+            
+#elif Server
+
+#endif
 
             WorldName = _worldName;
 
@@ -46,7 +57,7 @@ namespace EvllyEngine
             }
         }
 
-        public void SpawnPlayer(CharSaveInfo charSaveInfo)
+    public void SpawnPlayer(CharSaveInfo charSaveInfo)
         {
 #if Client
             if (Network.IsServer)//is singleplayer
@@ -55,13 +66,16 @@ namespace EvllyEngine
             }
             else
             {
-                //Request Spawn to server
+                Network.SpawnEntity(new PlayerEntity());
             }
 #endif
         }
 
         public override void Tick()
         {
+#if Client
+#elif Server
+#endif
             CheckViewDistance();
             base.Tick();
         }

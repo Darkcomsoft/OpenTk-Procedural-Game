@@ -136,16 +136,11 @@
     <Compile Include="src\Client\Engine\Components\Camera.cs" />
     <Compile Include="src\Client\Engine\Components\MeshCollider.cs" />
     <Compile Include="src\Client\Engine\Components\MeshRender.cs" />
-    <Compile Include="src\Client\Engine\Components\RigidBody.cs" />
-    <Compile Include="src\Client\Engine\Components\ScriptBase.cs" />
     <Compile Include="src\Client\Engine\Components\Transform.cs" />
     <Compile Include="src\Client\Engine\Debug.cs" />
-    <Compile Include="src\Client\Engine\Element.cs" />
-    <Compile Include="src\Client\Engine\Engine.cs" />
-    <Compile Include="src\Client\Engine\GameObject.cs" />
+    <Compile Include="src\Client\Engine\Window.cs" />
     <Compile Include="src\Client\Engine\Input.cs" />
     <Compile Include="src\Client\Engine\Physics.cs" />
-    <Compile Include="src\Client\Engine\Render\Material.cs" />
     <Compile Include="src\Client\Engine\Render\Mesh.cs" />
     <Compile Include="src\Client\Engine\Render\Shader.cs" />
     <Compile Include="src\Client\Engine\Render\Texture.cs" />
@@ -153,7 +148,7 @@
     <Compile Include="src\Client\Engine\SplashScreen.cs" />
     <Compile Include="src\Client\Entitys\Entity.cs" />
     <Compile Include="src\Client\Entitys\TesteEntityRemote.cs" />
-    <Compile Include="src\Client\Game.cs" />
+    <Compile Include="src\Client\Client.cs" />
     <Compile Include="src\Client\MainMenu.cs" />
     <Compile Include="src\Client\Input\OpenTK.cs" />
     <Compile Include="src\Client\Input\OpenTKAlternative.cs" />
@@ -163,7 +158,7 @@
     <Compile Include="src\Client\save\PlayerSaveInfo.cs" />
     <Compile Include="src\Client\save\SaveManager.cs" />
     <Compile Include="src\Client\save\WorldSaveInfo.cs" />
-    <Compile Include="src\Client\World\MidleWorldServer.cs" />
+    <Compile Include="src\Client\UI\InGameUI.cs" />
     <Compile Include="src\Commands.cs" />
     <Compile Include="src\Server\Server.cs" />
     <Compile Include="src\Client\UI\Gwen.UnitTest\Button.cs" />
@@ -205,7 +200,6 @@
     <Compile Include="src\Client\World\Chunk.cs" />
     <Compile Include="src\Client\Entitys\PlayerEntity.cs" />
     <Compile Include="src\Client\World\FastNoise.cs" />
-    <Compile Include="src\Client\World\ScriptTest.cs" />
     <Compile Include="src\Client\World\Tree.cs" />
     <Compile Include="src\Client\World\MidleWorld.cs" />
     <Compile Include="src\MainApplication.cs" />

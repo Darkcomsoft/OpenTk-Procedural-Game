@@ -37,9 +37,9 @@ namespace ProjectEvlly
         public Entity()
         {
 #if Client
-            Game.Game.TickEvent += OnUpdate;
-            Game.Game.DrawUpdate += OnDrawOpaque;
-            Game.Game.TransparentDrawUpdate += OnDrawT;
+            Game.Client.TickEvent += OnUpdate;
+            Game.Client.DrawUpdate += OnDrawOpaque;
+            Game.Client.TransparentDrawUpdate += OnDrawT;
 #elif Server
             Server.Tick += OnUpdate;
 #endif
@@ -58,20 +58,19 @@ namespace ProjectEvlly
         public Entity(NetViewSerializer entity)
         {
 #if Client
-            Game.Game.TickEvent += OnUpdate;
-            Game.Game.DrawUpdate += OnDrawOpaque;
-            Game.Game.TransparentDrawUpdate += OnDrawT;
+            Game.Client.TickEvent += OnUpdate;
+            Game.Client.DrawUpdate += OnDrawOpaque;
+            Game.Client.TransparentDrawUpdate += OnDrawT;
 #elif Server
             Server.Tick += OnUpdate;
 #endif
-
-            SetUpNet(entity.ViewID, entity.Owner, NetDeliveryMethod.Unreliable);
 
             transform = new Transform();
 
             transform.Position = new Vector3(entity.p_x, entity.p_y, entity.p_z);
             transform.Rotation = new Quaternion(entity.r_x, entity.r_y, entity.r_z, 0);
 
+            SetUpNet(entity.ViewID, entity.Owner, NetDeliveryMethod.Unreliable);
             OnConstruc();
             Debug.Log("Entity Creator2");
         }
@@ -130,9 +129,9 @@ namespace ProjectEvlly
         public virtual void OnDestroy()
         {
 #if Client
-            Game.Game.TickEvent -= OnUpdate;
-            Game.Game.DrawUpdate -= OnDrawOpaque;
-            Game.Game.TransparentDrawUpdate -= OnDrawT;
+            Game.Client.TickEvent -= OnUpdate;
+            Game.Client.DrawUpdate -= OnDrawOpaque;
+            Game.Client.TransparentDrawUpdate -= OnDrawT;
 #elif Server
             Server.Tick -= OnUpdate;
 #endif

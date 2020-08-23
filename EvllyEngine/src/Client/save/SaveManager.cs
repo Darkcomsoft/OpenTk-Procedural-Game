@@ -47,10 +47,10 @@ namespace ProjectEvlly.src.save
         #region PlayerSave
         public static void SavePlayer(PlayerSaveInfo info, string userid)
         {
-            CreateDirectory(GameRef.GetWorld.WorldName);
+            CreateDirectory(Game.GetWorld.WorldName);
 
             BinaryFormatter bf = new BinaryFormatter();
-            FileStream file = File.Create(Path.GetFullPath("Saves./" + GameRef.GetWorld.WorldName + "./player./" + userid + ".database"));
+            FileStream file = File.Create(Path.GetFullPath("Saves./" + Game.GetWorld.WorldName + "./player./" + userid + ".database"));
 
             bf.Serialize(file, info);
             file.Close();
@@ -58,15 +58,15 @@ namespace ProjectEvlly.src.save
 
         public static void DeletPlayer(string userid)
         {
-            File.Delete(Path.GetFullPath("Saves./" + GameRef.GetWorld.WorldName + "./player./" + userid + ".database"));
+            File.Delete(Path.GetFullPath("Saves./" + Game.GetWorld.WorldName + "./player./" + userid + ".database"));
         }
 
         public static PlayerSaveInfo LoadPlayer(string userid)
         {
-            if (File.Exists(Path.GetFullPath("Saves./" + GameRef.GetWorld.WorldName + "./player./" + userid + ".database")))
+            if (File.Exists(Path.GetFullPath("Saves./" + Game.GetWorld.WorldName + "./player./" + userid + ".database")))
             {
                 BinaryFormatter bf = new BinaryFormatter();
-                FileStream file = File.Open(Path.GetFullPath("Saves./" + GameRef.GetWorld.WorldName + "./player./" + userid + ".database"), FileMode.Open);
+                FileStream file = File.Open(Path.GetFullPath("Saves./" + Game.GetWorld.WorldName + "./player./" + userid + ".database"), FileMode.Open);
 
                 PlayerSaveInfo dataa = (PlayerSaveInfo)bf.Deserialize(file);
                 file.Close();
@@ -74,7 +74,7 @@ namespace ProjectEvlly.src.save
                 return dataa;
             }
 
-            Debug.Log("Dont found this Player File " + Path.GetFullPath("Saves./" + GameRef.GetWorld.WorldName + "./player./" + userid + ".database"));
+            Debug.Log("Dont found this Player File " + Path.GetFullPath("Saves./" + Game.GetWorld.WorldName + "./player./" + userid + ".database"));
             return new PlayerSaveInfo();
         }
         #endregion

@@ -9,7 +9,7 @@ using OpenTK;
 using OpenTK.Input;
 using ProjectEvlly;
 
-namespace ProjectEvlly.src.Client
+namespace ProjectEvlly.src
 {
     public class PlayerController
     {
@@ -79,18 +79,6 @@ namespace ProjectEvlly.src.Client
             else
             {
                 isOnGround = false;
-            }
-
-            if (Input.GetKeyDown(Key.P))
-            {
-                if (EvllyEngine.MouseCursor.MouseLocked)
-                {
-                    EvllyEngine.MouseCursor.UnLockCursor();
-                }
-                else
-                {
-                    EvllyEngine.MouseCursor.LockCursor();
-                }
             }
 
             if (EvllyEngine.MouseCursor.MouseLocked)

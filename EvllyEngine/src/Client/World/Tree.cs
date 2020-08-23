@@ -42,7 +42,7 @@ namespace EvllyEngine
 
             //_boxCollider = new BoxCollider(transform, new Vector3(1,1,1));
 
-            Game.Game.TransparentDrawUpdate += Draw;
+            Game.Client.TransparentDrawUpdate += Draw;
         }
 
         public void Draw(FrameEventArgs e)
@@ -52,7 +52,7 @@ namespace EvllyEngine
 
         public void OnDestroy()
         {
-            Game.Game.TransparentDrawUpdate -= Draw;
+            Game.Client.TransparentDrawUpdate -= Draw;
 
             //_boxCollider.OnDestroy();
             _meshRender.OnDestroy();

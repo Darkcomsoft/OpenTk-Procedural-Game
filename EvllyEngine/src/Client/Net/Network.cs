@@ -38,6 +38,8 @@ namespace ProjectEvlly.src.Net
         public static bool Ready { get; private set; }
         public static NetPeerStatistics PeerStat;
 
+        private static NetConnectionStatus _NetConnectionStatus;
+
         public static Action<NetConnection> OnPlayerDisconnect;
         public static Action<NetConnection> OnPlayerConnect;
         public static Action<string, NetConnection> PlayerApproval;
@@ -46,6 +48,8 @@ namespace ProjectEvlly.src.Net
         public static Action OnConnect;
 
         public static Action OnServerStart;
+        public static Action OnServerStop;
+
         public static Action OnClientStart;
 
         /// <summary>
@@ -491,38 +495,16 @@ namespace ProjectEvlly.src.Net
                 ToUnloadEntitys.Clear();
                 ConnectionList.Clear();
 
+                if (OnServerStop != null)
+                {
+                    OnServerStop();
+                }
+
                 Debug.Log("SERVER-NET: Server is Offline, and memory is clear!");
             }
             else if (IsClient)
             {
                 Client.Disconnect("Disconnect");
-
-                Client = null;
-                Server = null;
-                MyPeer = null;
-                Runing = false;
-
-                Ready = false;
-
-                _ISCLIENT = false;
-                _ISSERVER = false;
-
-                //Clear the entitys
-                foreach (var item in Entitys)
-                {
-                    ToUnloadEntitys.Enqueue(item.Value);
-                }
-
-                while (ToUnloadEntitys.Count > 0)
-                {
-                    Entity entity = ToUnloadEntitys.Dequeue();
-
-                    entity.OnDestroy();
-                }
-
-                Entitys.Clear();
-                ToUnloadEntitys.Clear();
-                ConnectionList.Clear();
             }
         }
 
@@ -707,15 +689,13 @@ namespace ProjectEvlly.src.Net
 
                                 if (status == NetConnectionStatus.Disconnected)
                                 {
-                                    if (OnDisconnect != null)
-                                    {
-                                        OnDisconnect();
-                                    }
+                                    _NetConnectionStatus = status;
                                 }
                                 else if (status == NetConnectionStatus.Disconnecting)
                                 {
-                                    Debug.Log("Disconnect from server");
-                                }else if (status == NetConnectionStatus.Connected)
+                                    
+                                }
+                                else if (status == NetConnectionStatus.Connected)
                                 {
                                     if (OnConnect != null)
                                     {
@@ -772,6 +752,43 @@ namespace ProjectEvlly.src.Net
                         Client.Recycle(inc);
                     }
                 }
+            }
+
+            if (_NetConnectionStatus == NetConnectionStatus.Disconnected)
+            {
+                Client = null;
+                Server = null;
+                MyPeer = null;
+                Runing = false;
+
+                Ready = false;
+
+                _ISCLIENT = false;
+                _ISSERVER = false;
+
+                //Clear the entitys
+                foreach (var item in Entitys)
+                {
+                    ToUnloadEntitys.Enqueue(item.Value);
+                }
+
+                while (ToUnloadEntitys.Count > 0)
+                {
+                    Entity entity = ToUnloadEntitys.Dequeue();
+
+                    entity.OnDestroy();
+                }
+
+                Entitys.Clear();
+                ToUnloadEntitys.Clear();
+                ConnectionList.Clear();
+
+                if (OnDisconnect != null)
+                {
+                    OnDisconnect();
+                }
+
+                _NetConnectionStatus = NetConnectionStatus.None;
             }
         }
 

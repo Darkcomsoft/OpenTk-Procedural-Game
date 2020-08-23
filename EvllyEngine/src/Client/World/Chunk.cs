@@ -47,9 +47,9 @@ namespace EvllyEngine
             //StartCoroutine(QueeObjects());
             //Game.World.LoadNewChunks(this);
 
-            Game.Game.TickEvent += Update;
-            Game.Game.DrawUpdate += Draw;
-            Game.Game.TransparentDrawUpdate += DrawT;
+            Game.Client.TickEvent += Update;
+            Game.Client.DrawUpdate += Draw;
+            Game.Client.TransparentDrawUpdate += DrawT;
         }
 
         public void Update()
@@ -81,9 +81,9 @@ namespace EvllyEngine
 
             _trees.Clear();
 
-            Game.Game.TickEvent -= Update;
-            Game.Game.DrawUpdate -= Draw;
-            Game.Game.TransparentDrawUpdate -= DrawT;
+            Game.Client.TickEvent -= Update;
+            Game.Client.DrawUpdate -= Draw;
+            Game.Client.TransparentDrawUpdate -= DrawT;
 
             _meshCollider.OnDestroy();
             _meshRender.OnDestroy();

@@ -10,7 +10,6 @@ namespace EvllyEngine
 {
     public class Mesh
     {
-        public Material _Material;
         public float[] _vertices;
         public int[] _indices;
         public float[] _texCoords;
@@ -22,7 +21,6 @@ namespace EvllyEngine
             _indices = newmesh._indices;
             _texCoords = newmesh._texCoords;
             _Colors = newmesh._Colors;
-            _Material = newmesh._Material;
         }
 
         public Mesh() 
@@ -89,7 +87,6 @@ namespace EvllyEngine
             _indices = null;
             _texCoords = null;
             _Colors = null;
-            _Material = null;
         }
     }
 }

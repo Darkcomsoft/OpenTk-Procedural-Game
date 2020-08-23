@@ -15,7 +15,13 @@ namespace ProjectEvlly.src.World
 
         public WorldBase()
         {
-           
+#if Client
+            Game.Client.TickEvent += Tick;
+            Game.Client.DrawUpdate += Draw;
+            Game.Client.TransparentDrawUpdate += DrawT;
+#elif Server
+            Server.Tick += Tick;
+#endif
         }
 
         public virtual void Tick()
@@ -28,6 +34,11 @@ namespace ProjectEvlly.src.World
 
         }
 
+        public virtual void DrawT(FrameEventArgs e)
+        {
+
+        }
+
         public virtual void OnDisposeWorld()
         {
 
@@ -35,9 +46,14 @@ namespace ProjectEvlly.src.World
 
         public void DisposeWorld()
         {
-            int c = 0;
-
             OnDisposeWorld();
+#if Client
+            Game.Client.TickEvent -= Tick;
+            Game.Client.DrawUpdate -= Draw;
+            Game.Client.TransparentDrawUpdate -= DrawT;
+#elif Server
+            Server.Tick -= Tick;
+#endif
         }
     }
 }

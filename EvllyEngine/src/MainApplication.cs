@@ -12,6 +12,9 @@ namespace EvllyEngine
 {
     class MainApplication
     {
+        public const string AppName = "ProjectEvlly";
+        public const string Version = "InDev V:0.0.0";
+
         public static void Main()
         {
 #if Client
