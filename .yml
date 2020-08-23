@@ -1,0 +1,2 @@
+- name: Butler Push
+  uses: josephbmanley/butler-publish-itchio-action@v1.0.2
