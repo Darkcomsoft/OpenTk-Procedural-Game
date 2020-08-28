@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BulletSharp;
+using BEPUphysics.Character;
+using BEPUphysics.Entities.Prefabs;
 using EvllyEngine;
 using OpenTK;
 using OpenTK.Input;
@@ -15,34 +16,30 @@ namespace ProjectEvlly.src
     {
         private PlayerEntity _playerEntity;
 
-        public float MoveSpeed = 3f;
+        private float MoveSpeed = 0.3f;
         private float sensitivity = 0.2f;
 
-        private bool isOnGround;
-        private float MAX_SLOPE_ANGLE = 45f;
+        const float characterHeight = 1;
+        const float characterWidth = 0.5f;
+        const float jumpSpeed = 10f;
 
-        public Vector3 finalTarget;
-        public Vector3 target;
-        public Vector3 mouseRotationBuffer;
-        public bool MouseLook = true;
+        const float stepHeight = 5f;
+
+        private bool flying = false;
+        private float DefaultGravity;
+
+        private Vector3 mouseRotationBuffer;
 
         private Vector2 _lastPos;
         private bool _firstMove;
 
-        private bool Jump = false;
-
         public float Yaw { get; private set; }
         public float Pitch { get; private set; }
 
+        CharacterController _CharacterController;
+
         #region Camera
         public Camera _PlayerCamera;
-        #endregion
-
-        #region RigidBody
-        public float _Mass;
-        public bool _Static;
-        private BulletSharp.RigidBody rigidBodyObject;
-        public CollisionShape _Shape;
         #endregion
 
         public PlayerController(PlayerEntity playerEntity, float cameraHight)
@@ -52,34 +49,20 @@ namespace ProjectEvlly.src
             _PlayerCamera = new Camera(_playerEntity.transform);
             _PlayerCamera._cameraTrnasform.Position = new Vector3(0, cameraHight, 0);//Set the position of the camera
 
-            _Mass = 1;
-            _Static = false;
-            _Shape = new CapsuleShape(0.5f, 1);
-            rigidBodyObject = LocalCreateRigidBody(_Mass, Matrix4.CreateTranslation(_playerEntity.transform.Position), _Shape);
-            rigidBodyObject.CollisionFlags = CollisionFlags.CharacterObject;
-            rigidBodyObject.Friction = 1.0f;
-            rigidBodyObject.SetDamping(0, 0);
+            _CharacterController = new CharacterController();
+
+            _CharacterController.Body.Position = new BEPUutilities.Vector3(playerEntity.transform.Position.X, playerEntity.transform.Position.Y, playerEntity.transform.Position.Z);
+            Physics.Add(_CharacterController);
         }
 
         public void UpdateController()
         {
-            var moveVector = new Vector3(0, 0, 0);
+            var moveVector = new Vector2(0, 0);
 
-            rigidBodyObject.Activate();
-
-            if (Physics.RayCast(_playerEntity.transform.Position, _playerEntity.transform.Position + new Vector3(0, -1.05f, 0), out ClosestRayResultCallback hit))
+            /*if (Physics.RayCast(_playerEntity.transform.Position, _playerEntity.transform.Position + new Vector3(0, -1.05f, 0), out ClosestRayResultCallback hit))
             {
-                //Debug.Log("RayCast Hited: " + hit.CollisionObject.UserObject);
-                isOnGround = true;
-                if (Jump)
-                {
-                    Jump = false;
-                }
-            }
-            else
-            {
-                isOnGround = false;
-            }
+                
+            }*/
 
             if (EvllyEngine.MouseCursor.MouseLocked)
             {
@@ -119,70 +102,78 @@ namespace ProjectEvlly.src
                 _PlayerCamera._cameraTrnasform.Rotation = new Quaternion(-MathHelper.Clamp(mouseRotationBuffer.Y, MathHelper.DegreesToRadians(-75.0f), MathHelper.DegreesToRadians(75.0f)), 0, 0, 0);
                 _playerEntity.transform.Rotation = new Quaternion(0, WrapAngle(mouseRotationBuffer.X), 0, 0);
 
-                ///////////////////////////////////////////////////////////////////////////////////////
+                #region PlayerMove
 
                 if (Input.GetKey(Key.W))
                 {
-                    moveVector.Z += MoveSpeed;
+                    moveVector += new Vector2(0, 1);
                 }
                 if (Input.GetKey(Key.S))
                 {
-                    moveVector.Z -= MoveSpeed;
+                    moveVector += new Vector2(0, -1);
                 }
                 if (Input.GetKey(Key.A))
                 {
-                    moveVector.X += MoveSpeed;
+                    moveVector += new Vector2(-1, 0);
                 }
                 if (Input.GetKey(Key.D))
                 {
-                    moveVector.X -= MoveSpeed;
+                    moveVector += new Vector2(1, 0);
                 }
-
-                if (isOnGround)
+                if (flying)
                 {
-                    if (Input.GetKeyDown(Key.Space))
+                    if (Input.GetKey(Key.Q))
                     {
-                        Jump = true;
+                        moveVector.Y -= MoveSpeed;
                     }
-                }
-
-                if (Input.GetKey(Key.Q))
-                {
-                    moveVector.Y -= MoveSpeed;
-                }
-                if (Input.GetKey(Key.E))
-                {
-                    moveVector.Y += MoveSpeed;
+                    if (Input.GetKey(Key.E))
+                    {
+                        moveVector.Y += MoveSpeed;
+                    }
                 }
 
                 if (Input.GetKey(Key.ShiftLeft))
                 {
-                    MoveSpeed = 5;
+                    MoveSpeed = 5f;
                 }
                 else
                 {
-                    MoveSpeed = 3;
+                    MoveSpeed = 3f;
                 }
-            }
 
-            if (isOnGround)
-            {
-                if (Jump)
-                {
-                    moveVector.Y += 10;
-                    MovePlayer(moveVector, false);
-                }
+                _CharacterController.StandingSpeed = MoveSpeed * 10;
+
+                if (Input.GetKey(Key.X))
+                    _CharacterController.StanceManager.DesiredStance = Stance.Prone;
+                else if (Input.GetKey(Key.ControlLeft))
+                    _CharacterController.StanceManager.DesiredStance = Stance.Crouching;
                 else
-                {
-                    MovePlayer(moveVector, false);
-                }
-            }
-            else
-            {
-                MovePlayer(moveVector, true);
-            }
+                    _CharacterController.StanceManager.DesiredStance = Stance.Standing;
 
-            _playerEntity.transform.Position = rigidBodyObject.WorldTransform.ExtractTranslation();
+                if (Input.GetKeyDown(Key.Z))
+                {
+                    if (flying)
+                    {
+                        flying = false;
+                    }
+                    else
+                    {
+                        flying = true;
+                    }
+                }
+
+                if (Input.GetKeyDown(Key.Space))
+                {
+                    _CharacterController.Jump();
+                }
+
+                MovePlayer(moveVector);
+                #endregion
+
+            }
+            
+            //_playerEntity.transform.Position = kinematicCharacter.GhostObject.WorldTransform.ExtractTranslation();
+            _playerEntity.transform.Position = new Vector3(_CharacterController.Body.Position.X, _CharacterController.Body.Position.Y, _CharacterController.Body.Position.Z);
 
             MidleWorld.instance.PlayerPos = _playerEntity.transform.Position;
 
@@ -194,8 +185,7 @@ namespace ProjectEvlly.src
             _PlayerCamera.OnDestroy();
             _PlayerCamera = null;
 
-            Physics.RemoveRigidBody(rigidBodyObject);
-            _Shape.Dispose();
+            Physics.Remove(_CharacterController);
         }
 
         public static float WrapAngle(float angle)
@@ -210,62 +200,25 @@ namespace ProjectEvlly.src
             return angle;
         }
 
-        private float GetGroundAngle()
+        private void MovePlayer(Vector2 moveVector)
         {
-            if (Physics.RayCast(_playerEntity.transform.Position, _playerEntity.transform.Position + new Vector3(0, -2f, 0), out ClosestRayResultCallback hit))
-            {
-                return Vector3.CalculateAngle(_playerEntity.transform.Position + new Vector3(0, 1f, 0), hit.HitNormalWorld);
-            }
-            return 0;
+            /*var camRotation = Matrix3.CreateRotationX(_playerEntity.transform.Rotation.X) * Matrix3.CreateRotationY(_playerEntity.transform.Rotation.Y) * Matrix3.CreateRotationZ(_playerEntity.transform.Rotation.Z);
+            var rotatedVector = Vector3.Transform(Vector3.Zero, camRotation);
+            
+            kinematicCharacter.SetWalkDirection(rotatedVector * MoveSpeed);*/
+            
+            _CharacterController.ViewDirection = Forward(_playerEntity.transform.RotationMatrix);
+            _CharacterController.HorizontalMotionConstraint.MovementDirection = BEPUutilities.Vector2.Normalize(new BEPUutilities.Vector2(moveVector.X, moveVector.Y));
         }
 
-        public BulletSharp.RigidBody LocalCreateRigidBody(float mass, Matrix4 startTransform, CollisionShape shape)
+        public BEPUutilities.Vector3 Forward(Matrix4 matrix)
         {
-            bool isDynamic = (mass != 0.0f);
+            BEPUutilities.Vector3 vector = new BEPUutilities.Vector3();
 
-            Vector3 localInertia = Vector3.Zero;
-            if (isDynamic || _Static == false)
-            {
-                shape.CalculateLocalInertia(mass, out localInertia);
-            }
-
-            DefaultMotionState myMotionState = new DefaultMotionState(startTransform);
-
-            RigidBodyConstructionInfo rbInfo = new RigidBodyConstructionInfo(mass, myMotionState, shape, localInertia);
-            BulletSharp.RigidBody body = new BulletSharp.RigidBody(rbInfo);
-
-            Physics.AddRigidBody(body);
-
-            return body;
-        }
-
-        /// <summary>
-        /// this is for moving the rigidbody with Physics, the rigidbody whill interact with collision
-        /// </summary>
-        /// <param name="direction"></param>
-        public void Move(Vector3 direction, bool gravity)
-        {
-            if (gravity)
-            {
-                rigidBodyObject.LinearVelocity = new Vector3(direction.X, rigidBodyObject.Gravity.Y, direction.Z);
-            }
-            else
-            {
-                rigidBodyObject.LinearVelocity = direction;
-            }
-            rigidBodyObject.AngularFactor = Vector3.Zero;
-            rigidBodyObject.AngularVelocity = Vector3.Zero;
-
-            //rigidBodyObject.WorldTransform = gameObject._transform.RotationMatrix * rigidBodyObject.WorldTransform * Matrix4.CreateScale(gameObject._transform._Size);
-        }
-
-        private void MovePlayer(Vector3 moveVector, bool gravity)
-        {
-            var camRotation = Matrix3.CreateRotationX(_playerEntity.transform.Rotation.X) * Matrix3.CreateRotationY(_playerEntity.transform.Rotation.Y) * Matrix3.CreateRotationZ(_playerEntity.transform.Rotation.Z);
-            var rotatedVector = Vector3.Transform(moveVector, camRotation);
-            //gameObject.GetRigidBody().Move(rotatedVector * moveSpeed);
-
-            Move(rotatedVector * MoveSpeed, gravity);
+            vector.X = matrix.M31;
+            vector.Y = matrix.M32;
+            vector.Z = matrix.M33;
+            return vector;
         }
     }
 }

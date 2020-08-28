@@ -80,13 +80,13 @@ namespace EvllyEngine
             base.Tick();
         }
 
-        public override void Draw(FrameEventArgs e)
+        public override void Draw()
         {
             /*foreach (var item in chunkMap)
             {
                 item.Value.Draw(e);
             }*/
-            base.Draw(e);
+            base.Draw();
         }
 
         public Vector2 GetChunkCoordFromVector3(Vector3 pos)
@@ -100,9 +100,12 @@ namespace EvllyEngine
 
         public void CheckViewDistance()
         {
-            Vector3 PlayerP = new Vector3((int)(Mathf.Round(PlayerPos.X / ChunkSize) * ChunkSize), 0, (int)(Mathf.Round(PlayerPos.Z / ChunkSize) * ChunkSize));
+            Vector3 PlayerP = new Vector3((int)(Mathf.Round(PlayerPos.X / ChunkSize) * ChunkSize), (int)(Mathf.Round(PlayerPos.Y / ChunkSize) * ChunkSize), (int)(Mathf.Round(PlayerPos.Z / ChunkSize) * ChunkSize));
             int minX = (int)PlayerP.X - renderDistance;
             int maxX = (int)PlayerP.X + renderDistance;
+
+            int minY = (int)PlayerP.Y - renderDistance;
+            int maxY = (int)PlayerP.Y + renderDistance;
 
             int minZ = (int)PlayerP.Z - renderDistance;
             int maxZ = (int)PlayerP.Z + renderDistance;
@@ -115,7 +118,7 @@ namespace EvllyEngine
 
             foreach (var item in chunkMap)
             {
-                if (item.Value.transform.Position.X > maxX || item.Value.transform.Position.X < minX || item.Value.transform.Position.Z > maxZ || item.Value.transform.Position.Z < minZ)
+                if (item.Value.transform.Position.X > maxX || item.Value.transform.Position.X < minX || item.Value.transform.Position.Y > maxY || item.Value.transform.Position.Y < minY || item.Value.transform.Position.Z > maxZ || item.Value.transform.Position.Z < minZ)
                 {
                     if (chunkMap.ContainsKey(item.Value.transform.Position))
                     {
@@ -126,15 +129,18 @@ namespace EvllyEngine
                 }
             }
 
-            for (int z = minZ; z < maxZ; z += ChunkSize)
+            for (int x = minX; x < maxX; x += ChunkSize)
             {
-                for (int x = minX; x < maxX; x += ChunkSize)
+                for (int y = minY; y < maxY; y += ChunkSize)
                 {
-                    Vector3 vector = new Vector3(x, 0, z);
-
-                    if (!chunkMap.ContainsKey(vector))
+                    for (int z = minZ; z < maxZ; z += ChunkSize)
                     {
-                        chunkMap.Add(vector, new Chunk(vector));
+                        Vector3 vector = new Vector3(x, y, z);
+
+                        if (!chunkMap.ContainsKey(vector))
+                        {
+                            chunkMap.Add(vector, new Chunk(vector));
+                        }
                     }
                 }
             }

@@ -1,5 +1,4 @@
-﻿using BulletSharp;
-using OpenTK;
+﻿using OpenTK;
 using OpenTK.Input;
 using ProjectEvlly;
 using ProjectEvlly.src;
@@ -22,39 +21,37 @@ namespace EvllyEngine
         public Block CcurrentBlock;
 #if Client
         public MeshRender _MeshRender;
+        private bool renderMesh = true;
 #elif Server
 #endif
 
         public PlayerEntity()
         {
-
+            Instance = this;
         }
 
         public PlayerEntity(NetViewSerializer entity) : base(entity)
         {
-
+            
         }
 
         public override void OnStart()
         {
-            Instance = this;
-
             transform.Position = new Vector3(0, 5, 0);
-
+#if Client
             if (isMine)
             {
+                renderMesh = false;
                 _playerController = new PlayerController(this, 0.5f);//Start the player controller, only if you own this entity(if you spawened this)
             }
-
-#if Client
-            _MeshRender = new MeshRender(transform, AssetsManager.instance.GetErrorMesh, AssetsManager.GetShader("Default"), AssetsManager.GetTexture("devTexture"));
+            _MeshRender = new MeshRender(transform, AssetsManager.GetMesh("Cube"), AssetsManager.GetShader("Default"), AssetsManager.GetTexture("devTexture"));
 #elif Server
 #endif
 
             base.OnStart();
         }
 
-        public override void OnUpdate()
+        public override void Tick()
         {
 #if Client
             if (_playerController != null)
@@ -64,7 +61,19 @@ namespace EvllyEngine
 
             if (isMine)//if this is my
             {
-                RPC("RPC_MouseLock", ProjectEvlly.src.Net.RPCMode.AllNoOwner, transform.Position, transform.Rotation);
+                RPC("RPC_SyncPosition", ProjectEvlly.src.Net.RPCMode.AllNoOwner, transform.Position, transform.Rotation);
+
+                if (Input.GetKeyDown(Key.V))
+                {
+                    if (renderMesh)
+                    {
+                        renderMesh = false;
+                    }
+                    else
+                    {
+                        renderMesh = true;
+                    }
+                }
             }
             else
             {
@@ -73,14 +82,18 @@ namespace EvllyEngine
 #elif Server
 
 #endif
+            base.Tick();
         }
 
-        public override void OnDrawOpaque(FrameEventArgs e)
+        public override void Draw()
         {
 #if Client
-            _MeshRender.Draw(e);
+            if (renderMesh)
+            {
+                _MeshRender.Draw();
+            }
 #endif
-            base.OnDrawOpaque(e);
+            base.Draw();
         }
 
         public override void OnDestroy()
@@ -97,7 +110,7 @@ namespace EvllyEngine
         }
 
         [RPC]
-        public void RPC_MouseLock(Vector3 position, Quaternion rotation)
+        public void RPC_SyncPosition(Vector3 position, Quaternion rotation)
         {
             transform.Position = position;
             transform.Rotation = rotation;

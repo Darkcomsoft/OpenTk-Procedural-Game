@@ -29,3 +29,5 @@ C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\obj\x64\Serve
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\obj\x64\ServerDebug\ProjectEvlly.exe
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\obj\x64\ServerDebug\ProjectEvlly.pdb
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\ServerDebug\Lidgren.Network.dll
+C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\ServerDebug\BepuPhysics.dll
+C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\ServerDebug\BepuUtilities.dll

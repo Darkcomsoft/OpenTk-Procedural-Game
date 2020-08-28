@@ -47,18 +47,17 @@ namespace EvllyEngine
         private bool EngineIsReady = false;
         private int crashTimeOut = 0;
 
-        protected override void OnLoad(EventArgs e)//Load the Window, but not the systems, importantem only the splash screen
+        protected override void OnLoad(EventArgs e)//Load the Window, but not the systems, loading only the splash screen
         {
             gl.ClearColor(Color4.DeepSkyBlue);
             Utilitys.CheckGLError("Set ClearColor");
             
             VSync = VSyncMode.Off;
             WindowBorder = WindowBorder.Resizable;
-
+            
             _SplashScreen = new SplashScreen();
             base.OnLoad(e);
         }
-
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             try
@@ -67,8 +66,8 @@ namespace EvllyEngine
                 {
                     UPS = (int)(1f / e.Time);
 
-                    _GUI.Tick();
                     OGame.Tick();
+                    _GUI.Tick();
 
                     if (Focused) // check to see if the window is focused  
                     {
@@ -101,16 +100,19 @@ namespace EvllyEngine
             {
                 if (crashTimeOut >= 10)
                 {
-                    Debug.Log("We cant start again the game, before the crash! Shutingdown....");
+                    Debug.Log("We cant start again the game, before the crash! Sorry ): Shutingdown....");
+                    SplashScreen.SetState("We cant start again the game, before the crash! Sorry ): Shutingdown....", SplashScreenStatus.Error);
+                    Thread.Sleep(1000);
                     Exit();
                 }
 
                 crashTimeOut++;
                 ReloadGame();
                 Debug.Log("Crashed Trying Yo Start Back!");
-
+                SplashScreen.SetState("Crashed Trying Yo Start Back!", SplashScreenStatus.Error);
+                Thread.Sleep(1000);
 #if Debug
-                throw ex;
+                Debug.LogError(ex.Message + " StackTrace: " + ex.StackTrace);
 #else
                 return;
 #endif

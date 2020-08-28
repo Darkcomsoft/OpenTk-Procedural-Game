@@ -29,12 +29,12 @@ namespace ProjectEvlly.src.World
             
         }
 
-        public virtual void Draw(FrameEventArgs e)
+        public virtual void Draw()
         {
 
         }
 
-        public virtual void DrawT(FrameEventArgs e)
+        public virtual void DrawT()
         {
 
         }

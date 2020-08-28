@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Lidgren.Network;
 using ProjectEvlly.src.Net;
 using System.Reflection;
+using ProjectEvlly.src.Utility;
 
 namespace ProjectEvlly
 {
@@ -37,11 +38,11 @@ namespace ProjectEvlly
         public Entity()
         {
 #if Client
-            Game.Client.TickEvent += OnUpdate;
-            Game.Client.DrawUpdate += OnDrawOpaque;
-            Game.Client.TransparentDrawUpdate += OnDrawT;
+            Game.Client.TickEvent += Tick;
+            Game.Client.DrawUpdate += Draw;
+            Game.Client.TransparentDrawUpdate += DrawT;
 #elif Server
-            Server.Tick += OnUpdate;
+            Server.Tick += Tick;
 #endif
 
             transform = new Transform();
@@ -58,11 +59,11 @@ namespace ProjectEvlly
         public Entity(NetViewSerializer entity)
         {
 #if Client
-            Game.Client.TickEvent += OnUpdate;
-            Game.Client.DrawUpdate += OnDrawOpaque;
-            Game.Client.TransparentDrawUpdate += OnDrawT;
+            Game.Client.TickEvent += Tick;
+            Game.Client.DrawUpdate += Draw;
+            Game.Client.TransparentDrawUpdate += DrawT;
 #elif Server
-            Server.Tick += OnUpdate;
+            Server.Tick += Tick;
 #endif
 
             transform = new Transform();
@@ -104,7 +105,7 @@ namespace ProjectEvlly
 
         }
 
-        public virtual void OnUpdate()
+        public virtual void Tick()
         {
 
         }
@@ -112,14 +113,14 @@ namespace ProjectEvlly
         /// <summary>
         /// Draw only opaque model
         /// </summary>
-        public virtual void OnDrawOpaque(FrameEventArgs e)
+        public virtual void Draw()
         {
 
         }
         /// <summary>
         /// Draw only Transparency model
         /// </summary>
-        public virtual void OnDrawT(FrameEventArgs e)
+        public virtual void DrawT()
         {
 
         }
@@ -129,11 +130,11 @@ namespace ProjectEvlly
         public virtual void OnDestroy()
         {
 #if Client
-            Game.Client.TickEvent -= OnUpdate;
-            Game.Client.DrawUpdate -= OnDrawOpaque;
-            Game.Client.TransparentDrawUpdate -= OnDrawT;
+            Game.Client.TickEvent -= Tick;
+            Game.Client.DrawUpdate -= Draw;
+            Game.Client.TransparentDrawUpdate -= DrawT;
 #elif Server
-            Server.Tick -= OnUpdate;
+            Server.Tick -= Tick;
 #endif
 
             _IsEntityReady = false;
@@ -171,7 +172,7 @@ namespace ProjectEvlly
         private void SendRPC(string funcname, RPCMode Mode, NetDeliveryMethod DeliveryMethod, params object[] param)
         {
             var om = Network.MyPeer.CreateMessage();
-
+            
             switch (Mode)
             {
                 case RPCMode.All:

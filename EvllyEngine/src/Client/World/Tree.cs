@@ -45,9 +45,12 @@ namespace EvllyEngine
             Game.Client.TransparentDrawUpdate += Draw;
         }
 
-        public void Draw(FrameEventArgs e)
+        public void Draw()
         {
-            _meshRender.Draw(e);
+            if (Vector3.Distance(transform.Position, PlayerEntity.Instance.transform.Position) <= 50)
+            {
+                _meshRender.Draw();
+            }
         }
 
         public void OnDestroy()

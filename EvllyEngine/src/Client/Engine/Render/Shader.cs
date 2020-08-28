@@ -54,6 +54,11 @@ namespace EvllyEngine
             GL.AttachShader(program, frag_shader);
             GL.LinkProgram(program);
 
+            int status;
+            GL.GetProgram(program, GetProgramParameterName.LinkStatus, out status);
+            if (status == 0)
+                Debug.LogError(String.Format("Error linking program: {0}", GL.GetProgramInfoLog(program)));
+
             GL.DeleteShader(vert_shader);
             GL.DeleteShader(frag_shader);
 
@@ -83,8 +88,10 @@ namespace EvllyEngine
         /// <param name="data">The data to set</param>
         public void SetInt(string name, int data)
         {
-            //GL.UseProgram(_shaderProgram);
-            GL.Uniform1(_uniformLocations[name], data);
+            if (_uniformLocations.TryGetValue(name, out int value))
+            {
+                GL.Uniform1(value, data);
+            }
         }
 
         /// <summary>
@@ -94,8 +101,10 @@ namespace EvllyEngine
         /// <param name="data">The data to set</param>
         public void SetFloat(string name, float data)
         {
-            //GL.UseProgram(_shaderProgram);
-            GL.Uniform1(_uniformLocations[name], data);
+            if (_uniformLocations.TryGetValue(name, out int value))
+            {
+                GL.Uniform1(value, data);
+            }
         }
 
         /// <summary>
@@ -111,7 +120,10 @@ namespace EvllyEngine
         public void SetMatrix4d(string name, Matrix4d data)
         {
             //GL.UseProgram(_shaderProgram);
-            GL.UniformMatrix4(_uniformLocations[name], true, ref data);
+            if (_uniformLocations.TryGetValue(name, out int value))
+            {
+                GL.UniformMatrix4(value, true, ref data);
+            }
         }
 
         /// <summary>
@@ -127,7 +139,10 @@ namespace EvllyEngine
         public void SetMatrix4(string name, Matrix4 data)
         {
             //GL.UseProgram(_shaderProgram);
-            GL.UniformMatrix4(_uniformLocations[name], true, ref data);
+            if (_uniformLocations.TryGetValue(name, out int value))
+            {
+                GL.UniformMatrix4(value, true, ref data);
+            }
         }
 
         /// <summary>
@@ -137,8 +152,10 @@ namespace EvllyEngine
         /// <param name="data">The data to set</param>
         public void SetVector3(string name, Vector3 data)
         {
-            //GL.UseProgram(_shaderProgram);
-            GL.Uniform3(_uniformLocations[name], data);
+            if (_uniformLocations.TryGetValue(name, out int value))
+            {
+                GL.Uniform3(value, data);
+            }
         }
     }
 }

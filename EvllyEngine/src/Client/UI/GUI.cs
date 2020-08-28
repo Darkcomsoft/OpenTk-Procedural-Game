@@ -31,21 +31,21 @@ namespace ProjectEvlly.src.UI
         {
             Game.GUI = this;
 
-            SplashScreen.SetState("Loading UI.Render", SplashScreenStatus.Loading);
+            SplashScreen.SetState("Setting-UP UI.Render", SplashScreenStatus.Loading);
             renderer = new Gwen.Renderer.OpenTK();
-            SplashScreen.SetState("Loading UI.Skin's", SplashScreenStatus.Loading);
-            skin = new Gwen.Skin.TexturedBase(renderer, "Assets/UI/DefaultSkin.png");
+            SplashScreen.SetState("Loading UI.Skins", SplashScreenStatus.Loading);
+            skin = new Gwen.Skin.TexturedBase(renderer, "Assets/UI/Colorize.png");
 
             SplashScreen.SetState("Loading UI.Fonts", SplashScreenStatus.Loading);
             skin.DefaultFont = new Gwen.Font(renderer, "Arial", 10);
-            SplashScreen.SetState("Starting UI.Canvas", SplashScreenStatus.Loading);
+            SplashScreen.SetState("Setting-UP UI.Canvas", SplashScreenStatus.Loading);
             canvas = new Gwen.Control.Canvas(skin);
 
             SplashScreen.SetState("Starting UI.Input", SplashScreenStatus.Loading);
             input = new Gwen.Input.OpenTK(Window.Instance);
             input.Initialize(canvas);
 
-            SplashScreen.SetState("Setting-UP UI", SplashScreenStatus.Loading);
+            SplashScreen.SetState("Setting-UP UI.FinalSettings", SplashScreenStatus.Loading);
             canvas.SetSize(Window.Instance.Width, Window.Instance.Height);
             canvas.ShouldDrawBackground = false;
             canvas.BackgroundColor = Color.FromArgb(255, 150, 170, 170);
@@ -102,14 +102,10 @@ namespace ProjectEvlly.src.UI
 
         public void DrawUI()
         {
-            if ((Time._Tick % 60) == 0)
+            if ((Time._Tick % 100) == 0)
             {
-                /*test.Note = String.Format("L1: {0} L2: {3} Invalidates: {4} Duplicate Invalidates: {5} Draw Calls: {1} Vertex Count: {2}", renderer.LevelOneCacheSize, renderer.DrawCallCount,
-                    renderer.VertexCount, renderer.LevelTwoCacheSize, canvas.InvalidatesThisFrame, canvas.DuplicateInvalidates);
-                test.Fps = Window.Instance.GetFPS;*/
-
-                if (renderer.TextCacheSize > 1000)
-                { // each cached string is an allocated texture, flush the cache once in a while in your real project
+                if (renderer.TextCacheSize > 1000)// each cached string is an allocated texture, flush the cache once in a while in your real project
+                {
                     renderer.FlushTextCache();
                 }
             }

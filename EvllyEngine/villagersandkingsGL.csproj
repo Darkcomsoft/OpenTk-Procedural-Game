@@ -132,15 +132,15 @@
     <Compile Include="src\Client\Dimension\Dimension.cs" />
     <Compile Include="src\Client\Engine\AssetsManager.cs" />
     <Compile Include="src\Client\Engine\Collada\ColladaProcessor.cs" />
-    <Compile Include="src\Client\Engine\Components\BoxCollider.cs" />
-    <Compile Include="src\Client\Engine\Components\Camera.cs" />
-    <Compile Include="src\Client\Engine\Components\MeshCollider.cs" />
-    <Compile Include="src\Client\Engine\Components\MeshRender.cs" />
-    <Compile Include="src\Client\Engine\Components\Transform.cs" />
+    <Compile Include="src\Client\Engine\Physics\BoxCollider.cs" />
+    <Compile Include="src\Client\Engine\Camera.cs" />
+    <Compile Include="src\Client\Engine\Physics\MeshCollider.cs" />
+    <Compile Include="src\Client\Engine\Render\MeshRender.cs" />
+    <Compile Include="src\Client\Engine\Transform.cs" />
     <Compile Include="src\Client\Engine\Debug.cs" />
     <Compile Include="src\Client\Engine\Window.cs" />
     <Compile Include="src\Client\Engine\Input.cs" />
-    <Compile Include="src\Client\Engine\Physics.cs" />
+    <Compile Include="src\Client\Engine\Physics\Physics.cs" />
     <Compile Include="src\Client\Engine\Render\Mesh.cs" />
     <Compile Include="src\Client\Engine\Render\Shader.cs" />
     <Compile Include="src\Client\Engine\Render\Texture.cs" />
@@ -159,6 +159,7 @@
     <Compile Include="src\Client\save\SaveManager.cs" />
     <Compile Include="src\Client\save\WorldSaveInfo.cs" />
     <Compile Include="src\Client\UI\InGameUI.cs" />
+    <Compile Include="src\Client\World\ChunkMeshRender.cs" />
     <Compile Include="src\Commands.cs" />
     <Compile Include="src\Server\Server.cs" />
     <Compile Include="src\Client\UI\Gwen.UnitTest\Button.cs" />
@@ -207,9 +208,11 @@
     <Compile Include="src\Client\World\WorldBase.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="BulletSharp, Version=2.87.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\BulletSharp\x64\BulletSharp.dll</HintPath>
+    <Reference Include="BEPUphysics, Version=1.5.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BEPUphysics.1.5.1\lib\netstandard2.0\BEPUphysics.dll</HintPath>
+    </Reference>
+    <Reference Include="BEPUutilities, Version=1.5.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BEPUutilities.1.5.1\lib\netstandard2.0\BEPUutilities.dll</HintPath>
     </Reference>
     <Reference Include="Gwen">
       <HintPath>..\packages\Gwen.Renderer.OpenTK\Gwen.dll</HintPath>
@@ -241,8 +244,8 @@
     <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
     </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.7.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />

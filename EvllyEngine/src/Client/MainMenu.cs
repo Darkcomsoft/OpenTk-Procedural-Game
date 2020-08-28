@@ -111,6 +111,7 @@ namespace ProjectEvlly.src
             CharNameTextBox.Text = "Character Name";
             CharNameTextBox.TextChanged += OnCharNameChange;
             CharNameTextBox.SetSize(200, 30);
+            CharNameTextBox.TextColor = Color.White;
             CharNameTextBox.Hide();
 
             CharFinalCreate = new Gwen.Control.Button(this);
@@ -149,11 +150,13 @@ namespace ProjectEvlly.src
             ipTextInput = new Gwen.Control.TextBox(this);
             ipTextInput.SetSize(150, 30);
             ipTextInput.Text = "127.0.0.1";
+            ipTextInput.TextColor = Color.White;
             ipTextInput.Hide();
 
             portTextInput = new TextBoxNumeric(this);
             portTextInput.Value = 25000;
             portTextInput.SetSize(150, 30);
+            portTextInput.TextColor = Color.White;
             portTextInput.Hide();
 
             ipportConnect = new Gwen.Control.Button(this);
@@ -225,6 +228,7 @@ namespace ProjectEvlly.src
                 Gwen.Control.Button pTestButton = new Gwen.Control.Button(CharacterScroll);
                 pTestButton.Name = "containerRoll";
                 pTestButton.Text = listcahr[i].CharName;
+                pTestButton.TextColor = Color.White;
                 pTestButton.Alignment = Pos.Top | Pos.Left;
                 pTestButton.SetBounds(0, i * 50, 249, 50);
                 pTestButton.Disable();

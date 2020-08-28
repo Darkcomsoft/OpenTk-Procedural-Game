@@ -32,8 +32,8 @@ namespace ProjectEvlly.src
         public CharSaveInfo _CharacterInfo;
 
         public Action TickEvent;
-        public Action<FrameEventArgs> DrawUpdate;
-        public Action<FrameEventArgs> TransparentDrawUpdate;
+        public Action DrawUpdate;
+        public Action TransparentDrawUpdate;
         public Action<FrameEventArgs> UIDrawUpdate;
 
         public Client()
@@ -90,9 +90,9 @@ namespace ProjectEvlly.src
         {
             if (_isPlaying)
             {
-                DrawUpdate.Invoke(e);//Draw all opaque objects
+                DrawUpdate.Invoke();//Draw all opaque objects
                 Utilitys.CheckGLError("End Of DrawUpdate");
-                TransparentDrawUpdate.Invoke(e);
+                TransparentDrawUpdate.Invoke();
                 Utilitys.CheckGLError("End Of Transparent Draw");
             }
             else//Menu Draw

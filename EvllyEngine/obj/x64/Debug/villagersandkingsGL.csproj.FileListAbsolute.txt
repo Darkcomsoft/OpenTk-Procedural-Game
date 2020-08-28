@@ -5,7 +5,6 @@ C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Debug
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Debug\ProjectEvlly.exe.config
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Debug\ProjectEvlly.exe
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Debug\ProjectEvlly.pdb
-C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Debug\BulletSharp.dll
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Debug\Gwen.dll
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Debug\Lidgren.Network.dll
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Debug\OpenTK.dll
@@ -29,3 +28,5 @@ C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\obj\x64\Debug
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\obj\x64\Debug\ProjectEvlly.pdb
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\obj\x64\Debug\ProjectEvlly.Properties.Resources.resources
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\obj\x64\Debug\villagersandkingsGL.csproj.GenerateResource.cache
+C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Debug\BepuPhysics.dll
+C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Debug\BepuUtilities.dll

@@ -46,7 +46,7 @@ namespace EvllyEngine
             }
         }
 
-        [Obsolete("Na verdade n esta implementado e n Obisoleto")]
+        [Obsolete("Na verdade n esta implementado e n Obsoleto")]
         public static bool GetKeyUp(Key key)
         {
             if (!Window.Instance.Focused) { return false; }
