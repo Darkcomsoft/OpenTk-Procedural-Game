@@ -37,7 +37,7 @@ namespace EvllyEngine
 
         public override void OnStart()
         {
-            transform.Position = new Vector3(0, 5, 0);
+            transform.Position = new Vector3(0, 20, 0);
 #if Client
             if (isMine)
             {

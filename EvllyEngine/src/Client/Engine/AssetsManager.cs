@@ -57,6 +57,11 @@ namespace EvllyEngine
             _Textures.Add("TileAtlas", new Texture(AssetsManager.LoadImage("Assets/Texture/", "TileAtlas", "png")));
             _Textures.Add("SpritesTreeHigt", new Texture(AssetsManager.LoadImage("Assets/Texture/", "SpritesTreeHigt", "png")));
 
+            _Textures.Add("TextureTeste01", new Texture(AssetsManager.LoadImage("Assets/Texture/", "TextureTeste01", "png"), TextureUnit.Texture0));
+            _Textures.Add("TextureTeste02", new Texture(AssetsManager.LoadImage("Assets/Texture/", "TextureTeste02", "png"), TextureUnit.Texture1));
+            _Textures.Add("TextureTeste03", new Texture(AssetsManager.LoadImage("Assets/Texture/", "TextureTeste03", "png"), TextureUnit.Texture2));
+            _Textures.Add("TextureTeste04", new Texture(AssetsManager.LoadImage("Assets/Texture/", "TextureTeste04", "png"), TextureUnit.Texture3));
+
             //Load Shaders
             SplashScreen.SetState("Loading Shaders", SplashScreenStatus.Loading);
             _Shaders.Add("Default", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "Default")));

@@ -133,11 +133,10 @@ namespace EvllyEngine
                 OGame.Draw(e);
                 gl.Disable(EnableCap.DepthTest);
                 _GUI.DrawUI();
-                Utilitys.CheckGLError("Final Of Game Draw Frame");
             }
             else
             {
-
+                
             }
 
             SwapBuffers();

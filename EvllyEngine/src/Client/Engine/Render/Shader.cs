@@ -72,9 +72,10 @@ namespace EvllyEngine
             }
 
             GL.ValidateProgram(program);
-            if (GL.GetError() != ErrorCode.NoError)
+            var glerror = GL.GetError();
+            if (glerror != ErrorCode.NoError)
             {
-                Debug.LogError("SHADER: Failed to create program : " + GL.GetError());
+                Debug.LogError("SHADER: Failed to create program : " + glerror);
                 GL.DeleteProgram(program);
             }
             _shaderProgram = program;
@@ -88,6 +89,7 @@ namespace EvllyEngine
         /// <param name="data">The data to set</param>
         public void SetInt(string name, int data)
         {
+            Use();
             if (_uniformLocations.TryGetValue(name, out int value))
             {
                 GL.Uniform1(value, data);
@@ -101,6 +103,7 @@ namespace EvllyEngine
         /// <param name="data">The data to set</param>
         public void SetFloat(string name, float data)
         {
+            Use();
             if (_uniformLocations.TryGetValue(name, out int value))
             {
                 GL.Uniform1(value, data);
@@ -119,7 +122,7 @@ namespace EvllyEngine
         /// </remarks>
         public void SetMatrix4d(string name, Matrix4d data)
         {
-            //GL.UseProgram(_shaderProgram);
+            Use();
             if (_uniformLocations.TryGetValue(name, out int value))
             {
                 GL.UniformMatrix4(value, true, ref data);
@@ -138,7 +141,7 @@ namespace EvllyEngine
         /// </remarks>
         public void SetMatrix4(string name, Matrix4 data)
         {
-            //GL.UseProgram(_shaderProgram);
+            Use();
             if (_uniformLocations.TryGetValue(name, out int value))
             {
                 GL.UniformMatrix4(value, true, ref data);
@@ -152,6 +155,7 @@ namespace EvllyEngine
         /// <param name="data">The data to set</param>
         public void SetVector3(string name, Vector3 data)
         {
+            Use();
             if (_uniformLocations.TryGetValue(name, out int value))
             {
                 GL.Uniform3(value, data);

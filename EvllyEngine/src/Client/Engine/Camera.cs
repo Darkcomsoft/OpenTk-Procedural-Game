@@ -19,7 +19,7 @@ namespace EvllyEngine
 
         public static Camera Main;
 
-        public float _fildOfView = 60;
+        public float _fildOfView = 75;
         public float _nearPlane = 0.1f;
         public float _farPlane = 1000;
 

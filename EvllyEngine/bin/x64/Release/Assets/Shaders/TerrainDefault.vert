@@ -26,7 +26,7 @@ void main()
 	
     // projection1. y is largest normal component
     // so use x and z to sample texture
-    //texCoord = vec2(xcoord,zcoord); //first projection
+    texCoord = vec2(xcoord,zcoord); //first projection
     // projection2. x is largest normal component
     // so use z and y to sample texture
     //texCoord= vec2(zcoord,ycoord); //second projection
@@ -35,7 +35,7 @@ void main()
     //texCoord = vec2(xcoord,ycoord); //third projection
 
 	//frag_colors = colors;
-	texCoord = aTexCoord;
+	//texCoord = aTexCoord;
 	
 	gl_Position = position * world * view * projection;
 }

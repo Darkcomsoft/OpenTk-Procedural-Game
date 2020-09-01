@@ -40,7 +40,7 @@ namespace EvllyEngine
             //_meshRender.Transparency = true;
             _meshRender._cullType = OpenTK.Graphics.OpenGL.CullFaceMode.FrontAndBack;
 
-            //_boxCollider = new BoxCollider(transform, new Vector3(1,1,1));
+            _boxCollider = new BoxCollider(transform, new Vector3(0.7f, 5, 0.7f));
 
             Game.Client.TransparentDrawUpdate += Draw;
         }
@@ -57,7 +57,7 @@ namespace EvllyEngine
         {
             Game.Client.TransparentDrawUpdate -= Draw;
 
-            //_boxCollider.OnDestroy();
+            _boxCollider.OnDestroy();
             _meshRender.OnDestroy();
         }
     }

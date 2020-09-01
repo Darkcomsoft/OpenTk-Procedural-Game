@@ -25,9 +25,6 @@ namespace ProjectEvlly.src
 
         const float stepHeight = 5f;
 
-        private bool flying = false;
-        private float DefaultGravity;
-
         private Vector3 mouseRotationBuffer;
 
         private Vector2 _lastPos;
@@ -63,7 +60,7 @@ namespace ProjectEvlly.src
             {
                 
             }*/
-
+            
             if (EvllyEngine.MouseCursor.MouseLocked)
             {
                 var mouse = Mouse.GetState();
@@ -120,17 +117,6 @@ namespace ProjectEvlly.src
                 {
                     moveVector += new Vector2(1, 0);
                 }
-                if (flying)
-                {
-                    if (Input.GetKey(Key.Q))
-                    {
-                        moveVector.Y -= MoveSpeed;
-                    }
-                    if (Input.GetKey(Key.E))
-                    {
-                        moveVector.Y += MoveSpeed;
-                    }
-                }
 
                 if (Input.GetKey(Key.ShiftLeft))
                 {
@@ -141,26 +127,14 @@ namespace ProjectEvlly.src
                     MoveSpeed = 3f;
                 }
 
-                _CharacterController.StandingSpeed = MoveSpeed * 10;
+                _CharacterController.StandingSpeed = MoveSpeed * 2;
 
-                if (Input.GetKey(Key.X))
+                if (Input.GetKey(Key.Z))
                     _CharacterController.StanceManager.DesiredStance = Stance.Prone;
                 else if (Input.GetKey(Key.ControlLeft))
                     _CharacterController.StanceManager.DesiredStance = Stance.Crouching;
                 else
                     _CharacterController.StanceManager.DesiredStance = Stance.Standing;
-
-                if (Input.GetKeyDown(Key.Z))
-                {
-                    if (flying)
-                    {
-                        flying = false;
-                    }
-                    else
-                    {
-                        flying = true;
-                    }
-                }
 
                 if (Input.GetKeyDown(Key.Space))
                 {

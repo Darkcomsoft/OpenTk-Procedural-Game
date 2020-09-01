@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -88,7 +89,7 @@ namespace ProjectEvlly.src.UI
             _Label.Position(Pos.Top | Pos.Left, 10, 10);
             _LabelDebug.Position(Pos.Top | Pos.Left, 10, 30);
 
-            _LabelDebug.Text = "FPS:" + EvllyEngine.Window.Instance.GetFPS;
+            _LabelDebug.Text = "FPS:(" + EvllyEngine.Window.Instance.GetFPS + ") PlayerPosition: " + PlayerEntity.Instance.transform.Position;
         }
 
         private void CreatePauseMenu()

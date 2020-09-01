@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace EvllyEngine
@@ -19,13 +20,21 @@ namespace EvllyEngine
         public static MidleWorld instance;
 
         public static int ChunkSize = 16;
-        public int renderDistance = 50;
+        public int renderDistanceXZ = 50;
+        public int renderDistanceY = 30;
         public bool WorldRuning { get; private set; }
+        private bool CanDestroyWorld = false;
         public Vector3 PlayerPos;
 
+        private object LockChunkMap;
         private Dictionary<Vector3, Chunk> chunkMap = new Dictionary<Vector3, Chunk>();
+        private Queue<Vector3> ToRemove = new Queue<Vector3>();
+
+        private Thread WorldGeneratorThread;
+        private int ThreadSleepTime = 30;
 
         public static FastNoise globalNoise;
+        public static FastNoise CaveNoise;
 
 #if Client
 #elif Server
@@ -36,15 +45,19 @@ namespace EvllyEngine
             instance = this;
 
 #if Client
-            
+
 #elif Server
 
 #endif
+            LockChunkMap = new object();
 
             WorldName = _worldName;
 
             globalNoise = new FastNoise(0);
             globalNoise.SetFrequency(0.005f);
+
+            CaveNoise = new FastNoise(0);
+            CaveNoise.SetFrequency(0.05f);
 
             //LoadTheWorld if has a save
             if (SaveManager.LoadWorld())//Have a Save
@@ -55,6 +68,11 @@ namespace EvllyEngine
             {
                 
             }
+
+            WorldRuning = true;
+            WorldGeneratorThread = new Thread(new ThreadStart(WorldLooping));
+            WorldGeneratorThread.Name = "WorldGeneratorLoop";
+            WorldGeneratorThread.Start();
         }
 
     public void SpawnPlayer(CharSaveInfo charSaveInfo)
@@ -76,55 +94,50 @@ namespace EvllyEngine
 #if Client
 #elif Server
 #endif
-            CheckViewDistance();
+            while (ToRemove.Count > 0)
+            {
+                lock (LockChunkMap)
+                {
+                    Vector3 vec = ToRemove.Dequeue();
+                    chunkMap[vec].OnDestroy();
+                    chunkMap.Remove(vec);
+                }
+            }
             base.Tick();
         }
 
-        public override void Draw()
+        private void WorldLooping()//this is a other thread looping
         {
-            /*foreach (var item in chunkMap)
+            while (WorldRuning)
             {
-                item.Value.Draw(e);
-            }*/
-            base.Draw();
-        }
+                CheckViewDistance();
+                Thread.Sleep(ThreadSleepTime);
+            }
 
-        public Vector2 GetChunkCoordFromVector3(Vector3 pos)
-        {
-            int x = (int)Mathf.FloorToInt(pos.X / ChunkSize);
-            int z = (int)Mathf.FloorToInt(pos.Z / ChunkSize);
-            return new Vector2(x, z);
+            CanDestroyWorld = true;
         }
-
-        Queue<Vector3> ToRemove = new Queue<Vector3>();
 
         public void CheckViewDistance()
         {
             Vector3 PlayerP = new Vector3((int)(Mathf.Round(PlayerPos.X / ChunkSize) * ChunkSize), (int)(Mathf.Round(PlayerPos.Y / ChunkSize) * ChunkSize), (int)(Mathf.Round(PlayerPos.Z / ChunkSize) * ChunkSize));
-            int minX = (int)PlayerP.X - renderDistance;
-            int maxX = (int)PlayerP.X + renderDistance;
+            int minX = (int)PlayerP.X - renderDistanceXZ;
+            int maxX = (int)PlayerP.X + renderDistanceXZ;
 
-            int minY = (int)PlayerP.Y - renderDistance;
-            int maxY = (int)PlayerP.Y + renderDistance;
+            int minY = (int)PlayerP.Y - renderDistanceY;
+            int maxY = (int)PlayerP.Y + renderDistanceY;
 
-            int minZ = (int)PlayerP.Z - renderDistance;
-            int maxZ = (int)PlayerP.Z + renderDistance;
-
-            while (ToRemove.Count > 0)
+            int minZ = (int)PlayerP.Z - renderDistanceXZ;
+            int maxZ = (int)PlayerP.Z + renderDistanceXZ;
+            lock (LockChunkMap)
             {
-                Vector3 vec = ToRemove.Dequeue();
-                chunkMap.Remove(vec);
-            }
-
-            foreach (var item in chunkMap)
-            {
-                if (item.Value.transform.Position.X > maxX || item.Value.transform.Position.X < minX || item.Value.transform.Position.Y > maxY || item.Value.transform.Position.Y < minY || item.Value.transform.Position.Z > maxZ || item.Value.transform.Position.Z < minZ)
+                foreach (var item in chunkMap)
                 {
-                    if (chunkMap.ContainsKey(item.Value.transform.Position))
+                    if (item.Value.transform.Position.X > maxX || item.Value.transform.Position.X < minX || item.Value.transform.Position.Y > maxY || item.Value.transform.Position.Y < minY || item.Value.transform.Position.Z > maxZ || item.Value.transform.Position.Z < minZ)
                     {
-                        chunkMap[item.Value.transform.Position].OnDestroy();
-
-                        ToRemove.Enqueue(item.Value.transform.Position);
+                        if (chunkMap.ContainsKey(item.Value.transform.Position))
+                        {
+                            ToRemove.Enqueue(item.Value.transform.Position);
+                        }
                     }
                 }
             }
@@ -136,10 +149,12 @@ namespace EvllyEngine
                     for (int z = minZ; z < maxZ; z += ChunkSize)
                     {
                         Vector3 vector = new Vector3(x, y, z);
-
-                        if (!chunkMap.ContainsKey(vector))
+                        lock (LockChunkMap)
                         {
-                            chunkMap.Add(vector, new Chunk(vector));
+                            if (!chunkMap.ContainsKey(vector))
+                            {
+                                chunkMap.Add(vector, new Chunk(vector));
+                            }
                         }
                     }
                 }
@@ -148,6 +163,12 @@ namespace EvllyEngine
 
         public override void OnDisposeWorld()
         {
+            WorldRuning = false;
+
+            Debug.Log("Wait for the world loop stop....");
+            while (CanDestroyWorld != true) { }//wait to other thread loop finishe and destroy the thread
+            Debug.Log("Yayyyyyy we are free to go (:");
+
             foreach (var item in chunkMap.Values)
             {
                 chunkMap[item.transform.Position].OnDestroy();
@@ -159,6 +180,12 @@ namespace EvllyEngine
             base.OnDisposeWorld();
         }
 
+        public Vector2 GetChunkCoordFromVector3(Vector3 pos)
+        {
+            int x = (int)Mathf.FloorToInt(pos.X / ChunkSize);
+            int z = (int)Mathf.FloorToInt(pos.Z / ChunkSize);
+            return new Vector2(x, z);
+        }
 
         public Block GetTileAt(int x, int z)
         {
@@ -166,7 +193,7 @@ namespace EvllyEngine
 
             if (chunk != null)
             {
-                return chunk.Blocks[x - (int)chunk.transform.Position.X, z - (int)chunk.transform.Position.Z];
+                //return chunk.Blocks[x - (int)chunk.transform.Position.X, z - (int)chunk.transform.Position.Z];
             }
             return new Block();
         }
@@ -177,8 +204,8 @@ namespace EvllyEngine
 
             if (chunk != null)
             {
-                lock (chunk.Blocks)
-                    return chunk.Blocks[(int)pos.X - (int)chunk.transform.Position.X, (int)pos.Z - (int)chunk.transform.Position.Z];
+                /*lock (chunk.Blocks)
+                    return chunk.Blocks[(int)pos.X - (int)chunk.transform.Position.X, (int)pos.Z - (int)chunk.transform.Position.Z];*/
             }
             return new Block();
         }
@@ -192,21 +219,25 @@ namespace EvllyEngine
 
             if (chunk != null)
             {
-                return chunk.Blocks[mx - (int)chunk.transform.Position.X, mz - (int)chunk.transform.Position.Z];
+                //return chunk.Blocks[mx - (int)chunk.transform.Position.X, mz - (int)chunk.transform.Position.Z];
             }
             return new Block();
         }
 
         public Chunk GetChunkAt(int xx, int zz)
         {
-            Vector3 chunkpos = new Vector3(Mathf.FloorToInt(xx / ChunkSize) * ChunkSize, 0, Mathf.FloorToInt(zz / ChunkSize) * ChunkSize);
-            if (chunkMap.ContainsKey(chunkpos))
+            lock (LockChunkMap)
             {
-                return chunkMap[chunkpos];
-            }
-            else
-            {
-                return null;
+                Vector3 chunkpos = new Vector3(Mathf.FloorToInt(xx / ChunkSize) * ChunkSize, 0, Mathf.FloorToInt(zz / ChunkSize) * ChunkSize);
+
+                if (chunkMap.ContainsKey(chunkpos))
+                {
+                    return chunkMap[chunkpos];
+                }
+                else
+                {
+                    return null;
+                }
             }
         }
     }

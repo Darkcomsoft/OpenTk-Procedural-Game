@@ -19,14 +19,14 @@ namespace EvllyEngine
         public PixelFormat _PixelFormat = PixelFormat.Bgra;
 
 
-        public Texture(ImageFile imageData)
+        public Texture(ImageFile imageData, TextureUnit textureUnit = TextureUnit.Texture0)
         {
             _Width = imageData._width;
             _Height = imageData._height;
 
             Handle = GL.GenTexture();
 
-            Use();
+            Use(textureUnit);
 
             GL.TexImage2D(_TextureTarget, 0, _PixelInternalFormat, _Width, _Height, 0, _PixelFormat, PixelType.UnsignedByte, imageData._ImgData);
 
@@ -39,14 +39,14 @@ namespace EvllyEngine
             //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
 
-        public Texture(ImageFile imageData, TextureMinFilter textureMinFilter, TextureMagFilter textureMagFilter)
+        public Texture(ImageFile imageData, TextureMinFilter textureMinFilter, TextureMagFilter textureMagFilter, TextureUnit textureUnit = TextureUnit.Texture0)
         {
             _Width = imageData._width;
             _Height = imageData._height;
 
             Handle = GL.GenTexture();
 
-            Use();
+            Use(textureUnit);
 
             GL.TexImage2D(_TextureTarget, 0, _PixelInternalFormat, _Width, _Height, 0, _PixelFormat, PixelType.UnsignedByte, imageData._ImgData);
 
@@ -59,9 +59,9 @@ namespace EvllyEngine
             //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
 
-        public void Use()
+        public void Use(TextureUnit textunit = TextureUnit.Texture0)
         {
-            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.ActiveTexture(textunit);
             GL.BindTexture(_TextureTarget, Handle);
         }
 
