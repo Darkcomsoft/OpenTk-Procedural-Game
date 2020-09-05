@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ProjectEvlly.src.save;
 using ProjectEvlly.src.Net;
+using ProjectEvlly.src.Engine.Render;
 
 namespace ProjectEvlly.src
 {
@@ -31,14 +32,17 @@ namespace ProjectEvlly.src
         
         public CharSaveInfo _CharacterInfo;
 
+        private RenderSystem _RenderSystem;
+
         public Action TickEvent;
-        public Action DrawUpdate;
-        public Action TransparentDrawUpdate;
         public Action<FrameEventArgs> UIDrawUpdate;
 
         public Client()
         {
             Game.Client = this;
+
+            _RenderSystem = new RenderSystem();
+
             EvllyEngine.MouseCursor.UnLockCursor();
 
             CharacterSaveList = SaveManager.LoadChars();
@@ -58,6 +62,8 @@ namespace ProjectEvlly.src
 
             if (_isPlaying)
             {
+                _RenderSystem.Tick(Time._Time);
+
                 if (TickEvent != null)
                 {
                     TickEvent.Invoke();
@@ -90,10 +96,8 @@ namespace ProjectEvlly.src
         {
             if (_isPlaying)
             {
-                DrawUpdate.Invoke();//Draw all opaque objects
+                _RenderSystem.RenderTick((float)e.Time);
                 Utilitys.CheckGLError("End Of DrawUpdate");
-                TransparentDrawUpdate.Invoke();
-                Utilitys.CheckGLError("End Of Transparent Draw");
             }
             else//Menu Draw
             {
@@ -117,6 +121,8 @@ namespace ProjectEvlly.src
             {
                 _InGameUI.Dispose();
             }
+
+            _RenderSystem.Dispose();
 
             Network.Disconnect();
 
@@ -221,16 +227,16 @@ namespace ProjectEvlly.src
     {
         public static Client Client;
         public static GUI GUI;
-        public static WorldBase World;
+        public static MidleWorld MidleWorld;
         public static InGameUI _InGameUI;
 
-        public static WorldBase GetWorld
+        public static MidleWorld GetWorld
         {
             get
             {
-                if (World != null)
+                if (MidleWorld != null)
                 {
-                    return World;
+                    return MidleWorld;
                 }
                 else
                 {

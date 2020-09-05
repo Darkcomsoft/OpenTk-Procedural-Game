@@ -34,7 +34,7 @@ namespace ProjectEvlly.src.UI
             Dock = Pos.Fill;
 
             _Label = new Gwen.Control.Label(this);
-            _Label.Text = MainApplication.AppName + " " + MainApplication.Version;
+            _Label.Text = GlobalData.AppName + " " + GlobalData.Version;
             _Label.MouseInputEnabled = true;
             _Label.SetToolTipText("Hi iam a tooltip!");
             _Label.Position(Pos.Top | Pos.Left, 10, 10);
@@ -89,7 +89,7 @@ namespace ProjectEvlly.src.UI
             _Label.Position(Pos.Top | Pos.Left, 10, 10);
             _LabelDebug.Position(Pos.Top | Pos.Left, 10, 30);
 
-            _LabelDebug.Text = "FPS:(" + EvllyEngine.Window.Instance.GetFPS + ") PlayerPosition: " + PlayerEntity.Instance.transform.Position;
+            _LabelDebug.Text = "FPS:(" + EvllyEngine.Window.Instance.GetFPS + ") CurrentBlock:" + PlayerEntity.Instance.CurrentBlock.ToString();
         }
 
         private void CreatePauseMenu()

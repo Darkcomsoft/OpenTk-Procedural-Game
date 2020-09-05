@@ -135,7 +135,10 @@
     <Compile Include="src\Client\Engine\Physics\BoxCollider.cs" />
     <Compile Include="src\Client\Engine\Camera.cs" />
     <Compile Include="src\Client\Engine\Physics\MeshCollider.cs" />
+    <Compile Include="src\Client\Engine\Render\Frustum.cs" />
     <Compile Include="src\Client\Engine\Render\MeshRender.cs" />
+    <Compile Include="src\Client\Engine\Render\RenderEntityBase.cs" />
+    <Compile Include="src\Client\Engine\Render\RenderSystem.cs" />
     <Compile Include="src\Client\Engine\Transform.cs" />
     <Compile Include="src\Client\Engine\Debug.cs" />
     <Compile Include="src\Client\Engine\Window.cs" />
@@ -150,8 +153,8 @@
     <Compile Include="src\Client\Entitys\TesteEntityRemote.cs" />
     <Compile Include="src\Client\Client.cs" />
     <Compile Include="src\Client\MainMenu.cs" />
-    <Compile Include="src\Client\Input\OpenTK.cs" />
-    <Compile Include="src\Client\Input\OpenTKAlternative.cs" />
+    <Compile Include="src\Client\UI\Input\OpenTK.cs" />
+    <Compile Include="src\Client\UI\Input\OpenTKAlternative.cs" />
     <Compile Include="src\Client\Net\Network.cs" />
     <Compile Include="src\Client\PlayerController.cs" />
     <Compile Include="src\Client\save\CharSaveInfo.cs" />
@@ -159,8 +162,12 @@
     <Compile Include="src\Client\save\SaveManager.cs" />
     <Compile Include="src\Client\save\WorldSaveInfo.cs" />
     <Compile Include="src\Client\UI\InGameUI.cs" />
+    <Compile Include="src\Client\World\Biomes\BiomeData.cs" />
+    <Compile Include="src\Client\World\Biomes\OakForest.cs" />
     <Compile Include="src\Client\World\ChunkMeshRender.cs" />
     <Compile Include="src\Commands.cs" />
+    <Compile Include="src\EnumClass.cs" />
+    <Compile Include="src\GlobalData.cs" />
     <Compile Include="src\Server\Server.cs" />
     <Compile Include="src\Client\UI\Gwen.UnitTest\Button.cs" />
     <Compile Include="src\Client\UI\Gwen.UnitTest\CheckBox.cs" />
@@ -200,7 +207,7 @@
     <Compile Include="src\Client\Utility\Utilitys.cs" />
     <Compile Include="src\Client\World\Chunk.cs" />
     <Compile Include="src\Client\Entitys\PlayerEntity.cs" />
-    <Compile Include="src\Client\World\FastNoise.cs" />
+    <Compile Include="src\Client\World\Noise\FastNoise.cs" />
     <Compile Include="src\Client\World\Tree.cs" />
     <Compile Include="src\Client\World\MidleWorld.cs" />
     <Compile Include="src\MainApplication.cs" />

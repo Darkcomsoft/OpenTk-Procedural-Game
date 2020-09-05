@@ -149,7 +149,7 @@ namespace ProjectEvlly.src
             //_playerEntity.transform.Position = kinematicCharacter.GhostObject.WorldTransform.ExtractTranslation();
             _playerEntity.transform.Position = new Vector3(_CharacterController.Body.Position.X, _CharacterController.Body.Position.Y, _CharacterController.Body.Position.Z);
 
-            MidleWorld.instance.PlayerPos = _playerEntity.transform.Position;
+            Game.GetWorld.PlayerPos = _playerEntity.transform.Position;
 
             _PlayerCamera.UpdateCamera();//Update the camera
         }

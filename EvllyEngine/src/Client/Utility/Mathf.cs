@@ -9,6 +9,7 @@ namespace ProjectEvlly.src.Utility
     public static class Mathf
     {
         public static int FloorToInt(float value) => (int)Math.Floor(value);
+        public static float Floor(float value) => (float)Math.Floor(value);
         public static float Round(float value) => (float)Math.Round(value);
     }
 }

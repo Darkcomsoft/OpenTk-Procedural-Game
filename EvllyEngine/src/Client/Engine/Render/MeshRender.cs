@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using ProjectEvlly.src.Engine.Render;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace EvllyEngine
 {
-    public class MeshRender
+    public class MeshRender : RenderEntityBase
     {
         public Mesh _mesh;
         public Shader _shader;
@@ -18,8 +19,6 @@ namespace EvllyEngine
 
         public CullFaceMode _cullType;
         public bool Transparency = false;
-
-        public Transform transform;
 
         public MeshRender(Transform transformParent, Mesh mesh, Shader shader, Texture texture)
         {
@@ -72,7 +71,7 @@ namespace EvllyEngine
             GL.EnableVertexAttribArray(3);
         }
 
-        public void Draw()
+        public override void TickRender(float time)
         {
             if (_shader != null && Camera.Main != null)
             {
@@ -95,14 +94,14 @@ namespace EvllyEngine
                 {
                     _texture.Use();
                 }
-                
+
                 _shader.Use();
 
                 _shader.SetMatrix4("world", transform.GetTransformWorld);
                 _shader.SetMatrix4("view", Camera.Main.viewMatrix);
                 _shader.SetMatrix4("projection", Camera.Main._projection);
 
-                GL.DrawElements(BeginMode.Triangles, _mesh._indices.Length, DrawElementsType.UnsignedInt, 0);
+                GL.DrawElements(Window.GetGLBeginMode, _mesh._indices.Length, DrawElementsType.UnsignedInt, 0);
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
                 GL.BindVertexArray(0);
 
@@ -116,9 +115,10 @@ namespace EvllyEngine
                     GL.Disable(EnableCap.Blend);
                 }
             }
+            base.TickRender(time);
         }
 
-        public void OnDestroy()
+        public override void Destroy()
         {
             //_shader.Delete();
 
@@ -149,6 +149,7 @@ namespace EvllyEngine
             GL.DeleteBuffer(nbo);
 
             GL.DeleteVertexArray(VAO);
+            base.Destroy();
         }
     }
 }

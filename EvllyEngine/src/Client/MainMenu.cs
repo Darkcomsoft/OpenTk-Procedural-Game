@@ -133,7 +133,7 @@ namespace ProjectEvlly.src
             _copyText.TextColor = Color.White;
 
             _Label = new Gwen.Control.Label(this);
-            _Label.Text = MainApplication.AppName + " " + MainApplication.Version;
+            _Label.Text = GlobalData.AppName + " " + GlobalData.Version;
             _Label.MouseInputEnabled = true;
             _Label.SetToolTipText("Hi iam a tooltip!");
             _Label.Position(Pos.Top | Pos.Left, 10, 10);

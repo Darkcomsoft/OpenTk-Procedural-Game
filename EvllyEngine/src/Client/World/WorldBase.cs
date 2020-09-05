@@ -11,14 +11,11 @@ namespace ProjectEvlly.src.World
     public class WorldBase
     {
         public string WorldName;
-        public static readonly int Seed;
 
         public WorldBase()
         {
 #if Client
             Game.Client.TickEvent += Tick;
-            Game.Client.DrawUpdate += Draw;
-            Game.Client.TransparentDrawUpdate += DrawT;
 #elif Server
             Server.Tick += Tick;
 #endif
@@ -27,16 +24,6 @@ namespace ProjectEvlly.src.World
         public virtual void Tick()
         {
             
-        }
-
-        public virtual void Draw()
-        {
-
-        }
-
-        public virtual void DrawT()
-        {
-
         }
 
         public virtual void OnDisposeWorld()
@@ -49,8 +36,6 @@ namespace ProjectEvlly.src.World
             OnDisposeWorld();
 #if Client
             Game.Client.TickEvent -= Tick;
-            Game.Client.DrawUpdate -= Draw;
-            Game.Client.TransparentDrawUpdate -= DrawT;
 #elif Server
             Server.Tick -= Tick;
 #endif

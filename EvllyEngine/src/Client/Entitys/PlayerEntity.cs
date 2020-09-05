@@ -2,6 +2,7 @@
 using OpenTK.Input;
 using ProjectEvlly;
 using ProjectEvlly.src;
+using ProjectEvlly.src.Engine.Render;
 using ProjectEvlly.src.Net;
 using System;
 using System.Collections.Generic;
@@ -18,10 +19,11 @@ namespace EvllyEngine
 
         private PlayerController _playerController;
 
-        public Block CcurrentBlock;
+        public Block CurrentBlock;
 #if Client
         public MeshRender _MeshRender;
-        private bool renderMesh = true;
+        public MeshRender _MeshRenderSword;
+        private bool renderMesh = false;
 #elif Server
 #endif
 
@@ -37,14 +39,19 @@ namespace EvllyEngine
 
         public override void OnStart()
         {
-            transform.Position = new Vector3(0, 20, 0);
+            transform.Position = new Vector3(0, 30, 0);
+
 #if Client
             if (isMine)
             {
                 renderMesh = false;
                 _playerController = new PlayerController(this, 0.5f);//Start the player controller, only if you own this entity(if you spawened this)
+
+                _MeshRenderSword = new MeshRender(Camera.Main._transformParent, AssetsManager.GetMesh("SwordMetal"), AssetsManager.GetShader("Default"), AssetsManager.GetTexture("MetalSword"));
+                RenderSystem.AddRenderItem(_MeshRenderSword);
             }
             _MeshRender = new MeshRender(transform, AssetsManager.GetMesh("Cube"), AssetsManager.GetShader("Default"), AssetsManager.GetTexture("devTexture"));
+            RenderSystem.AddRenderItem(_MeshRender);
 #elif Server
 #endif
 
@@ -62,17 +69,24 @@ namespace EvllyEngine
             if (isMine)//if this is my
             {
                 RPC("RPC_SyncPosition", ProjectEvlly.src.Net.RPCMode.AllNoOwner, transform.Position, transform.Rotation);
-
+                
                 if (Input.GetKeyDown(Key.V))
                 {
                     if (renderMesh)
                     {
                         renderMesh = false;
+                        //CurrentBlock = Game.GetWorld.GetTileAt((int)transform.Position.X, (int)transform.Position.Z);
                     }
                     else
                     {
                         renderMesh = true;
                     }
+                }
+                
+                if (renderMesh)
+                {
+                    //Debug.Log("ChunkPos: " + ((int)transform.Position.X % MidleWorld.ChunkSize, 0, (int)transform.Position.Z % MidleWorld.ChunkSize));
+                    CurrentBlock = Game.GetWorld.GetTileAt((int)transform.Position.X, (int)transform.Position.Z);
                 }
             }
             else
@@ -85,17 +99,6 @@ namespace EvllyEngine
             base.Tick();
         }
 
-        public override void Draw()
-        {
-#if Client
-            if (renderMesh)
-            {
-                _MeshRender.Draw();
-            }
-#endif
-            base.Draw();
-        }
-
         public override void OnDestroy()
         {
 #if Client
@@ -103,8 +106,8 @@ namespace EvllyEngine
             {
                 _playerController.DisposeController();
             }
-
-            _MeshRender.OnDestroy();
+            RenderSystem.RemoveRenderItem(_MeshRenderSword);
+            RenderSystem.RemoveRenderItem(_MeshRender);
 #endif
             base.OnDestroy();
         }

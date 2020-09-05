@@ -1,6 +1,7 @@
 ﻿using EvllyEngine;
 using OpenTK;
 using ProjectEvlly.src;
+using ProjectEvlly.src.Engine.Render;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,7 +35,9 @@ namespace EvllyEngine
             transform.Position = position;
             transform.Rotation = new Quaternion(MathHelper.DegreesToRadians((float)new System.Random((int)ChunkSeed).Next(0, 10)), MathHelper.DegreesToRadians((float)new System.Random((int)ChunkSeed).Next(0,90)), MathHelper.DegreesToRadians((float)new System.Random((int)ChunkSeed).Next(0, 5)));
 
-            transform.Size = new Vector3(ProjectEvlly.src.Utility.Random.Range(1.5f, 2f, (int)ChunkSeed), ProjectEvlly.src.Utility.Random.Range(1.5f, 2f, (int)ChunkSeed), ProjectEvlly.src.Utility.Random.Range(1.5f, 2f, (int)ChunkSeed));
+            float size = ProjectEvlly.src.Utility.Random.Range(1.5f, 2f, (int)ChunkSeed);
+
+            transform.Size = new Vector3(1, 1, 1);
 
             _meshRender = new MeshRender(transform, AssetsManager.GetMesh("oak"), AssetsManager.GetShader("Default"), AssetsManager.GetTexture("SpritesTreeHigt"));
             //_meshRender.Transparency = true;
@@ -42,23 +45,13 @@ namespace EvllyEngine
 
             _boxCollider = new BoxCollider(transform, new Vector3(0.7f, 5, 0.7f));
 
-            Game.Client.TransparentDrawUpdate += Draw;
-        }
-
-        public void Draw()
-        {
-            if (Vector3.Distance(transform.Position, PlayerEntity.Instance.transform.Position) <= 50)
-            {
-                _meshRender.Draw();
-            }
+            RenderSystem.AddRenderItemT(_meshRender);
         }
 
         public void OnDestroy()
         {
-            Game.Client.TransparentDrawUpdate -= Draw;
-
             _boxCollider.OnDestroy();
-            _meshRender.OnDestroy();
+            RenderSystem.RemoveRenderItemT(_meshRender);
         }
     }
 }

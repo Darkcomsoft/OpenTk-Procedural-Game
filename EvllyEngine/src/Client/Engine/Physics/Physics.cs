@@ -52,7 +52,7 @@ namespace EvllyEngine
         public void UpdatePhisics(float time)
         {
             //_Simulation.Timestep(1 / 60f, _ThreadDispatcher);
-            space.Update(1 / 60f);
+            space.Update(time);
         }
 
         public void Dispose()

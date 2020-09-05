@@ -20,13 +20,14 @@ using ProjectEvlly.src.Utility;
 using System.Drawing;
 using ProjectEvlly.src;
 using System.Net;
+using ProjectEvlly.src.Engine.Render;
 
 namespace EvllyEngine
 {
     public class Window : GameWindow
     {
         public Window(int width, int height, string title) : base(width, height, GraphicsMode.Default, title) {
-            Instance = this; 
+            Instance = this;
         }
 
         public static Window Instance;
@@ -36,12 +37,16 @@ namespace EvllyEngine
         private AssetsManager _assetsManager;
         private Physics _physics;
         private SplashScreen _SplashScreen;
+        private Frustum frustum;
         private GUI _GUI;
 
         private Sky _Sky;
 
         private int FPS;
         private int UPS;
+
+        private bool IsDebug = false;//this is not the visual studio solution plataform, is for testing debugs things like OpenGL Render only lines of meshes
+        private BeginMode GLBeginMode = BeginMode.Triangles;
 
         private bool GameLoaded = false;
         private bool EngineIsReady = false;
@@ -51,10 +56,10 @@ namespace EvllyEngine
         {
             gl.ClearColor(Color4.DeepSkyBlue);
             Utilitys.CheckGLError("Set ClearColor");
-            
+
             VSync = VSyncMode.Off;
             WindowBorder = WindowBorder.Resizable;
-            
+
             _SplashScreen = new SplashScreen();
             base.OnLoad(e);
         }
@@ -65,6 +70,20 @@ namespace EvllyEngine
                 if (EngineIsReady)
                 {
                     UPS = (int)(1f / e.Time);
+
+                    if (Input.GetKeyDown(Key.F4))
+                    {
+                        if (IsDebug)
+                        {
+                            IsDebug = false;
+                            GLBeginMode = BeginMode.Triangles;
+                        }
+                        else
+                        {
+                            IsDebug = true;
+                            GLBeginMode = BeginMode.Lines;
+                        }
+                    }
 
                     OGame.Tick();
                     _GUI.Tick();
@@ -119,7 +138,7 @@ namespace EvllyEngine
             }
             base.OnUpdateFrame(e);
         }
-        
+
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             FPS = (int)(1f / e.Time);
@@ -136,7 +155,7 @@ namespace EvllyEngine
             }
             else
             {
-                
+
             }
 
             SwapBuffers();
@@ -212,6 +231,7 @@ namespace EvllyEngine
             _GUI.OnResize();//Resize the GUI
             SplashScreen.SetState("Starting Engine Systems", SplashScreenStatus.Loading);
             //_Sky = new Sky(AssetsManager.GetShader("Default"), AssetsManager.GetTexture("devTexture2"));
+            frustum = new Frustum();
             OGame = new Client();
             SplashScreen.SetState("Setting-Up OpenGL", SplashScreenStatus.Loading);
             EngineIsReady = true;
@@ -286,6 +306,7 @@ namespace EvllyEngine
             base.OnUnload(e);
         }
 
+        public static BeginMode GetGLBeginMode{ get { return Window.Instance.GLBeginMode; } }
         public int GetFPS { get { return FPS; } }
         public int GetUPS { get { return UPS; } }
     }

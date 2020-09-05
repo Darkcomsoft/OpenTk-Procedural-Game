@@ -12,13 +12,10 @@ namespace EvllyEngine
 {
     class MainApplication
     {
-        public const string AppName = "ProjectEvlly";
-        public const string Version = "InDev V:0.0.0";
-
         public static void Main()
         {
 #if Client
-            using (Window game = new Window(1000, 600, "ProjectEvlly"))
+            using (Window game = new Window(1000, 600, GlobalData.AppName + " : " + GlobalData.Version))
             {
                 game.RenderFrame += (sender, e) =>
                 {

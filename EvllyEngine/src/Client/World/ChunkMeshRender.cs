@@ -7,26 +7,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EvllyEngine;
-
+using ProjectEvlly.src.Engine.Render;
 
 namespace ProjectEvlly.src.World
 {
-    public class ChunkMeshRender
+    public class ChunkMeshRender : RenderEntityBase
     {
         public Mesh _mesh;
         public Shader _shader;
         public Texture _texture;
-        public Texture _texture2;
-        public Texture _texture3;
-        public Texture _texture4;
         private int IBO, VAO, vbo, dbo, tbo, nbo;
 
         public CullFaceMode _cullType;
         public bool Transparency = false;
         private bool isReady;
-        public Transform transform;
 
-        public ChunkMeshRender(Transform transformParent, Mesh mesh, Shader shader, Texture texture, Texture texture2, Texture texture3, Texture texture4)
+        public ChunkMeshRender(Transform transformParent, Mesh mesh, Shader shader, Texture texture)
         {
             isReady = false;
             _cullType = CullFaceMode.Front;
@@ -39,14 +35,8 @@ namespace ProjectEvlly.src.World
             {
                 _shader = shader;
                 _texture = texture;
-                _texture2 = texture2;
-                _texture3 = texture3;
-                _texture4 = texture4;
 
                 shader.SetInt("texture0", 0);
-                shader.SetInt("texture1", 1);
-                shader.SetInt("texture2", 2);
-                shader.SetInt("texture3", 3);
 
                 /*if (_shader != null)
                 {
@@ -94,7 +84,7 @@ namespace ProjectEvlly.src.World
             }
         }
 
-        public void Draw()
+        public override void TickRender(float time)
         {
             if (_shader != null && Camera.Main != null && isReady)
             {
@@ -115,21 +105,6 @@ namespace ProjectEvlly.src.World
                     _texture.Use(TextureUnit.Texture0);
                 }
 
-                if (_texture2 != null)
-                {
-                    _texture2.Use(TextureUnit.Texture1);
-                }
-
-                if (_texture3 != null)
-                {
-                    _texture3.Use(TextureUnit.Texture2);
-                }
-
-                if (_texture4 != null)
-                {
-                    _texture4.Use(TextureUnit.Texture3);
-                }
-
                 _shader.Use();
 
                 _shader.SetMatrix4("world", transform.GetTransformWorld);
@@ -138,7 +113,7 @@ namespace ProjectEvlly.src.World
 
                 GL.BindVertexArray(VAO);
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, IBO);
-                GL.DrawElements(BeginMode.Triangles, _mesh._indices.Length, DrawElementsType.UnsignedInt, 0);
+                GL.DrawElements(Window.GetGLBeginMode, _mesh._indices.Length, DrawElementsType.UnsignedInt, 0);
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
                 GL.BindVertexArray(0);
 
@@ -152,9 +127,10 @@ namespace ProjectEvlly.src.World
                     GL.Disable(EnableCap.Blend);
                 }
             }
+            base.TickRender(time);
         }
 
-        public void OnDestroy()
+        public override void Destroy()
         {
             if (isReady)
             {
@@ -186,6 +162,7 @@ namespace ProjectEvlly.src.World
 
                 GL.DeleteVertexArray(VAO);
             }
+            base.Destroy();
         }
     }
 }

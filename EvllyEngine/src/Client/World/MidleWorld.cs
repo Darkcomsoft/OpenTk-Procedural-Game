@@ -17,10 +17,8 @@ namespace EvllyEngine
 {
     public class MidleWorld : WorldBase
     {
-        public static MidleWorld instance;
-
-        public static int ChunkSize = 16;
-        public int renderDistanceXZ = 50;
+        public static int ChunkSize = 10;
+        public int renderDistanceXZ = 100;
         public int renderDistanceY = 30;
         public bool WorldRuning { get; private set; }
         private bool CanDestroyWorld = false;
@@ -34,7 +32,6 @@ namespace EvllyEngine
         private int ThreadSleepTime = 30;
 
         public static FastNoise globalNoise;
-        public static FastNoise CaveNoise;
 
 #if Client
 #elif Server
@@ -42,10 +39,8 @@ namespace EvllyEngine
 
         public MidleWorld(string _worldName)
         {
-            instance = this;
-
 #if Client
-
+            Game.MidleWorld = this;
 #elif Server
 
 #endif
@@ -55,9 +50,6 @@ namespace EvllyEngine
 
             globalNoise = new FastNoise(0);
             globalNoise.SetFrequency(0.005f);
-
-            CaveNoise = new FastNoise(0);
-            CaveNoise.SetFrequency(0.05f);
 
             //LoadTheWorld if has a save
             if (SaveManager.LoadWorld())//Have a Save
@@ -99,8 +91,11 @@ namespace EvllyEngine
                 lock (LockChunkMap)
                 {
                     Vector3 vec = ToRemove.Dequeue();
-                    chunkMap[vec].OnDestroy();
-                    chunkMap.Remove(vec);
+                    if (chunkMap.ContainsKey(vec))
+                    {
+                        chunkMap[vec].OnDestroy();
+                        chunkMap.Remove(vec);
+                    }
                 }
             }
             base.Tick();
@@ -123,8 +118,8 @@ namespace EvllyEngine
             int minX = (int)PlayerP.X - renderDistanceXZ;
             int maxX = (int)PlayerP.X + renderDistanceXZ;
 
-            int minY = (int)PlayerP.Y - renderDistanceY;
-            int maxY = (int)PlayerP.Y + renderDistanceY;
+            /*int minY = (int)PlayerP.Y - renderDistanceY;
+            int maxY = (int)PlayerP.Y + renderDistanceY;*/
 
             int minZ = (int)PlayerP.Z - renderDistanceXZ;
             int maxZ = (int)PlayerP.Z + renderDistanceXZ;
@@ -132,7 +127,7 @@ namespace EvllyEngine
             {
                 foreach (var item in chunkMap)
                 {
-                    if (item.Value.transform.Position.X > maxX || item.Value.transform.Position.X < minX || item.Value.transform.Position.Y > maxY || item.Value.transform.Position.Y < minY || item.Value.transform.Position.Z > maxZ || item.Value.transform.Position.Z < minZ)
+                    if (item.Value.transform.Position.X > maxX || item.Value.transform.Position.X < minX || item.Value.transform.Position.Z > maxZ || item.Value.transform.Position.Z < minZ)
                     {
                         if (chunkMap.ContainsKey(item.Value.transform.Position))
                         {
@@ -144,17 +139,14 @@ namespace EvllyEngine
 
             for (int x = minX; x < maxX; x += ChunkSize)
             {
-                for (int y = minY; y < maxY; y += ChunkSize)
+                for (int z = minZ; z < maxZ; z += ChunkSize)
                 {
-                    for (int z = minZ; z < maxZ; z += ChunkSize)
+                    Vector3 vector = new Vector3(x, 0, z);
+                    lock (LockChunkMap)
                     {
-                        Vector3 vector = new Vector3(x, y, z);
-                        lock (LockChunkMap)
+                        if (!chunkMap.ContainsKey(vector))
                         {
-                            if (!chunkMap.ContainsKey(vector))
-                            {
-                                chunkMap.Add(vector, new Chunk(vector));
-                            }
+                            chunkMap.Add(vector, new Chunk(vector));
                         }
                     }
                 }
@@ -190,10 +182,10 @@ namespace EvllyEngine
         public Block GetTileAt(int x, int z)
         {
             Chunk chunk = GetChunkAt(x, z);
-
+            
             if (chunk != null)
             {
-                //return chunk.Blocks[x - (int)chunk.transform.Position.X, z - (int)chunk.transform.Position.Z];
+                return chunk.GetBlocksMap[x - (int)chunk.transform.Position.X, z - (int)chunk.transform.Position.Z];
             }
             return new Block();
         }
@@ -204,22 +196,21 @@ namespace EvllyEngine
 
             if (chunk != null)
             {
-                /*lock (chunk.Blocks)
-                    return chunk.Blocks[(int)pos.X - (int)chunk.transform.Position.X, (int)pos.Z - (int)chunk.transform.Position.Z];*/
+                return chunk.GetBlocksMap[(int)pos.X - (int)chunk.transform.Position.X, (int)pos.Z - (int)chunk.transform.Position.Z];
             }
             return new Block();
         }
 
         public Block GetTileAt(float x, float z)
         {
-            int mx = (int)Mathf.FloorToInt(x);
-            int mz = (int)Mathf.FloorToInt(z);
+            int mx = Mathf.FloorToInt(x);
+            int mz = Mathf.FloorToInt(z);
 
-            Chunk chunk = GetChunkAt(mx, mz);
+            Chunk chunk = GetChunkAt(mx,  mz);
 
             if (chunk != null)
             {
-                //return chunk.Blocks[mx - (int)chunk.transform.Position.X, mz - (int)chunk.transform.Position.Z];
+                return chunk.GetBlocksMap[mx - (int)chunk.transform.Position.X, mz - (int)chunk.transform.Position.Z];
             }
             return new Block();
         }
@@ -228,7 +219,7 @@ namespace EvllyEngine
         {
             lock (LockChunkMap)
             {
-                Vector3 chunkpos = new Vector3(Mathf.FloorToInt(xx / ChunkSize) * ChunkSize, 0, Mathf.FloorToInt(zz / ChunkSize) * ChunkSize);
+                Vector3 chunkpos = new Vector3(xx % ChunkSize, 0, zz % ChunkSize);
 
                 if (chunkMap.ContainsKey(chunkpos))
                 {

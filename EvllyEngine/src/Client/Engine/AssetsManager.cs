@@ -49,6 +49,7 @@ namespace EvllyEngine
             _Models.Add("oak", LoadModel("Assets/Models/", "oak"));
             _Models.Add("Cube", LoadModel("Assets/Models/", "Cube"));
             _Models.Add("SkySphere", LoadModel("Assets/Models/", "SkySphere"));
+            _Models.Add("SwordMetal", LoadModel("Assets/Models/", "SwordMetal"));
 
             //Load Textures
             SplashScreen.SetState("Loading Textures", SplashScreenStatus.Loading);
@@ -56,11 +57,7 @@ namespace EvllyEngine
             _Textures.Add("devTexture2", new Texture(AssetsManager.LoadImage("Assets/Texture/", "devTexture2", "png")));
             _Textures.Add("TileAtlas", new Texture(AssetsManager.LoadImage("Assets/Texture/", "TileAtlas", "png")));
             _Textures.Add("SpritesTreeHigt", new Texture(AssetsManager.LoadImage("Assets/Texture/", "SpritesTreeHigt", "png")));
-
-            _Textures.Add("TextureTeste01", new Texture(AssetsManager.LoadImage("Assets/Texture/", "TextureTeste01", "png"), TextureUnit.Texture0));
-            _Textures.Add("TextureTeste02", new Texture(AssetsManager.LoadImage("Assets/Texture/", "TextureTeste02", "png"), TextureUnit.Texture1));
-            _Textures.Add("TextureTeste03", new Texture(AssetsManager.LoadImage("Assets/Texture/", "TextureTeste03", "png"), TextureUnit.Texture2));
-            _Textures.Add("TextureTeste04", new Texture(AssetsManager.LoadImage("Assets/Texture/", "TextureTeste04", "png"), TextureUnit.Texture3));
+            _Textures.Add("MetalSword", new Texture(AssetsManager.LoadImage("Assets/Texture/", "MetalSword", "png")));
 
             //Load Shaders
             SplashScreen.SetState("Loading Shaders", SplashScreenStatus.Loading);

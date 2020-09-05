@@ -39,8 +39,6 @@ namespace ProjectEvlly
         {
 #if Client
             Game.Client.TickEvent += Tick;
-            Game.Client.DrawUpdate += Draw;
-            Game.Client.TransparentDrawUpdate += DrawT;
 #elif Server
             Server.Tick += Tick;
 #endif
@@ -60,8 +58,6 @@ namespace ProjectEvlly
         {
 #if Client
             Game.Client.TickEvent += Tick;
-            Game.Client.DrawUpdate += Draw;
-            Game.Client.TransparentDrawUpdate += DrawT;
 #elif Server
             Server.Tick += Tick;
 #endif
@@ -110,29 +106,12 @@ namespace ProjectEvlly
 
         }
 
-        /// <summary>
-        /// Draw only opaque model
-        /// </summary>
-        public virtual void Draw()
-        {
-
-        }
-        /// <summary>
-        /// Draw only Transparency model
-        /// </summary>
-        public virtual void DrawT()
-        {
-
-        }
-
         public virtual void OnDead() { }
 
         public virtual void OnDestroy()
         {
 #if Client
             Game.Client.TickEvent -= Tick;
-            Game.Client.DrawUpdate -= Draw;
-            Game.Client.TransparentDrawUpdate -= DrawT;
 #elif Server
             Server.Tick -= Tick;
 #endif
