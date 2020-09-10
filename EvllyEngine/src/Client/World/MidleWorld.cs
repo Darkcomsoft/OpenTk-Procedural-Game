@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace EvllyEngine
 {
@@ -25,13 +26,17 @@ namespace EvllyEngine
         public Vector3 PlayerPos;
 
         private object LockChunkMap;
+        private object LockToUpdate;
+
         private Dictionary<Vector3, Chunk> chunkMap = new Dictionary<Vector3, Chunk>();
         private Queue<Vector3> ToRemove = new Queue<Vector3>();
+        private Queue<Vector3> ToUpdate = new Queue<Vector3>();
 
         private Thread WorldGeneratorThread;
-        private int ThreadSleepTime = 30;
+        private int ThreadSleepTime = 60;
 
         public static FastNoise globalNoise;
+        public static FastNoise biomeNoise;
 
 #if Client
 #elif Server
@@ -45,11 +50,19 @@ namespace EvllyEngine
 
 #endif
             LockChunkMap = new object();
+            LockToUpdate = new object();
 
             WorldName = _worldName;
 
-            globalNoise = new FastNoise(0);
+            globalNoise = new FastNoise(GlobalData.Seed);
             globalNoise.SetFrequency(0.005f);
+
+            biomeNoise = new FastNoise(GlobalData.Seed);
+            biomeNoise.SetFrequency(0.05f);
+            biomeNoise.SetGradientPerturbAmp(30f);
+            biomeNoise.SetCellularNoiseLookup(new FastNoise());
+            biomeNoise.SetCellularDistanceFunction(FastNoise.CellularDistanceFunction.Manhattan);
+            biomeNoise.SetCellularReturnType(FastNoise.CellularReturnType.NoiseLookup);
 
             //LoadTheWorld if has a save
             if (SaveManager.LoadWorld())//Have a Save
@@ -93,7 +106,7 @@ namespace EvllyEngine
                     Vector3 vec = ToRemove.Dequeue();
                     if (chunkMap.ContainsKey(vec))
                     {
-                        chunkMap[vec].OnDestroy();
+                        chunkMap[vec].Dispose();
                         chunkMap.Remove(vec);
                     }
                 }
@@ -103,13 +116,42 @@ namespace EvllyEngine
 
         private void WorldLooping()//this is a other thread looping
         {
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(MyHandler);
+
             while (WorldRuning)
             {
-                CheckViewDistance();
-                Thread.Sleep(ThreadSleepTime);
+                try
+                {
+                    CheckViewDistance();
+                    Thread.Sleep(ThreadSleepTime);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError("Error On WorldLoop: (" + ex.Message + ") --- (StackTrace: " + ex.StackTrace + ")");
+                }
             }
 
             CanDestroyWorld = true;
+        }
+
+        static void MyHandler(object sender, UnhandledExceptionEventArgs e)
+        {
+            try
+            {
+                Exception ex = (Exception)e.ExceptionObject;
+                Debug.LogError("Unhadled domain exception:\n\n" + ex.Message);
+            }
+            catch (Exception exc)
+            {
+                try
+                {
+                    Debug.LogError("Fatal exception happend inside UnhadledExceptionHandler: \n\n" + exc.Message);
+                }
+                finally
+                {
+                    Environment.Exit(1);
+                }
+            }
         }
 
         public void CheckViewDistance()
@@ -123,6 +165,22 @@ namespace EvllyEngine
 
             int minZ = (int)PlayerP.Z - renderDistanceXZ;
             int maxZ = (int)PlayerP.Z + renderDistanceXZ;
+
+            lock (LockToUpdate)
+            {
+                while (ToUpdate.Count > 0)
+                {
+                    lock (LockChunkMap)
+                    {
+                        Vector3 chunk = ToUpdate.Dequeue();
+                        if (chunkMap.ContainsKey(chunk))
+                        {
+                            chunkMap[chunk].UpdateMesh();
+                        }
+                    }
+                }
+            }
+
             lock (LockChunkMap)
             {
                 foreach (var item in chunkMap)
@@ -148,6 +206,22 @@ namespace EvllyEngine
                         {
                             chunkMap.Add(vector, new Chunk(vector));
                         }
+                        else
+                        {
+                            /*switch (chunkMap[vector].GetStatus)
+                            {
+                                case ChunkState.noload:
+                                    break;
+                                case ChunkState.nogameLogic:
+                                    break;
+                                case ChunkState.noEntity:
+                                    break;
+                                case ChunkState.AllGameLogic:
+                                    break;
+                                default:
+                                    break;
+                            }*/
+                        }
                     }
                 }
             }
@@ -163,13 +237,18 @@ namespace EvllyEngine
 
             foreach (var item in chunkMap.Values)
             {
-                chunkMap[item.transform.Position].OnDestroy();
+                chunkMap[item.transform.Position].Dispose();
             }
 
             chunkMap.Clear();
             ToRemove.Clear();
 
             base.OnDisposeWorld();
+        }
+
+        public void UpDateChunk(Vector3 chunk)
+        {
+            ToUpdate.Enqueue(chunk);
         }
 
         public Vector2 GetChunkCoordFromVector3(Vector3 pos)
@@ -219,7 +298,7 @@ namespace EvllyEngine
         {
             lock (LockChunkMap)
             {
-                Vector3 chunkpos = new Vector3(xx % ChunkSize, 0, zz % ChunkSize);
+                Vector3 chunkpos = new Vector3(Mathf.FloorToInt(xx / (float)ChunkSize) * ChunkSize, 0, Mathf.FloorToInt(zz/ (float)ChunkSize) * ChunkSize);
 
                 if (chunkMap.ContainsKey(chunkpos))
                 {

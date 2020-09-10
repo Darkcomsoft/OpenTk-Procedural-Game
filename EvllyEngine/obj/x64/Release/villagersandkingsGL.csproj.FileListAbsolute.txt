@@ -5,10 +5,8 @@ C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Relea
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Release\ProjectEvlly.pdb
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Release\BepuPhysics.dll
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Release\BepuUtilities.dll
-C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Release\BulletSharp.dll
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Release\Gwen.dll
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Release\Lidgren.Network.dll
-C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Release\MeshOptimizer.dll
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Release\OpenTK.dll
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Release\QuickFont.dll
 C:\Users\estev\Documents\GitHub\Villagers-and-Kings-GL\EvllyEngine\bin\x64\Release\SharpFont.dll

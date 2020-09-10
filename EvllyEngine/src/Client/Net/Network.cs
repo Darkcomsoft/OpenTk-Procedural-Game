@@ -488,7 +488,7 @@ namespace ProjectEvlly.src.Net
                 {
                     Entity entity = ToUnloadEntitys.Dequeue();
 
-                    entity.OnDestroy();
+                    entity.Dispose();
                 }
 
                 Entitys.Clear();
@@ -518,7 +518,7 @@ namespace ProjectEvlly.src.Net
                 while (ToUnloadEntitys.Count > 0)
                 {
                     Entity entity = ToUnloadEntitys.Dequeue();
-                    entity.OnDestroy();
+                    entity.Dispose();
                 }
             }
 
@@ -776,7 +776,7 @@ namespace ProjectEvlly.src.Net
                 {
                     Entity entity = ToUnloadEntitys.Dequeue();
 
-                    entity.OnDestroy();
+                    entity.Dispose();
                 }
 
                 Entitys.Clear();

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ProjectEvlly.src.Engine.Render
 {
-    public class RenderSystem
+    public class RenderSystem : IDisposable
     {
         public static RenderSystem Instance;
 
@@ -26,7 +26,15 @@ namespace ProjectEvlly.src.Engine.Render
             while (toRemove.Count > 0)
             {
                 RenderEntityBase entity = toRemove.Dequeue();
-                entity.Destroy();
+                if (renderEntityBases.Contains(entity))
+                {
+                    renderEntityBases.Remove(entity);
+                }
+                else
+                {
+                    renderEntityBasesT.Remove(entity);
+                }
+                entity.Dispose();
             }
         }
 
@@ -59,18 +67,39 @@ namespace ProjectEvlly.src.Engine.Render
 
         public void Dispose()
         {
+            while (toRemove.Count > 0)
+            {
+                RenderEntityBase entity = toRemove.Dequeue();
+
+                if (renderEntityBases.Contains(entity))
+                {
+                    renderEntityBases.Remove(entity);
+                }
+                else if (renderEntityBasesT.Contains(entity))
+                {
+                    renderEntityBasesT.Remove(entity);
+                }
+
+                if (entity != null)
+                {
+                    entity.Dispose();
+                }
+            }
+
             foreach (var item in renderEntityBases)
             {
-                item.Destroy();
+                item.Dispose();
             }
 
             foreach (var item in renderEntityBasesT)
             {
-                item.Destroy();
+                item.Dispose();
             }
+            toRemove.Clear();
             renderEntityBases.Clear();
             renderEntityBasesT.Clear();
 
+            toRemove = null;
             renderEntityBases = null;
             renderEntityBasesT = null;
         }
@@ -82,8 +111,12 @@ namespace ProjectEvlly.src.Engine.Render
 
         public static void RemoveRenderItem(RenderEntityBase entityRender)
         {
-            RenderSystem.Instance.renderEntityBases.Remove(entityRender);
             RenderSystem.Instance.toRemove.Enqueue(entityRender);
+        }
+
+        public static void InstaRemoveRenderItem(RenderEntityBase entityRender)
+        {
+            RenderSystem.Instance.renderEntityBases.Remove(entityRender);
         }
 
         public static void AddRenderItemT(RenderEntityBase entityRender)
@@ -93,8 +126,12 @@ namespace ProjectEvlly.src.Engine.Render
 
         public static void RemoveRenderItemT(RenderEntityBase entityRender)
         {
-            RenderSystem.Instance.renderEntityBasesT.Remove(entityRender);
             RenderSystem.Instance.toRemove.Enqueue(entityRender);
+        }
+
+        public static void InstaRemoveRenderItemT(RenderEntityBase entityRender)
+        {
+            RenderSystem.Instance.renderEntityBasesT.Remove(entityRender);
         }
     }
 }

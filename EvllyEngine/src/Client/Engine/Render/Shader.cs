@@ -110,6 +110,24 @@ namespace EvllyEngine
             }
         }
 
+        public void Setbool(string name, bool data)
+        {
+            Use();
+            if (_uniformLocations.TryGetValue(name, out int value))
+            {
+                GL.Uniform1(value, data ? 1 : 0);
+            }
+        }
+
+        public void SetVector4(string name, Vector4 data)
+        {
+            Use();
+            if (_uniformLocations.TryGetValue(name, out int value))
+            {
+                GL.Uniform4(value, data);
+            }
+        }
+
         /// <summary>
         /// Set a uniform Matrix4 on this shader
         /// </summary>

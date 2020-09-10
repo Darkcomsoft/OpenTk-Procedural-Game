@@ -49,7 +49,7 @@ namespace EvllyEngine
             GL.BindVertexArray(VAO);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, _mesh._vertices.Length * sizeof(float), _mesh._vertices, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, _mesh._vertices.Length * Vector3.SizeInBytes, _mesh._vertices, BufferUsageHint.StaticDraw);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
             GL.EnableVertexAttribArray(0);
 
@@ -61,12 +61,12 @@ namespace EvllyEngine
 
             //Texture
             GL.BindBuffer(BufferTarget.ArrayBuffer, tbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, _mesh._texCoords.Length * sizeof(float), _mesh._texCoords, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, _mesh._texCoords.Length * Vector2.SizeInBytes, _mesh._texCoords, BufferUsageHint.StaticDraw);
             GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 0, 0);
             GL.EnableVertexAttribArray(2);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, nbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, _mesh._Normals.Length * sizeof(float), _mesh._Normals, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, _mesh._Normals.Length * Vector3.SizeInBytes, _mesh._Normals, BufferUsageHint.StaticDraw);
             GL.VertexAttribPointer(3, 3, VertexAttribPointerType.Float, false, 0, 0);
             GL.EnableVertexAttribArray(3);
         }
@@ -101,6 +101,11 @@ namespace EvllyEngine
                 _shader.SetMatrix4("view", Camera.Main.viewMatrix);
                 _shader.SetMatrix4("projection", Camera.Main._projection);
 
+                //Set The Fog Values(this need to be in all mesh with use fog)
+                _shader.SetFloat("FOG_Density", Fog.Density);
+                _shader.SetFloat("FOG_Gradiante", Fog.Distance);
+                _shader.SetVector4("FOG_Color", Fog.FogColor);
+
                 GL.DrawElements(Window.GetGLBeginMode, _mesh._indices.Length, DrawElementsType.UnsignedInt, 0);
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
                 GL.BindVertexArray(0);
@@ -118,10 +123,8 @@ namespace EvllyEngine
             base.TickRender(time);
         }
 
-        public override void Destroy()
+        public override void Dispose()
         {
-            //_shader.Delete();
-
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
             GL.BindVertexArray(0);
 
@@ -149,7 +152,7 @@ namespace EvllyEngine
             GL.DeleteBuffer(nbo);
 
             GL.DeleteVertexArray(VAO);
-            base.Destroy();
+            base.Dispose();
         }
     }
 }

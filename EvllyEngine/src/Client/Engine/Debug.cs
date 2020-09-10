@@ -32,6 +32,7 @@ namespace EvllyEngine
         {
 #if Debug && Client
             System.Diagnostics.Debug.Fail(menssage);
+            //Console.Error.WriteLine("Unhandled exception: " + args.ExceptionObject);
 #elif Debug && Server
             Server.Instance.WriteLine("ERROR: " + menssage);
 #endif

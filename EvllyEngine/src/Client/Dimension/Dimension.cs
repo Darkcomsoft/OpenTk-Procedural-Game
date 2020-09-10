@@ -29,7 +29,7 @@ namespace EvllyEngine
             {
                 Entity entity = ToUnloadEntitys.Dequeue();
 
-                entity.OnDestroy();
+                entity.Dispose();
                 entity = null;
             }
         }
@@ -66,7 +66,7 @@ namespace EvllyEngine
 
             for (int i = 0; i < Entitys.Count; i++)
             {
-                Entitys[i].OnDestroy();
+                Entitys[i].Dispose();
                 Entitys[i] = null;
                 c++;
             }
@@ -75,7 +75,7 @@ namespace EvllyEngine
             {
                 Entity entity = ToUnloadEntitys.Dequeue();
 
-                entity.OnDestroy();
+                entity.Dispose();
                 entity = null;
             }
 

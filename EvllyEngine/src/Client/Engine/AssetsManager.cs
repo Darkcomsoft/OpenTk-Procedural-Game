@@ -14,6 +14,8 @@ using OpenTK;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using ProjectEvlly;
+using QuickFont;
+using QuickFont.Configuration;
 
 namespace EvllyEngine
 {
@@ -25,8 +27,9 @@ namespace EvllyEngine
         private Dictionary<string, Texture> _Textures;
         private Dictionary<string, Shader> _Shaders;
         private Dictionary<string, Mesh> _Models;
+        private Dictionary<string, QFont> _Fonts;
 
-        private Dictionary<string, float[]> _Tiles;
+        private Dictionary<string, Vector2[]> _Tiles;
 
         public AssetsManager() 
         {
@@ -35,8 +38,9 @@ namespace EvllyEngine
             _Textures = new Dictionary<string, Texture>();
             _Shaders = new Dictionary<string, Shader>();
             _Models = new Dictionary<string, Mesh>();
+            _Fonts = new Dictionary<string, QFont>();
 
-            _Tiles = new Dictionary<string, float[]>();
+            _Tiles = new Dictionary<string, Vector2[]>();
         }
 
         public void LoadAssets()
@@ -58,17 +62,26 @@ namespace EvllyEngine
             _Textures.Add("TileAtlas", new Texture(AssetsManager.LoadImage("Assets/Texture/", "TileAtlas", "png")));
             _Textures.Add("SpritesTreeHigt", new Texture(AssetsManager.LoadImage("Assets/Texture/", "SpritesTreeHigt", "png")));
             _Textures.Add("MetalSword", new Texture(AssetsManager.LoadImage("Assets/Texture/", "MetalSword", "png")));
+            _Textures.Add("Water", new Texture(AssetsManager.LoadImage("Assets/Texture/", "Water", "png")));
+            _Textures.Add("Water2", new Texture(AssetsManager.LoadImage("Assets/Texture/", "Water2", "png")));
 
             //Load Shaders
             SplashScreen.SetState("Loading Shaders", SplashScreenStatus.Loading);
             _Shaders.Add("Default", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "Default")));
             _Shaders.Add("TerrainDefault", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "TerrainDefault")));
             _Shaders.Add("UI", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "UI")));
+            _Shaders.Add("Water", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "Water")));
 
             //Load TileUvs
             SplashScreen.SetState("Loading Tile UVs", SplashScreenStatus.Loading);
             AddTileUv("Grass", new Vector2(0.15f, 0.066667f), new Vector2(0.15f, 0f), new Vector2(0.2f, 0.066667f), new Vector2(0.2f, 0f));
             AddTileUv("Dirt", new Vector2(0.55f, 0.066667f), new Vector2(0.55f, 0f), new Vector2(0.6f, 0.066667f), new Vector2(0.6f, 0f));
+            AddTileUv("Sand", new Vector2(0.8f, 0.066667f), new Vector2(0.8f, 0f), new Vector2(0.85f, 0.066667f), new Vector2(0.85f, 0f));
+            AddTileUv("Water", new Vector2(0.2f, 0.066667f), new Vector2(0.2f, 0f), new Vector2(0.25f, 0.066667f), new Vector2(0.25f, 0f));
+
+            //Load Fonts
+            _Fonts.Add("OpenSans", new QFont("OpenSans.ttf", 15, new QFontBuilderConfiguration(true)));
+            _Fonts.Add("FreePixel", new QFont("/Assets/UI/Fonts/FreePixel.ttf", 12, new QFontBuilderConfiguration(true)));
         }
 
         public void UnloadAll()
@@ -180,6 +193,18 @@ namespace EvllyEngine
             }
         }
 
+        public static QFont GetFont(string FontName)
+        {
+            if (AssetsManager.instance._Fonts.TryGetValue(FontName, out QFont font))
+            {
+                return font;
+            }
+            else
+            {
+                throw new Exception("Dont Exist this Assets: " + font);
+            }
+        }
+
         public static void UseTexture(string TextureName)
         {
             if (AssetsManager.instance._Textures.TryGetValue(TextureName, out Texture texture))
@@ -206,26 +231,19 @@ namespace EvllyEngine
 
         public void AddTileUv(string tileName,Vector2 point1, Vector2 point2, Vector2 point3, Vector2 point4)
         {
-            float[] uvs = new float[8];
+            Vector2[] uvs = new Vector2[4];
 
-            uvs[0] = point1.X;
-            uvs[1] = point1.Y;
-
-            uvs[2] = point2.X;
-            uvs[3] = point2.Y;
-
-            uvs[4] = point3.X;
-            uvs[5] = point3.Y;
-
-            uvs[6] = point4.X;
-            uvs[7] = point4.Y;
+            uvs[0] = point1;
+            uvs[1] = point2;
+            uvs[2] = point3;
+            uvs[3] = point4;
 
             _Tiles.Add(tileName, uvs);
         }
 
-        public static float[] GetTileUV(string tileName)
+        public static Vector2[] GetTileUV(string tileName)
         {
-            if (AssetsManager.instance._Tiles.TryGetValue(tileName, out float[] arraylist))
+            if (AssetsManager.instance._Tiles.TryGetValue(tileName, out Vector2[] arraylist))
             {
                 return arraylist;
             }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using OpenTK;
+using OpenTK.Graphics;
 
 namespace EvllyEngine
 {
@@ -233,18 +234,18 @@ namespace EvllyEngine
 
 			if (colorsArray == null)
 			{
-				List<float> colorsFloat = new List<float>();
+				List<Color4> colorsFloat = new List<Color4>();
 
 				for (int i = 0; i < verticesArray.Length; i++)
 				{
-					colorsFloat.Add(1111);
+					colorsFloat.Add(new Color4(1,1,1,1));
 				}
 
-				return new Mesh(ConvertVector3Float(verticesArray), normalsArray, ConvertVector2Float(texturesArray), colorsFloat.ToArray(), PolyList.ToArray());
+				return new Mesh(verticesArray, normalsArray, texturesArray, colorsFloat.ToArray(), PolyList.ToArray());
 			}
 			else
 			{
-				return new Mesh(ConvertVector3Float(verticesArray), normalsArray, ConvertVector2Float(texturesArray), ConvertVector3Float(colorsArray), PolyList.ToArray());
+				return new Mesh(verticesArray, normalsArray, texturesArray, ConvertColor(colorsArray), PolyList.ToArray());
 			}
 		}
 
@@ -265,16 +266,15 @@ namespace EvllyEngine
 			return output.ToArray();
 		}
 
-		public float[] ConvertVector2Float(Vector2[] input)
+		public Color4[] ConvertColor(Vector3[] input)
 		{
-			List<float> output = new List<float>();
+			List<Color4> output = new List<Color4>();
 
 			if (input != null)
 			{
 				for (int i = 0; i < input.Length; i++)
 				{
-					output.Add(input[i].X);
-					output.Add(input[i].Y);
+					output.Add(new Color4(input[i].X, input[i].Y, input[i].Z, 1));
 				}
 			}
 

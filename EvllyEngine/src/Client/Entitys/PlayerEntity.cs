@@ -47,8 +47,8 @@ namespace EvllyEngine
                 renderMesh = false;
                 _playerController = new PlayerController(this, 0.5f);//Start the player controller, only if you own this entity(if you spawened this)
 
-                _MeshRenderSword = new MeshRender(Camera.Main._transformParent, AssetsManager.GetMesh("SwordMetal"), AssetsManager.GetShader("Default"), AssetsManager.GetTexture("MetalSword"));
-                RenderSystem.AddRenderItem(_MeshRenderSword);
+                /*_MeshRenderSword = new MeshRender(Camera.Main._transformParent, AssetsManager.GetMesh("SwordMetal"), AssetsManager.GetShader("Default"), AssetsManager.GetTexture("MetalSword"));
+                RenderSystem.AddRenderItem(_MeshRenderSword);*/
             }
             _MeshRender = new MeshRender(transform, AssetsManager.GetMesh("Cube"), AssetsManager.GetShader("Default"), AssetsManager.GetTexture("devTexture"));
             RenderSystem.AddRenderItem(_MeshRender);
@@ -69,7 +69,9 @@ namespace EvllyEngine
             if (isMine)//if this is my
             {
                 RPC("RPC_SyncPosition", ProjectEvlly.src.Net.RPCMode.AllNoOwner, transform.Position, transform.Rotation);
-                
+
+                CurrentBlock = Game.GetWorld.GetTileAt(transform.Position.X, transform.Position.Z);
+
                 if (Input.GetKeyDown(Key.V))
                 {
                     if (renderMesh)
@@ -82,12 +84,6 @@ namespace EvllyEngine
                         renderMesh = true;
                     }
                 }
-                
-                if (renderMesh)
-                {
-                    //Debug.Log("ChunkPos: " + ((int)transform.Position.X % MidleWorld.ChunkSize, 0, (int)transform.Position.Z % MidleWorld.ChunkSize));
-                    CurrentBlock = Game.GetWorld.GetTileAt((int)transform.Position.X, (int)transform.Position.Z);
-                }
             }
             else
             {
@@ -99,17 +95,17 @@ namespace EvllyEngine
             base.Tick();
         }
 
-        public override void OnDestroy()
+        public override void Dispose()
         {
 #if Client
             if (_playerController != null)
             {
-                _playerController.DisposeController();
+                _playerController.Dispose();
             }
             RenderSystem.RemoveRenderItem(_MeshRenderSword);
             RenderSystem.RemoveRenderItem(_MeshRender);
 #endif
-            base.OnDestroy();
+            base.Dispose();
         }
 
         [RPC]

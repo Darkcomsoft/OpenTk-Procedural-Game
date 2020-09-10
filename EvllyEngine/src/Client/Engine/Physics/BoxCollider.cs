@@ -39,6 +39,9 @@ namespace EvllyEngine
         public void OnDestroy()
         {
             Physics.Remove(BoxHandler);
+
+            BoxHandler = null;
+            _parenntTransform = null;
         }
     }
 }

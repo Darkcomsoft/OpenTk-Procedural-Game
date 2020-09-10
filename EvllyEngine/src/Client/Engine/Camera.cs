@@ -12,7 +12,7 @@ using ProjectEvlly.src;
 
 namespace EvllyEngine
 {
-    public class Camera
+    public class Camera : IDisposable
     {
         public Transform _transformParent;
         public Transform _cameraTrnasform;
@@ -79,9 +79,10 @@ namespace EvllyEngine
             viewMatrix = Matrix4.LookAt(_cameraTrnasform.Position + _transformParent.Position, finalTarget, camRotatedUpVector);
         }
 
-        public void OnDestroy()
+        public void Dispose()
         {
             _transformParent = null;
+            _cameraTrnasform = null;
             Main = null;
         }
 

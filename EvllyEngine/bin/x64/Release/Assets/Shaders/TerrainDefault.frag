@@ -2,22 +2,16 @@
 
 layout(location = 0) out vec4 color;
 
-//in vec4 frag_colors;
 in vec2 texCoord;
 in vec4 colortest;
+in vec3 N;
+in float visiblity;
 
 uniform sampler2D texture0;
-//uniform gl_FogParameters gl_Fog;
+uniform vec4 FOG_Color;
 
 void main()
 {
     color = texture(texture0, texCoord);
+    color = mix(FOG_Color, color, visiblity);
 }
-
-/*struct gl_FogParameters {
- vec4 color;
- float density;
- float start;
- float end;
- float scale; // Derived: 1.0 / (end - start)
-};*/

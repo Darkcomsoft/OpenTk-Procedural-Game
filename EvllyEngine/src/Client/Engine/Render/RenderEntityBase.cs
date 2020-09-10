@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ProjectEvlly.src.Engine.Render
 {
-    public abstract class RenderEntityBase
+    public abstract class RenderEntityBase : IDisposable
     {
         public Transform transform;
 
@@ -16,9 +16,9 @@ namespace ProjectEvlly.src.Engine.Render
 
         }
 
-        public virtual void Destroy()
+        public virtual void Dispose()
         {
-
+            transform = null;
         }
     }
 }

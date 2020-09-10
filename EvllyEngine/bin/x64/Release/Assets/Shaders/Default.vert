@@ -6,18 +6,26 @@ layout (location = 3) in vec3 Normals;
 
 out vec4 frag_colors;
 out vec2 texCoord;
+out float visiblity;
 
 uniform mat4 world;
 uniform mat4 view;
 uniform mat4 projection;
 
+uniform float FOG_Density; 
+uniform float FOG_Gradiante;
+
 void main()
 {
-	vec4 worldPosition = world * position;
-	vec4 posRelativeCamera = view * worldPosition;
+	vec4 worldPosition = position * world;
+	vec4 posRelativeCamera = worldPosition * view;
 
 	frag_colors = colors;
 	texCoord = aTexCoord;
 	
-	gl_Position = position * world * view * projection;
+	float distance = length(posRelativeCamera.xyz);
+    visiblity = exp(-pow((distance * FOG_Density), FOG_Gradiante));
+    visiblity = clamp(visiblity, 0.0, 1.0);
+	
+	gl_Position = posRelativeCamera * projection;
 }

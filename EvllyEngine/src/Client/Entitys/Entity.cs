@@ -16,7 +16,7 @@ namespace ProjectEvlly
     /// <summary>
     /// A base entity class, this is used for all entitys, all entitys is synced with multiplayer, if you want use a static entity dont use this
     /// </summary>
-    public abstract class Entity
+    public abstract class Entity : IDisposable
     {
         public Transform transform;
         public int _currentChannelID = 0;//This is the world id, like the normal world, all regions of chunks have ther owne channel id.
@@ -108,7 +108,7 @@ namespace ProjectEvlly
 
         public virtual void OnDead() { }
 
-        public virtual void OnDestroy()
+        public virtual void Dispose()
         {
 #if Client
             Game.Client.TickEvent -= Tick;

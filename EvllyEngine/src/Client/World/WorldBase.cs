@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ProjectEvlly.src.World
 {
-    public class WorldBase
+    public class WorldBase : IDisposable
     {
         public string WorldName;
 
@@ -31,7 +31,7 @@ namespace ProjectEvlly.src.World
 
         }
 
-        public void DisposeWorld()
+        public void Dispose()
         {
             OnDisposeWorld();
 #if Client

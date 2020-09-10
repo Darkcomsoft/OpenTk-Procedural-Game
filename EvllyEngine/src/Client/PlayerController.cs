@@ -7,12 +7,15 @@ using BEPUphysics.Character;
 using BEPUphysics.Entities.Prefabs;
 using EvllyEngine;
 using OpenTK;
+using OpenTK.Graphics;
 using OpenTK.Input;
 using ProjectEvlly;
+using ProjectEvlly.src.Engine.Render;
+using ProjectEvlly.src.Utility;
 
 namespace ProjectEvlly.src
 {
-    public class PlayerController
+    public class PlayerController : IDisposable
     {
         private PlayerEntity _playerEntity;
 
@@ -61,6 +64,21 @@ namespace ProjectEvlly.src
                 
             }*/
             
+            if (_PlayerCamera._cameraTrnasform.Position.Y + _playerEntity.transform.Position.Y < 0)
+            {
+                Fog.Density = 0.4f;
+                Fog.Distance = 0.5f;
+                Fog.FogColor = new Vector4(0, 0, 0.5450981f, 1);
+                gl.ClearColor(Color4.DarkBlue);
+            }
+            else
+            {
+                Fog.Density = 0.014f;
+                Fog.Distance = 3.5f;
+                Fog.FogColor = new Vector4(0, 0.7490196f, 1, 1);
+                gl.ClearColor(new Color4(0, 0.7490196f, 1, 1));
+            }
+
             if (EvllyEngine.MouseCursor.MouseLocked)
             {
                 var mouse = Mouse.GetState();
@@ -127,7 +145,7 @@ namespace ProjectEvlly.src
                     MoveSpeed = 3f;
                 }
 
-                _CharacterController.StandingSpeed = MoveSpeed * 2;
+                _CharacterController.StandingSpeed = MoveSpeed * 10;
 
                 if (Input.GetKey(Key.Z))
                     _CharacterController.StanceManager.DesiredStance = Stance.Prone;
@@ -154,9 +172,9 @@ namespace ProjectEvlly.src
             _PlayerCamera.UpdateCamera();//Update the camera
         }
 
-        public void DisposeController()
+        public void Dispose()
         {
-            _PlayerCamera.OnDestroy();
+            _PlayerCamera.Dispose();
             _PlayerCamera = null;
 
             Physics.Remove(_CharacterController);

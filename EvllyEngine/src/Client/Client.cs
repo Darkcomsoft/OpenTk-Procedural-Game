@@ -19,7 +19,7 @@ namespace ProjectEvlly.src
     /// This class is for the game logics, so every time you quit a server, or quit to mainmenu,
     /// game class is gone do erease all and start again, so this is not a static class or final class, is a dynamic class.
     /// </summary>
-    public class Client
+    public class Client : IDisposable
     {
         public MainMenu _MainMenu;
         private InGameUI _InGameUI;
@@ -107,6 +107,8 @@ namespace ProjectEvlly.src
 
         public void Dispose()
         {
+            Network.Disconnect();
+
             if (!_isPlaying)
             {
                 _MainMenu.Dispose();
@@ -114,7 +116,7 @@ namespace ProjectEvlly.src
 
             if (_MidleWorld != null)
             {
-                _MidleWorld.DisposeWorld();
+                _MidleWorld.Dispose();
             }
 
             if (_InGameUI != null)
@@ -122,9 +124,10 @@ namespace ProjectEvlly.src
                 _InGameUI.Dispose();
             }
 
-            _RenderSystem.Dispose();
-
-            Network.Disconnect();
+            if (_RenderSystem != null)
+            {
+                _RenderSystem.Dispose();
+            }
 
             Network.OnServerStart -= OnServerStart;
             Network.OnDisconnect -= OnDsiconnect;
@@ -176,9 +179,12 @@ namespace ProjectEvlly.src
 
             if (_MidleWorld != null)
             {
-                _MidleWorld.DisposeWorld();
+                _MidleWorld.Dispose();
                 _MidleWorld = null;
             }
+
+            _RenderSystem.Dispose();
+            _RenderSystem = null;
 
             _MainMenu = new MainMenu(Game.GUI.GetCanvas);
             _isPlaying = false;
@@ -187,6 +193,7 @@ namespace ProjectEvlly.src
         private void LoadPlayingWorld()
         {
             _InGameUI = new InGameUI(Game.GUI.GetCanvas);
+            _RenderSystem = new RenderSystem();
 
             _MidleWorld = new MidleWorld(_CharacterInfo.WorldName);
             _MidleWorld.SpawnPlayer(_CharacterInfo);
@@ -229,6 +236,7 @@ namespace ProjectEvlly.src
         public static GUI GUI;
         public static MidleWorld MidleWorld;
         public static InGameUI _InGameUI;
+        public static Window Window;
 
         public static MidleWorld GetWorld
         {

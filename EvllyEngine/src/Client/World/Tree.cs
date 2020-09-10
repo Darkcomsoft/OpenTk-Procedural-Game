@@ -52,6 +52,11 @@ namespace EvllyEngine
         {
             _boxCollider.OnDestroy();
             RenderSystem.RemoveRenderItemT(_meshRender);
+
+            transform = null;
+
+            _meshRender = null;
+            _boxCollider = null;
         }
     }
 }

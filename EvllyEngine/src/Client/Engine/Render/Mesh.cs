@@ -5,16 +5,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
+using System.Drawing;
 
 namespace EvllyEngine
 {
     public class Mesh
     {
-        public float[] _vertices;
+        public Vector3[] _vertices;
         public int[] _indices;
-        public float[] _texCoords;
-        public float[] _Colors;
-        public float[] _Normals;
+        public Vector2[] _texCoords;
+        public Color4[] _Colors;
+        public Vector3[] _Normals;
 
         public Mesh(Mesh newmesh)
         {
@@ -22,20 +23,18 @@ namespace EvllyEngine
             _indices = newmesh._indices;
             _texCoords = newmesh._texCoords;
             _Colors = newmesh._Colors;
-
-            OptimizeMesh();
-            _Normals = CalculateNormals();
+            _Normals = newmesh._Normals;
         }
 
         public Mesh() 
         {
-            _vertices = new float[]
+            _vertices = new Vector3[]
             {
                  //Position          Texture coordinates
-                 0.5f,  0.5f, 0.0f, // top right
-                 0.5f, -0.5f, 0.0f, // bottom right
-                -0.5f, -0.5f, 0.0f, // bottom left
-                -0.5f,  0.5f, 0.0f // top left
+                 new Vector3(0.5f,  0.5f, 0.0f), // top right
+                 new Vector3(0.5f, -0.5f, 0.0f), // bottom right
+                new Vector3(-0.5f, -0.5f, 0.0f), // bottom left
+                new Vector3(-0.5f,  0.5f, 0.0f) // top left
             };
 
             _indices = new int[]
@@ -44,23 +43,23 @@ namespace EvllyEngine
                 1, 2, 3    // second triangle
             };
 
-            _Colors = new float[] {
-                1.0f,1.0f,1.0f,1.0f,
-                1.0f,1.0f,1.0f,1.0f,
-                1.0f,1.0f,1.0f,1.0f
+            _Colors = new Color4[] {
+                new Color4(1.0f,1.0f,1.0f,1.0f),
+                new Color4(1.0f,1.0f,1.0f,1.0f),
+                new Color4(1.0f,1.0f,1.0f,1.0f)
             };
 
-            _texCoords = new float[] {
-                1.0f, 1.0f,
-                1.0f, 0.0f,
-                0.0f, 0.0f,
-                0.0f, 1.0f
+            _texCoords = new Vector2[] {
+               new Vector2( 1.0f, 1.0f),
+                new Vector2(1.0f, 0.0f),
+                new Vector2(0.0f, 0.0f),
+                new Vector2(0.0f, 1.0f)
             };
 
             OptimizeMesh();
             _Normals = CalculateNormals();
         }
-        public Mesh(float[] vertices, int[] indices, float[] colors)
+        public Mesh(Vector3[] vertices, int[] indices, Color4[] colors)
         {
             _vertices = vertices;
             _indices = indices;
@@ -69,7 +68,7 @@ namespace EvllyEngine
             OptimizeMesh();
             _Normals = CalculateNormals();
         }
-        public Mesh(float[] vertices, int[] indices)
+        public Mesh(Vector3[] vertices, int[] indices)
         {
             _vertices = vertices;
             _indices = indices;
@@ -78,7 +77,7 @@ namespace EvllyEngine
             _Normals = CalculateNormals();
         }
 
-        public Mesh(float[] vertices, float[] textures, float[] colors, int[] indices)
+        public Mesh(Vector3[] vertices, Vector2[] textures, Color4[] colors, int[] indices)
         {
             _vertices = vertices;
             _indices = indices;
@@ -89,7 +88,7 @@ namespace EvllyEngine
             _Normals = CalculateNormals();
         }
 
-        public Mesh(float[] vertices, Vector3[] normals, float[] textures, float[] colors, int[] indices)
+        public Mesh(Vector3[] vertices, Vector3[] normals, Vector2[] textures, Color4[] colors, int[] indices)
         {
             _vertices = vertices;
             _indices = indices;
@@ -136,26 +135,17 @@ namespace EvllyEngine
             _indices = finalindice.ToArray();*/
         }
 
-        public float[] CalculateNormals()
+        public Vector3[] CalculateNormals()
         {
-            List<Vector3> vertices = new List<Vector3>();
-            List<float> finalNormals = new List<float>();
-
-
-            for (int i = 0; i < _vertices.Length; i+=3)
-            {
-                vertices.Add(new Vector3(_vertices[i], _vertices[i + 1], _vertices[i + 2]));
-            }
-
-            Vector3[] normals = new Vector3[vertices.Count];
+            Vector3[] normals = new Vector3[_vertices.Length];
             int[] inds = _indices;
 
             // Compute normals for each face
             for (int i = 0; i < inds.Length; i += 3)
             {
-                Vector3 v1 = vertices[inds[i]];
-                Vector3 v2 = vertices[inds[i + 1]];
-                Vector3 v3 = vertices[inds[i + 2]];
+                Vector3 v1 = _vertices[inds[i]];
+                Vector3 v2 = _vertices[inds[i + 1]];
+                Vector3 v3 = _vertices[inds[i + 2]];
 
                 // The normal is the cross product of two sides of the triangle
                 normals[inds[i]] += Vector3.Cross(v2 - v1, v3 - v1);
@@ -163,24 +153,20 @@ namespace EvllyEngine
                 normals[inds[i + 2]] += Vector3.Cross(v2 - v1, v3 - v1);
             }
 
-            for (int i = 0; i < vertices.Count; i++)
+            for (int i = 0; i < _vertices.Length; i++)
             {
                 normals[i] = normals[i].Normalized();
-
-                finalNormals.Add(normals[i].X);
-                finalNormals.Add(normals[i].Y);
-                finalNormals.Add(normals[i].Z);
             }
 
-            return finalNormals.ToArray();
+            return normals;
         }
 
         public void Clear()
         {
-            _vertices = null;
-            _indices = null;
-            _texCoords = null;
-            _Colors = null;
+            _vertices = new Vector3[] { };
+            _indices = new int[] { };
+            _texCoords = new Vector2[] { };
+            _Colors = new Color4[] { };
         }
     }
 }

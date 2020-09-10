@@ -9,18 +9,21 @@ namespace ProjectEvlly.src.World.Biomes
 {
     public static class OakForest
     {
-        public static BiomeData GetBiome(int x, int z)
+        public static BiomeData GetBiome(int x, int z, Chunk chunk)
         {
-            float noise = new FastNoise(GlobalData.Seed).GetPerlin(x, z);
-            System.Random rand = new Random(x * z * z + z / x + x);
+            FastNoise noiseFast = new FastNoise(GlobalData.Seed);
+            noiseFast.SetFrequency(0.005f);
+
+            float noise = noiseFast.GetPerlin(x, z);
+            System.Random rand = new Random((int)chunk.GetSeed * chunk.GetHashCode() * x - z);
 
             if (noise <= 0.15f)
             {
-                return new BiomeData(TypeBlock.Dirt, BlockVariant.none, TreeType.none);
+                return new BiomeData(TypeBlock.Grass, BlockVariant.none, TreeType.none);
             }
             else if (noise > 0.15f && noise < 0.2f)
             {
-                return new BiomeData(TypeBlock.Dirt, BlockVariant.none, TreeType.none);
+                return new BiomeData(TypeBlock.Grass, BlockVariant.none, TreeType.none);
             }
             else
             {

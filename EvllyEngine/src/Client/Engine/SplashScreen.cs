@@ -10,6 +10,7 @@ using System.Drawing;
 using QuickFont;
 using QuickFont.Configuration;
 using OpenTK;
+using OpenTK.Graphics;
 
 namespace ProjectEvlly
 {
@@ -61,7 +62,7 @@ namespace ProjectEvlly
             GL.BindVertexArray(VAO);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, _mesh._vertices.Length * sizeof(float), _mesh._vertices, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, _mesh._vertices.Length * Vector3.SizeInBytes, _mesh._vertices, BufferUsageHint.StaticDraw);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
             GL.EnableVertexAttribArray(0);
 
@@ -73,7 +74,7 @@ namespace ProjectEvlly
 
             //Texture
             GL.BindBuffer(BufferTarget.ArrayBuffer, tbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, _mesh._texCoords.Length * sizeof(float), _mesh._texCoords, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, _mesh._texCoords.Length * Vector2.SizeInBytes, _mesh._texCoords, BufferUsageHint.StaticDraw);
             GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 0, 0);
             GL.EnableVertexAttribArray(2);
         }
@@ -82,13 +83,13 @@ namespace ProjectEvlly
         {
             _mesh = new Mesh();
 
-            _mesh._vertices = new float[]
+            _mesh._vertices = new Vector3[]
             {
                  //Position          Texture coordinates
-                 0.5f,  0.6f, 0.0f, // top right
-                 0.5f, -0.6f, 0.0f, // bottom right
-                -0.5f, -0.6f, 0.0f, // bottom left
-                -0.5f,  0.6f, 0.0f // top left
+                 new Vector3(0.5f,  0.6f, 0.0f), // top right
+                new Vector3( 0.5f, -0.6f, 0.0f), // bottom right
+               new Vector3( -0.5f, -0.6f, 0.0f), // bottom left
+                new Vector3(-0.5f,  0.6f, 0.0f) // top left
             };
 
             _mesh._indices = new int[]
@@ -97,17 +98,17 @@ namespace ProjectEvlly
                 1, 2, 3    // second triangle
             };
 
-            _mesh._Colors = new float[] {
-                1.0f,1.0f,1.0f,1.0f,
-                1.0f,1.0f,1.0f,1.0f,
-                1.0f,1.0f,1.0f,1.0f
+            _mesh._Colors = new Color4[] {
+                new Color4(1.0f,1.0f,1.0f,1.0f),
+                new Color4(1.0f,1.0f,1.0f,1.0f),
+               new Color4(1.0f,1.0f,1.0f,1.0f)
             };
 
-            _mesh._texCoords = new float[] {
-                1.0f, 1.0f,
-                1.0f, 0.0f,
-                0.0f, 0.0f,
-                0.0f, 1.0f
+            _mesh._texCoords = new Vector2[] {
+                new Vector2(1.0f, 1.0f),
+                new Vector2(1.0f, 0.0f),
+                new Vector2(0.0f, 0.0f),
+                new Vector2(0.0f, 1.0f)
             };
         }
 
@@ -135,7 +136,7 @@ namespace ProjectEvlly
 
                     GL.BindVertexArray(VAO);
                     GL.BindBuffer(BufferTarget.ElementArrayBuffer, IBO);
-                    
+
                     if (_texture != null)
                     {
                         _texture.Use();

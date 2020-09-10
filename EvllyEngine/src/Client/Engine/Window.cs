@@ -28,9 +28,11 @@ namespace EvllyEngine
     {
         public Window(int width, int height, string title) : base(width, height, GraphicsMode.Default, title) {
             Instance = this;
+            Game.Window = this;
         }
 
         public static Window Instance;
+        private AppDomain currentDomain;
 
         public Client OGame;
 
@@ -54,87 +56,61 @@ namespace EvllyEngine
 
         protected override void OnLoad(EventArgs e)//Load the Window, but not the systems, loading only the splash screen
         {
-            gl.ClearColor(Color4.DeepSkyBlue);
+            gl.ClearColor(new Color4(0, 0.7490196f, 1, 1));
             Utilitys.CheckGLError("Set ClearColor");
 
             VSync = VSyncMode.Off;
             WindowBorder = WindowBorder.Resizable;
 
             _SplashScreen = new SplashScreen();
+
+            currentDomain = AppDomain.CurrentDomain;
+            currentDomain.UnhandledException += new UnhandledExceptionEventHandler(MyHandler);
+
             base.OnLoad(e);
         }
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            try
+            if (EngineIsReady)
             {
-                if (EngineIsReady)
-                {
-                    UPS = (int)(1f / e.Time);
+                UPS = (int)(1f / e.Time);
 
-                    if (Input.GetKeyDown(Key.F4))
+                if (Input.GetKeyDown(Key.F4))
+                {
+                    if (IsDebug)
                     {
-                        if (IsDebug)
-                        {
-                            IsDebug = false;
-                            GLBeginMode = BeginMode.Triangles;
-                        }
-                        else
-                        {
-                            IsDebug = true;
-                            GLBeginMode = BeginMode.Lines;
-                        }
+                        IsDebug = false;
+                        GLBeginMode = BeginMode.Triangles;
                     }
-
-                    OGame.Tick();
-                    _GUI.Tick();
-
-                    if (Focused) // check to see if the window is focused  
+                    else
                     {
-                        MouseCursor.CursorLockPosition();
+                        IsDebug = true;
+                        GLBeginMode = BeginMode.Lines;
                     }
-
-                    _physics.UpdatePhisics((float)e.Time);
                 }
-                else if (!GameLoaded)//first load the window, before load the systems
+
+                OGame.Tick();
+                _GUI.Tick();
+
+                if (Focused) // check to see if the window is focused  
                 {
-                    LoadGame();
+                    MouseCursor.CursorLockPosition();
                 }
 
-                Time._Time = (float)e.Time;
-                Time._Tick++;
-
-                if (Time._Tick > 10000)
-                {
-                    GCollector.Collect();
-                    Time._Tick = 0;
-                }
+                _physics.UpdatePhisics((float)e.Time);
             }
-            catch (OutOfMemoryException memoryEx)
+            else if (!GameLoaded)//first load the window, before load the systems
             {
-                Debug.LogWarning("GC: " + memoryEx.Message);
-                GC.Collect();
-                return;
+                LoadGame();
             }
-            catch (Exception ex)
-            {
-                if (crashTimeOut >= 10)
-                {
-                    Debug.Log("We cant start again the game, before the crash! Sorry ): Shutingdown....");
-                    SplashScreen.SetState("We cant start again the game, before the crash! Sorry ): Shutingdown....", SplashScreenStatus.Error);
-                    Thread.Sleep(1000);
-                    Exit();
-                }
 
-                crashTimeOut++;
-                ReloadGame();
-                Debug.Log("Crashed Trying Yo Start Back!");
-                SplashScreen.SetState("Crashed Trying Yo Start Back!", SplashScreenStatus.Error);
-                Thread.Sleep(1000);
-#if Debug
-                Debug.LogError(ex.Message + " StackTrace: " + ex.StackTrace);
-#else
-                return;
-#endif
+            Time._Time = (float)e.Time;
+            Time._Tick++;
+
+            if (Time._Tick > 10000)
+            {
+                GCollector.Collect();
+                Time._Tick = 0;
             }
             base.OnUpdateFrame(e);
         }
@@ -239,6 +215,30 @@ namespace EvllyEngine
             SplashScreen.SetState("Finished Loading.", SplashScreenStatus.finished);
         }
 
+        static void MyHandler(object sender, UnhandledExceptionEventArgs args)
+        {
+            Exception e = (Exception)args.ExceptionObject;
+            Debug.LogError("GameLoop: Unhandled exception: " + args.ExceptionObject);
+            Environment.Exit(2);
+        }
+
+        public void Crash()
+        {
+            if (crashTimeOut >= 10)
+            {
+                Debug.Log("We cant start again the game, before the crash! Sorry ): Shutingdown....");
+                SplashScreen.SetState("We cant start again the game, before the crash! Sorry ): Shutingdown....", SplashScreenStatus.Error);
+                Thread.Sleep(1000);
+                Exit();
+            }
+
+            crashTimeOut++;
+            ReloadGame();
+            Debug.Log("Crashed Trying Yo Start Back!");
+            SplashScreen.SetState("Crashed Trying Yo Start Back!", SplashScreenStatus.Error);
+            Thread.Sleep(1000);
+        }
+
         /// <summary>
         /// This is gona disconnect/quit you from any world or server etc. and unload assets, and other things, this is for reload the game, like the firts time
         /// </summary>
@@ -287,6 +287,9 @@ namespace EvllyEngine
 
         protected override void OnUnload(EventArgs e)
         {
+            currentDomain.UnhandledException -= new UnhandledExceptionEventHandler(MyHandler);
+            currentDomain = null;
+
             if (EngineIsReady)
             {
                 //_Sky.OnDestroy();
