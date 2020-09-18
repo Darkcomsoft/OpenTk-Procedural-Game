@@ -21,9 +21,9 @@ jobs:
          uses: KikimoraGames/itch-publish@v0.0.1
          with:
             # Butler API Key
-            butlerApiKey: I6enr0FLTsHQ2yu4TxnZINGODkzX5BVQ922y4qwV
+            butlerApiKey: ${{ secrets.BUTLER_API_KEY }}
             # Directory or .zip file of the game data. Zip files are slower to upload.
-            gameData: ./EvllyEngine/bin/x64/Debug
+            gameData: ./EvllyEngine
             # Itch.io username of the game owner. e.g. in finji/overland this would be finji.
             itchUsername: darckcomsoft
             # Itch.io id of the game. e.g. in finji/overland this would be overland.
