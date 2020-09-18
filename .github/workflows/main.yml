@@ -17,11 +17,20 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Butler Push
-        uses: josephbmanley/butler-publish-itchio-action@v1.0.2
-        env:
-          BUTLER_CREDENTIALS: I6enr0FLTsHQ2yu4TxnZINGODkzX5BVQ922y4qwV
-          CHANNEL: windows
-          ITCH_GAME: projectevlly
-          ITCH_USER: darckcomsoft
-          PACKAGE: ./EvllyEngine/bin/x64/Debug
+       - name: Itch.io - Publish
+         uses: KikimoraGames/itch-publish@v0.0.1
+         with:
+            # Butler API Key
+            butlerApiKey: I6enr0FLTsHQ2yu4TxnZINGODkzX5BVQ922y4qwV
+            # Directory or .zip file of the game data. Zip files are slower to upload.
+            gameData: ./EvllyEngine/bin/x64/Debug
+            # Itch.io username of the game owner. e.g. in finji/overland this would be finji.
+            itchUsername: darckcomsoft
+            # Itch.io id of the game. e.g. in finji/overland this would be overland.
+            itchGameId: projectevlly
+            # Channel name of the game: https://itch.io/docs/butler/pushing.html#channel-names
+            buildChannel: win
+            # Optional build number, use to supply your own build version instead of using itch's versioning
+            #buildNumber: # optional
+            # Optional build number file path, use to supply your own build version instead of using itch's versioning. The file should contain a single line with the version or build number, in UTF-8 without BOM.
+            #buildNumberFile: # optional
