@@ -26,4 +26,4 @@ jobs:
           CHANNEL: windows
           ITCH_GAME: projectevlly
           ITCH_USER: darckcomsoft
-          PACKAGE: EvllyEngine/bin/x64/Debug/
+          PACKAGE: VillagersandKings-GL/EvllyEngine/bin/x64/Debug/
