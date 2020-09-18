@@ -30,7 +30,7 @@ namespace EvllyEngine
             float a = (float)rand.NextDouble();
             float b = (float)rand.NextDouble();
 
-            float ChunkSeed = position.X * a + position.Z * b + Time._Time;
+            float ChunkSeed = position.X * a + position.Z * b + Time._DeltaTime;
 
             transform.Position = position;
             transform.Rotation = new Quaternion(MathHelper.DegreesToRadians((float)new System.Random((int)ChunkSeed).Next(0, 10)), MathHelper.DegreesToRadians((float)new System.Random((int)ChunkSeed).Next(0,90)), MathHelper.DegreesToRadians((float)new System.Random((int)ChunkSeed).Next(0, 5)));
@@ -40,18 +40,19 @@ namespace EvllyEngine
             transform.Size = new Vector3(1, 1, 1);
 
             _meshRender = new MeshRender(transform, AssetsManager.GetMesh("oak"), AssetsManager.GetShader("Default"), AssetsManager.GetTexture("SpritesTreeHigt"));
+
+            _meshRender.ViewBoxWitdh = 3;
+            _meshRender.ViewBoxWitdh = 5;
+
             //_meshRender.Transparency = true;
             _meshRender._cullType = OpenTK.Graphics.OpenGL.CullFaceMode.FrontAndBack;
 
             _boxCollider = new BoxCollider(transform, new Vector3(0.7f, 5, 0.7f));
-
-            RenderSystem.AddRenderItemT(_meshRender);
         }
 
         public void OnDestroy()
         {
             _boxCollider.OnDestroy();
-            RenderSystem.RemoveRenderItemT(_meshRender);
 
             transform = null;
 

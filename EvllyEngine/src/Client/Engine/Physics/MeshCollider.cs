@@ -41,7 +41,10 @@ namespace EvllyEngine
 
                 for (int i = 0; i < _mesh._vertices.Length; i++)
                 {
-                    points[i] = new BEPUutilities.Vector3(_mesh._vertices[i].X, _mesh._vertices[i].Y, _mesh._vertices[i].Z);
+                    if (i < _mesh._vertices.Length)
+                    {
+                        points[i] = new BEPUutilities.Vector3(_mesh._vertices[i].X, _mesh._vertices[i].Y, _mesh._vertices[i].Z);
+                    }
                 }
 
                 MeshHandler = new StaticMesh(points, _mesh._indices, new BEPUutilities.AffineTransform(new BEPUutilities.Vector3(transform.Position.X, transform.Position.Y, transform.Position.Z)));

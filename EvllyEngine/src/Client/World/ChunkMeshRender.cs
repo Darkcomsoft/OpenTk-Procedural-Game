@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using EvllyEngine;
 using ProjectEvlly.src.Engine.Render;
 using ProjectEvlly.src.Utility;
+using ProjectEvlly.src.Engine;
 
 namespace ProjectEvlly.src.World
 {
@@ -85,6 +86,8 @@ namespace ProjectEvlly.src.World
                 GL.EnableVertexAttribArray(3);
 
                 isReady = true;
+
+                TickSystem.AddRenderItem(this);
             }
         }
 
@@ -234,6 +237,8 @@ namespace ProjectEvlly.src.World
         {
             if (isReady)
             {
+                TickSystem.RemoveRenderItem(this);
+
                 isReady = false;
 
                 _Mesh.Clear();

@@ -157,12 +157,12 @@ namespace EvllyEngine
         ///   The matrix is transposed before being sent to the shader.
         ///   </para>
         /// </remarks>
-        public void SetMatrix4(string name, Matrix4 data)
+        public void SetMatrix4(string name, Matrix4 data, bool transpose = true)
         {
             Use();
             if (_uniformLocations.TryGetValue(name, out int value))
             {
-                GL.UniformMatrix4(value, true, ref data);
+                GL.UniformMatrix4(value, transpose, ref data);
             }
         }
 

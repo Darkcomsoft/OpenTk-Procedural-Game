@@ -97,12 +97,12 @@ namespace ProjectEvlly.src.UI
 
         public void Tick()
         {
-            renderer.Update(Time._Time);
+            renderer.Update(Time._DeltaTime);
         }
 
         public void DrawUI()
         {
-            if ((Time._Tick % 100) == 0)
+            if ((Time._Tick) == 0)
             {
                 if (renderer.TextCacheSize > 1000)// each cached string is an allocated texture, flush the cache once in a while in your real project
                 {

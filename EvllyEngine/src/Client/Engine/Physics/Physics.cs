@@ -16,7 +16,7 @@ namespace EvllyEngine
         public static Physics _Main;
 
         public const float GravityX = 0;
-        public const float GravityY = -10;
+        public const float GravityY = -9.81f;
         public const float GravityZ = 0;
 
         ///////New Engine

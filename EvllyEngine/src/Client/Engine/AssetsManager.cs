@@ -52,7 +52,7 @@ namespace EvllyEngine
             SplashScreen.SetState("Loading Models", SplashScreenStatus.Loading);
             _Models.Add("oak", LoadModel("Assets/Models/", "oak"));
             _Models.Add("Cube", LoadModel("Assets/Models/", "Cube"));
-            _Models.Add("SkySphere", LoadModel("Assets/Models/", "SkySphere"));
+            _Models.Add("SkyCube", LoadModel("Assets/Models/", "SkyCube"));
             _Models.Add("SwordMetal", LoadModel("Assets/Models/", "SwordMetal"));
 
             //Load Textures
@@ -64,6 +64,10 @@ namespace EvllyEngine
             _Textures.Add("MetalSword", new Texture(AssetsManager.LoadImage("Assets/Texture/", "MetalSword", "png")));
             _Textures.Add("Water", new Texture(AssetsManager.LoadImage("Assets/Texture/", "Water", "png")));
             _Textures.Add("Water2", new Texture(AssetsManager.LoadImage("Assets/Texture/", "Water2", "png")));
+            _Textures.Add("Cloud", new Texture(AssetsManager.LoadImage("Assets/Texture/", "Cloud", "png")));
+
+            //Load Images
+            _Textures.Add("Darkcomsoft", new Texture(AssetsManager.LoadImage("Assets/Images/", "Darkcomsoft", "png")));
 
             //Load Shaders
             SplashScreen.SetState("Loading Shaders", SplashScreenStatus.Loading);
@@ -71,6 +75,9 @@ namespace EvllyEngine
             _Shaders.Add("TerrainDefault", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "TerrainDefault")));
             _Shaders.Add("UI", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "UI")));
             _Shaders.Add("Water", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "Water")));
+            _Shaders.Add("GUI", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "GUI")));
+            _Shaders.Add("Sky", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "Sky")));
+            _Shaders.Add("Cloud", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "Cloud")));
 
             //Load TileUvs
             SplashScreen.SetState("Loading Tile UVs", SplashScreenStatus.Loading);
@@ -215,17 +222,65 @@ namespace EvllyEngine
 
         public static void UseShader(string ShaderName)
         {
-            if (AssetsManager.instance._Shaders.TryGetValue(ShaderName, out Shader texture))
+            if (AssetsManager.instance._Shaders.TryGetValue(ShaderName, out Shader shader))
             {
-                texture.Use();
+                shader.Use();
             }
         }
 
-        public static void ShaderSet(string ShaderName, string name, Matrix4 matrix)
+        public static void ShaderSet(string ShaderName, string name, Matrix4 value)
         {
             if (AssetsManager.instance._Shaders.TryGetValue(ShaderName, out Shader texture))
             {
-                texture.SetMatrix4(name, matrix);
+                texture.SetMatrix4(name, value);
+            }
+        }
+
+        public static void ShaderSet(string ShaderName, string name, Matrix4d value)
+        {
+            if (AssetsManager.instance._Shaders.TryGetValue(ShaderName, out Shader texture))
+            {
+                texture.SetMatrix4d(name, value);
+            }
+        }
+
+        public static void ShaderSet(string ShaderName, string name, int value)
+        {
+            if (AssetsManager.instance._Shaders.TryGetValue(ShaderName, out Shader texture))
+            {
+                texture.SetInt(name, value);
+            }
+        }
+
+        public static void ShaderSet(string ShaderName, string name, float value)
+        {
+            if (AssetsManager.instance._Shaders.TryGetValue(ShaderName, out Shader texture))
+            {
+                texture.SetFloat(name, value);
+            }
+        }
+
+        public static void ShaderSet(string ShaderName, string name, bool value)
+        {
+            if (AssetsManager.instance._Shaders.TryGetValue(ShaderName, out Shader texture))
+            {
+                texture.Setbool(name, value);
+            }
+        }
+
+        public static void ShaderSet(string ShaderName, string name, Vector3 value)
+        {
+            if (AssetsManager.instance._Shaders.TryGetValue(ShaderName, out Shader texture))
+            {
+                texture.SetVector3(name, value);
+            }
+        }
+
+        public static void ShaderSet(string ShaderName, string name, Vector4 value)
+        {
+            if (AssetsManager.instance._Shaders.TryGetValue(ShaderName, out Shader texture))
+            {
+                texture.SetVector4(name, value);
             }
         }
 

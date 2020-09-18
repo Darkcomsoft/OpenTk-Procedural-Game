@@ -3,11 +3,13 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using ProjectEvlly;
 using ProjectEvlly.src;
+using ProjectEvlly.src.Engine;
 using ProjectEvlly.src.Engine.Render;
 using ProjectEvlly.src.World;
 using ProjectEvlly.src.World.Biomes;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -15,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace EvllyEngine
 {
-    public class Chunk : IDisposable
+    public class Chunk : ScriptBase
     {
         public Transform transform;
         private double ChunkSeed;
@@ -56,12 +58,12 @@ namespace EvllyEngine
 
             ChunkSeed = transform.Position.X * a + transform.Position.Z * b + 0;
 
-            Game.Client.TickEvent += Update;
+            TickSystem.AddTick(this);
 
             PopulateVoxel();
         }
 
-        public void Update()
+        public override void Tick()
         {
             while (ActionUpdateMesh.Count > 0)
             {
@@ -70,9 +72,10 @@ namespace EvllyEngine
                     ActionUpdateMesh.Dequeue().Invoke();
                 }
             }
+            base.Tick();
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             isReady = false;
 
@@ -83,16 +86,16 @@ namespace EvllyEngine
 
             _trees.Clear();
 
-            Game.Client.TickEvent -= Update;
+            TickSystem.RemoveTick(this);
 
             if (_meshRender != null)
             {
-                RenderSystem.RemoveRenderItem(_meshRender);
+                _meshRender.Dispose();
             }
 
             if (_waterMeshRender !=  null)
             {
-                RenderSystem.RemoveRenderItemT(_waterMeshRender);
+                _waterMeshRender.Dispose();
             }
 
             if (ChunkMesh != null)
@@ -136,7 +139,11 @@ namespace EvllyEngine
             {
                 for (int z = 0; z < MidleWorld.ChunkSize; z++)
                 {
-                    blocks[x, z] = new Block(x + (int)transform.Position.X, z + (int)transform.Position.Z, transform.Position, MidleWorld.globalNoise.GetPerlin(x + (int)transform.Position.X, z + (int)transform.Position.Z) * 50, this);
+                    Vector3 pos = new Vector3(x + (int)transform.Position.X, z + (int)transform.Position.Z, 0);
+
+                    MidleWorld.globalNoise.GradientPerturbFractal(ref pos.X, ref pos.Y, ref pos.Z);
+
+                    blocks[x, z] = new Block(x + (int)transform.Position.X, z + (int)transform.Position.Z, transform.Position, MidleWorld.globalNoise.GetPerlin(pos.X, pos.Y) + MidleWorld.globalNoise2.GetPerlin(pos.X, pos.Y) * 50, this);
                 }
             }
 
@@ -174,12 +181,15 @@ namespace EvllyEngine
             _meshRender = new ChunkMeshRender(transform, ChunkMesh, AssetsManager.GetShader("TerrainDefault"), AssetsManager.GetTexture("TileAtlas"));
             //_meshCollider = new MeshCollider(transform, ChunkMesh._vertices, ChunkMesh._indices);
 
+            _meshRender.ViewBoxWitdh = 10;
+            _meshRender.ViewBoxWitdh = 10;
+
             //Water
             _waterMeshRender = new WaterMeshRender(transform, WaterMesh, AssetsManager.GetShader("Water"), AssetsManager.GetTexture("Water"), AssetsManager.GetTexture("Water2"));
             _waterMeshRender.Transparency = true;
 
-            RenderSystem.AddRenderItemT(_waterMeshRender);
-            RenderSystem.AddRenderItem(_meshRender);
+            _waterMeshRender.ViewBoxWitdh = 10;
+            _waterMeshRender.ViewBoxWitdh = 10;
 
             for (int i = 0; i < _trees.Count; i++)
             {
@@ -230,9 +240,6 @@ namespace EvllyEngine
                     //Water
                     _waterMeshRender = new WaterMeshRender(transform, WaterMesh, AssetsManager.GetShader("Water"), AssetsManager.GetTexture("Water"), AssetsManager.GetTexture("Water2"));
                     _waterMeshRender.Transparency = true;
-
-                    RenderSystem.AddRenderItemT(_waterMeshRender);
-                    RenderSystem.AddRenderItem(_meshRender);
                 }
             }
         }
@@ -446,7 +453,40 @@ namespace EvllyEngine
 
                 Type = biomeData._typeBlock;
                 treeType = biomeData._treeType;
+                height *= biomeData._Height % _Height;
             }
+        }
+
+        public Block[] GetNeighboors(bool diagonals = false)
+        {
+            Block[] neighbors;
+
+            if (diagonals)
+            {
+                neighbors = new Block[8];
+
+                neighbors[0] = Game.GetWorld.GetTileAt(x, z + 1);//cima
+                neighbors[1] = Game.GetWorld.GetTileAt(x + 1, z);//direita
+                neighbors[2] = Game.GetWorld.GetTileAt(x, z - 1);//baixo
+                neighbors[3] = Game.GetWorld.GetTileAt(x - 1, z);//esquerda
+
+                neighbors[4] = Game.GetWorld.GetTileAt(x + 1, z - 1);//corn baixo direita
+                neighbors[5] = Game.GetWorld.GetTileAt(x - 1, z + 1);//corn cima esquerda
+                neighbors[6] = Game.GetWorld.GetTileAt(x + 1, z + 1);//corn cima direita
+                neighbors[7] = Game.GetWorld.GetTileAt(x - 1, z - 1);//corn baixo esuqerda
+
+            }
+            else
+            {
+                neighbors = new Block[6];
+
+                neighbors[0] = Game.GetWorld.GetTileAt(x, z - 1);//Atras
+                neighbors[1] = Game.GetWorld.GetTileAt(x, z + 1);//Frente
+                neighbors[2] = Game.GetWorld.GetTileAt(x - 1, z);//esquerda
+                neighbors[3] = Game.GetWorld.GetTileAt(x + 1, z);//direita
+            }
+
+            return neighbors;
         }
 
         public string ToString()
@@ -593,10 +633,10 @@ namespace EvllyEngine
                 {
                     if (tile[x, z].Type == TypeBlock.Sand)
                     {
-                        _vertices.Add(new Vector3(x, 0f, z));
-                        _vertices.Add(new Vector3(x + 1, 0, z));
-                        _vertices.Add(new Vector3(x, 0, z + 1));
-                        _vertices.Add(new Vector3(x + 1, 0, z + 1));
+                        _vertices.Add(new Vector3(x, -1f, z));
+                        _vertices.Add(new Vector3(x + 1, -1, z));
+                        _vertices.Add(new Vector3(x, -1, z + 1));
+                        _vertices.Add(new Vector3(x + 1, -1, z + 1));
 
 
                         _triangles.Add(0 + verticesNum);

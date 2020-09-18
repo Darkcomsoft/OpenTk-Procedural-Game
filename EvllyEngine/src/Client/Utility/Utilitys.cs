@@ -28,14 +28,14 @@ namespace ProjectEvlly.src.Utility
             return point;
         }
 
-        public static Vector2 ScreenToWorldCoords(Point coords, float screen_width, float screen_height)
+        public static Vector2 ScreenToWorldCoords(float X, float Y, float screen_width, float screen_height)
         {
             Vector2 point = new Vector2();
 
-            float temp_x = ((coords.X / screen_width) * 2) - 1;
+            float temp_x = ((X / screen_width) * 2) - 1;
             point.X = temp_x;
 
-            float temp_y = ((coords.Y / screen_height) * 2) - 1;
+            float temp_y = ((Y / screen_height) * 2) - 1;
             point.Y = (int)temp_y;
 
             return point;

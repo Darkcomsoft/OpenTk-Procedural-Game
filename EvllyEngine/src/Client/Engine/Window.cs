@@ -41,8 +41,7 @@ namespace EvllyEngine
         private SplashScreen _SplashScreen;
         private Frustum frustum;
         private GUI _GUI;
-
-        private Sky _Sky;
+        private GUIRender _GUIRender;
 
         private int FPS;
         private int UPS;
@@ -56,7 +55,7 @@ namespace EvllyEngine
 
         protected override void OnLoad(EventArgs e)//Load the Window, but not the systems, loading only the splash screen
         {
-            gl.ClearColor(new Color4(0, 0.7490196f, 1, 1));
+            gl.ClearColor(Color.Black);
             Utilitys.CheckGLError("Set ClearColor");
 
             VSync = VSyncMode.Off;
@@ -85,12 +84,13 @@ namespace EvllyEngine
                     else
                     {
                         IsDebug = true;
-                        GLBeginMode = BeginMode.Lines;
+                        GLBeginMode = BeginMode.LineLoop;
                     }
                 }
 
                 OGame.Tick();
                 _GUI.Tick();
+                _GUIRender.Tick();
 
                 if (Focused) // check to see if the window is focused  
                 {
@@ -104,13 +104,14 @@ namespace EvllyEngine
                 LoadGame();
             }
 
-            Time._Time = (float)e.Time;
-            Time._Tick++;
+            Time._DeltaTime = (float)e.Time;
+            Time._Time += e.Time;
 
-            if (Time._Tick > 10000)
+            Time._Tick = (float)Time._Time % 60f;
+
+            if (Time._Time >= double.MaxValue)
             {
-                GCollector.Collect();
-                Time._Tick = 0;
+                Time._Time = -Time._Time;
             }
             base.OnUpdateFrame(e);
         }
@@ -128,6 +129,7 @@ namespace EvllyEngine
                 OGame.Draw(e);
                 gl.Disable(EnableCap.DepthTest);
                 _GUI.DrawUI();
+                _GUIRender.TickRender();
             }
             else
             {
@@ -189,6 +191,7 @@ namespace EvllyEngine
             {
                 Input.GetMouse = e;
                 _GUI.OnMouseMove(e);
+                _GUIRender.OnMouseMove(e);
             }
             base.OnMouseMove(e);
         }
@@ -203,6 +206,7 @@ namespace EvllyEngine
 
             SplashScreen.SetState("Starting Physics", SplashScreenStatus.Loading);
             _physics = new Physics();
+            _GUIRender = new GUIRender();
             _GUI = new GUI();
             _GUI.OnResize();//Resize the GUI
             SplashScreen.SetState("Starting Engine Systems", SplashScreenStatus.Loading);
@@ -264,25 +268,17 @@ namespace EvllyEngine
                 _GUI = null;
             }
 
+            if (_GUIRender != null)
+            {
+                _GUIRender.Dispose();
+                _GUIRender = null;
+            }
+
             _assetsManager.UnloadAll();
             _assetsManager = null;
 
             GameLoaded = false;
             EngineIsReady = false;
-        }
-
-        private void ApplyFog()
-        {
-            gl.Enable(EnableCap.Fog);
-
-            // Fog
-            float[] colors = { 230, 230, 230 };
-            GL.Fog(FogParameter.FogMode, (int)FogMode.Linear);
-            GL.Hint(HintTarget.FogHint, HintMode.DontCare);
-            GL.Fog(FogParameter.FogColor, colors);
-
-            GL.Fog(FogParameter.FogStart, (float)1000 / 100.0f);
-            GL.Fog(FogParameter.FogEnd, 250.0f);
         }
 
         protected override void OnUnload(EventArgs e)
@@ -297,6 +293,12 @@ namespace EvllyEngine
                 OGame.Dispose();
                 _assetsManager.UnloadAll();
                 _physics.Dispose();
+
+                if (_GUIRender != null)
+                {
+                    _GUIRender.Dispose();
+                    _GUIRender = null;
+                }
 
                 _GUI.Dispose();
             }
@@ -316,7 +318,8 @@ namespace EvllyEngine
 
     public static class Time
     {
-        public static float _Time;
+        public static float _DeltaTime;
+        public static double _Time;
         public static float _Tick;
     }
 

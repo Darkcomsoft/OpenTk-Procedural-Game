@@ -10,13 +10,14 @@ using Lidgren.Network;
 using ProjectEvlly.src.Net;
 using System.Reflection;
 using ProjectEvlly.src.Utility;
+using ProjectEvlly.src.Engine;
 
 namespace ProjectEvlly
 {
     /// <summary>
     /// A base entity class, this is used for all entitys, all entitys is synced with multiplayer, if you want use a static entity dont use this
     /// </summary>
-    public abstract class Entity : IDisposable
+    public abstract class Entity : ScriptBase
     {
         public Transform transform;
         public int _currentChannelID = 0;//This is the world id, like the normal world, all regions of chunks have ther owne channel id.
@@ -38,7 +39,7 @@ namespace ProjectEvlly
         public Entity()
         {
 #if Client
-            Game.Client.TickEvent += Tick;
+            TickSystem.AddTick(this);
 #elif Server
             Server.Tick += Tick;
 #endif
@@ -57,7 +58,7 @@ namespace ProjectEvlly
         public Entity(NetViewSerializer entity)
         {
 #if Client
-            Game.Client.TickEvent += Tick;
+            TickSystem.AddTick(this);
 #elif Server
             Server.Tick += Tick;
 #endif
@@ -101,17 +102,12 @@ namespace ProjectEvlly
 
         }
 
-        public virtual void Tick()
-        {
-
-        }
-
         public virtual void OnDead() { }
 
-        public virtual void Dispose()
+        public override void Dispose()
         {
 #if Client
-            Game.Client.TickEvent -= Tick;
+            TickSystem.RemoveTick(this);
 #elif Server
             Server.Tick -= Tick;
 #endif

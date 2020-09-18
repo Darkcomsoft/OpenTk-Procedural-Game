@@ -50,8 +50,8 @@ namespace EvllyEngine
                 /*_MeshRenderSword = new MeshRender(Camera.Main._transformParent, AssetsManager.GetMesh("SwordMetal"), AssetsManager.GetShader("Default"), AssetsManager.GetTexture("MetalSword"));
                 RenderSystem.AddRenderItem(_MeshRenderSword);*/
             }
-            _MeshRender = new MeshRender(transform, AssetsManager.GetMesh("Cube"), AssetsManager.GetShader("Default"), AssetsManager.GetTexture("devTexture"));
-            RenderSystem.AddRenderItem(_MeshRender);
+            //_MeshRender = new MeshRender(transform, AssetsManager.GetMesh("Cube"), AssetsManager.GetShader("Default"), AssetsManager.GetTexture("devTexture"));
+            //RenderSystem.AddRenderItem(_MeshRender);
 #elif Server
 #endif
 
@@ -65,6 +65,8 @@ namespace EvllyEngine
             {
                 _playerController.UpdateController();
             }
+
+            Debug.Log("Player is Updating");
 
             if (isMine)//if this is my
             {
@@ -102,8 +104,8 @@ namespace EvllyEngine
             {
                 _playerController.Dispose();
             }
-            RenderSystem.RemoveRenderItem(_MeshRenderSword);
-            RenderSystem.RemoveRenderItem(_MeshRender);
+            //RenderSystem.RemoveRenderItem(_MeshRenderSword);
+            //RenderSystem.RemoveRenderItem(_MeshRender);
 #endif
             base.Dispose();
         }

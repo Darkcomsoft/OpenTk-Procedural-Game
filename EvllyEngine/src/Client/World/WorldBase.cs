@@ -1,5 +1,6 @@
 ﻿using EvllyEngine;
 using OpenTK;
+using ProjectEvlly.src.Engine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,22 +9,17 @@ using System.Threading.Tasks;
 
 namespace ProjectEvlly.src.World
 {
-    public class WorldBase : IDisposable
+    public class WorldBase : ScriptBase
     {
         public string WorldName;
 
         public WorldBase()
         {
 #if Client
-            Game.Client.TickEvent += Tick;
+            TickSystem.AddTick(this);
 #elif Server
             Server.Tick += Tick;
 #endif
-        }
-
-        public virtual void Tick()
-        {
-            
         }
 
         public virtual void OnDisposeWorld()
@@ -31,11 +27,11 @@ namespace ProjectEvlly.src.World
 
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             OnDisposeWorld();
 #if Client
-            Game.Client.TickEvent -= Tick;
+            TickSystem.RemoveTick(this);
 #elif Server
             Server.Tick -= Tick;
 #endif

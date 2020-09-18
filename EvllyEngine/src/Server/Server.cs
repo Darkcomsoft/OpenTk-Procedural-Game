@@ -49,8 +49,16 @@ public class Server : IDisposable
 			}
 
 			SetTitleConsole("ProjectEvllyn-Server FPS: " + (int)(1f / _watchUpdate.Elapsed.TotalSeconds));
-			Time._Time = (float)_watchUpdate.Elapsed.TotalSeconds;
-			Time._Tick++;
+
+			Time._DeltaTime = (float)_watchUpdate.Elapsed.TotalSeconds;
+			Time._Time += (float)_watchUpdate.Elapsed.TotalSeconds;
+
+			Time._Tick = (float)Time._Time % 60f;
+
+			if (Time._Time >= double.MaxValue)
+			{
+				Time._Time = -Time._Time;
+			}
 
 			_watchUpdate.Restart();
             Thread.Sleep(10);

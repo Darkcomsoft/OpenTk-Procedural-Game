@@ -45,7 +45,7 @@ void main()
 
 	//frag_colors = colors;
 	texCoord = vec2(xcoord, zcoord);
-    texCoord += vec2(time, -time) / 30;
+    //texCoord += vec2(time, -time) / 30;
 
     float distance = length(posRelativeCamera.xyz);
     visiblity = exp(-pow((distance * FOG_Density), FOG_Gradiante));

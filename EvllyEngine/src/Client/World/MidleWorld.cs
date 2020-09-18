@@ -36,6 +36,7 @@ namespace EvllyEngine
         private int ThreadSleepTime = 60;
 
         public static FastNoise globalNoise;
+        public static FastNoise globalNoise2;
         public static FastNoise biomeNoise;
 
 #if Client
@@ -55,7 +56,13 @@ namespace EvllyEngine
             WorldName = _worldName;
 
             globalNoise = new FastNoise(GlobalData.Seed);
-            globalNoise.SetFrequency(0.005f);
+            globalNoise.SetFrequency(0.0005f);
+            globalNoise.SetGradientPerturbAmp(9.0f);
+            globalNoise.SetFrequencygrad(0.05f);
+
+            globalNoise2 = new FastNoise(GlobalData.Seed * 15);
+            globalNoise2.SetFrequency(0.0009f);
+
 
             biomeNoise = new FastNoise(GlobalData.Seed);
             biomeNoise.SetFrequency(0.05f);
@@ -248,7 +255,10 @@ namespace EvllyEngine
 
         public void UpDateChunk(Vector3 chunk)
         {
-            ToUpdate.Enqueue(chunk);
+            lock (LockToUpdate)
+            {
+                ToUpdate.Enqueue(chunk);
+            }
         }
 
         public Vector2 GetChunkCoordFromVector3(Vector3 pos)

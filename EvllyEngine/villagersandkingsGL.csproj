@@ -139,7 +139,7 @@
     <Compile Include="src\Client\Engine\Render\Frustum.cs" />
     <Compile Include="src\Client\Engine\Render\MeshRender.cs" />
     <Compile Include="src\Client\Engine\Render\RenderEntityBase.cs" />
-    <Compile Include="src\Client\Engine\Render\RenderSystem.cs" />
+    <Compile Include="src\Client\Engine\ScriptBase.cs" />
     <Compile Include="src\Client\Engine\TickSystem.cs" />
     <Compile Include="src\Client\Engine\Transform.cs" />
     <Compile Include="src\Client\Engine\Debug.cs" />
@@ -156,6 +156,9 @@
     <Compile Include="src\Client\Client.cs" />
     <Compile Include="src\Client\MainMenu.cs" />
     <Compile Include="src\Client\UI\GUIBase.cs" />
+    <Compile Include="src\Client\UI\GUIImage.cs" />
+    <Compile Include="src\Client\UI\GUIRender.cs" />
+    <Compile Include="src\Client\UI\GUITextInput.cs" />
     <Compile Include="src\Client\UI\Input\OpenTK.cs" />
     <Compile Include="src\Client\UI\Input\OpenTKAlternative.cs" />
     <Compile Include="src\Client\Net\Network.cs" />
@@ -165,6 +168,7 @@
     <Compile Include="src\Client\save\SaveManager.cs" />
     <Compile Include="src\Client\save\WorldSaveInfo.cs" />
     <Compile Include="src\Client\UI\InGameUI.cs" />
+    <Compile Include="src\Client\UI\RectangleMesh.cs" />
     <Compile Include="src\Client\World\Biomes\BiomeData.cs" />
     <Compile Include="src\Client\World\Biomes\OakForest.cs" />
     <Compile Include="src\Client\World\WaterMeshRender.cs" />

@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using ProjectEvlly.src.Engine;
 using ProjectEvlly.src.Engine.Render;
 using System;
 using System.Collections.Generic;
@@ -69,6 +70,8 @@ namespace EvllyEngine
             GL.BufferData(BufferTarget.ArrayBuffer, _mesh._Normals.Length * Vector3.SizeInBytes, _mesh._Normals, BufferUsageHint.StaticDraw);
             GL.VertexAttribPointer(3, 3, VertexAttribPointerType.Float, false, 0, 0);
             GL.EnableVertexAttribArray(3);
+
+            TickSystem.AddRenderItem(this);
         }
 
         public override void TickRender(float time)
@@ -125,6 +128,8 @@ namespace EvllyEngine
 
         public override void Dispose()
         {
+            TickSystem.RemoveRenderItem(this);
+
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
             GL.BindVertexArray(0);
 

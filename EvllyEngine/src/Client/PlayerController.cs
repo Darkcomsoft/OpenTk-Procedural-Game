@@ -64,7 +64,7 @@ namespace ProjectEvlly.src
                 
             }*/
             
-            if (_PlayerCamera._cameraTrnasform.Position.Y + _playerEntity.transform.Position.Y < 0)
+            /*if (_PlayerCamera._cameraTrnasform.Position.Y + _playerEntity.transform.Position.Y < -1)
             {
                 Fog.Density = 0.4f;
                 Fog.Distance = 0.5f;
@@ -77,7 +77,7 @@ namespace ProjectEvlly.src
                 Fog.Distance = 3.5f;
                 Fog.FogColor = new Vector4(0, 0.7490196f, 1, 1);
                 gl.ClearColor(new Color4(0, 0.7490196f, 1, 1));
-            }
+            }*/
 
             if (EvllyEngine.MouseCursor.MouseLocked)
             {
@@ -97,8 +97,8 @@ namespace ProjectEvlly.src
 
 
                     // Apply the camera pitch and yaw (we clamp the pitch in the camera class)
-                    Yaw -= deltaX * sensitivity * Time._Time;
-                    Pitch -= deltaY * sensitivity * Time._Time; // reversed since y-coordinates range from bottom to top
+                    Yaw -= deltaX * sensitivity * Time._DeltaTime;
+                    Pitch -= deltaY * sensitivity * Time._DeltaTime; // reversed since y-coordinates range from bottom to top
                 }
 
                 mouseRotationBuffer.X = Yaw;
@@ -145,7 +145,7 @@ namespace ProjectEvlly.src
                     MoveSpeed = 3f;
                 }
 
-                _CharacterController.StandingSpeed = MoveSpeed * 10;
+                _CharacterController.StandingSpeed = MoveSpeed * 2;
 
                 if (Input.GetKey(Key.Z))
                     _CharacterController.StanceManager.DesiredStance = Stance.Prone;

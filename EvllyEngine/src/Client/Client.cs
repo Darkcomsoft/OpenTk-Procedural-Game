@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using ProjectEvlly.src.save;
 using ProjectEvlly.src.Net;
 using ProjectEvlly.src.Engine.Render;
+using ProjectEvlly.src.Engine;
 
 namespace ProjectEvlly.src
 {
@@ -25,6 +26,8 @@ namespace ProjectEvlly.src
         private InGameUI _InGameUI;
         private bool _isPlaying;
 
+        private Sky _Sky;
+
         private MidleWorld _MidleWorld;
         //private World _TimeWorld;
 
@@ -32,16 +35,16 @@ namespace ProjectEvlly.src
         
         public CharSaveInfo _CharacterInfo;
 
-        private RenderSystem _RenderSystem;
+        private TickSystem _RenderSystem;
 
-        public Action TickEvent;
         public Action<FrameEventArgs> UIDrawUpdate;
 
         public Client()
         {
             Game.Client = this;
 
-            _RenderSystem = new RenderSystem();
+            _RenderSystem = new TickSystem();
+            _Sky = new Sky(AssetsManager.GetShader("Sky"), AssetsManager.GetTexture("devTexture2"));
 
             EvllyEngine.MouseCursor.UnLockCursor();
 
@@ -62,12 +65,9 @@ namespace ProjectEvlly.src
 
             if (_isPlaying)
             {
-                _RenderSystem.Tick(Time._Time);
+                _RenderSystem.Tick(Time._DeltaTime);
 
-                if (TickEvent != null)
-                {
-                    TickEvent.Invoke();
-                }
+                _Sky.Tick();
 
                 if (Input.GetKeyDown(Key.F11))
                 {
@@ -96,6 +96,7 @@ namespace ProjectEvlly.src
         {
             if (_isPlaying)
             {
+                _Sky.Draw(e);
                 _RenderSystem.RenderTick((float)e.Time);
                 Utilitys.CheckGLError("End Of DrawUpdate");
             }
@@ -128,6 +129,7 @@ namespace ProjectEvlly.src
             {
                 _RenderSystem.Dispose();
             }
+            _Sky.Dispose();
 
             Network.OnServerStart -= OnServerStart;
             Network.OnDisconnect -= OnDsiconnect;
@@ -193,7 +195,7 @@ namespace ProjectEvlly.src
         private void LoadPlayingWorld()
         {
             _InGameUI = new InGameUI(Game.GUI.GetCanvas);
-            _RenderSystem = new RenderSystem();
+            _RenderSystem = new TickSystem();
 
             _MidleWorld = new MidleWorld(_CharacterInfo.WorldName);
             _MidleWorld.SpawnPlayer(_CharacterInfo);

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using EvllyEngine;
 using ProjectEvlly.src.Engine.Render;
+using ProjectEvlly.src.Engine;
 
 namespace ProjectEvlly.src.World
 {
@@ -85,6 +86,8 @@ namespace ProjectEvlly.src.World
                 GL.EnableVertexAttribArray(2);
 
                 isReady = true;
+
+                TickSystem.AddRenderItemT(this);
             }
         }
 
@@ -136,7 +139,7 @@ namespace ProjectEvlly.src.World
                 _shader.SetMatrix4("world", transform.GetTransformWorld);
                 _shader.SetMatrix4("view", Camera.Main.viewMatrix);
                 _shader.SetMatrix4("projection", Camera.Main._projection);
-                _shader.SetFloat("time", Time._Tick % 60);
+                _shader.SetFloat("time", Time._Tick);
 
                 //Set The Fog Values(this need to be in all mesh with use fog)
                 _shader.SetFloat("FOG_Density", Fog.Density);
@@ -173,13 +176,15 @@ namespace ProjectEvlly.src.World
         {
             if (isReady)
             {
-               /* _mesh.Clear();
-                _mesh = null;
+                /* _mesh.Clear();
+                 _mesh = null;
 
-                _shader = null;
+                 _shader = null;
 
-                _WaterOnetexture = null;
-                _WaterTwotexture = null;*/
+                 _WaterOnetexture = null;
+                 _WaterTwotexture = null;*/
+
+                TickSystem.RemoveRenderItemT(this);
 
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
                 GL.BindVertexArray(0);

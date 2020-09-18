@@ -12,28 +12,31 @@ namespace ProjectEvlly.src.World.Biomes
         public static BiomeData GetBiome(int x, int z, Chunk chunk)
         {
             FastNoise noiseFast = new FastNoise(GlobalData.Seed);
-            noiseFast.SetFrequency(0.005f);
-
-            float noise = noiseFast.GetPerlin(x, z);
+            FastNoise noiseFast2 = new FastNoise(GlobalData.Seed);
             System.Random rand = new Random((int)chunk.GetSeed * chunk.GetHashCode() * x - z);
+
+            noiseFast.SetFrequency(0.005f);
+            noiseFast2.SetFrequency(0.05f);
+
+            float noise = noiseFast.GetPerlin(x, z) * noiseFast2.GetPerlinFractal(x, z);
 
             if (noise <= 0.15f)
             {
-                return new BiomeData(TypeBlock.Grass, BlockVariant.none, TreeType.none);
+                return new BiomeData(noise, TypeBlock.Grass, BlockVariant.none, TreeType.none);
             }
             else if (noise > 0.15f && noise < 0.2f)
             {
-                return new BiomeData(TypeBlock.Grass, BlockVariant.none, TreeType.none);
+                return new BiomeData(noise, TypeBlock.Grass, BlockVariant.none, TreeType.none);
             }
             else
             {
                 if (rand.Next(0, 20) == 1)
                 {
-                    return new BiomeData(TypeBlock.Grass, BlockVariant.none, TreeType.Oak);
+                    return new BiomeData(noise, TypeBlock.Grass, BlockVariant.none, TreeType.Oak);
                 }
                 else
                 {
-                    return new BiomeData(TypeBlock.Grass, BlockVariant.none, TreeType.none);
+                    return new BiomeData(noise, TypeBlock.Grass, BlockVariant.none, TreeType.none);
                 }
             }
         }

@@ -11,6 +11,9 @@ namespace ProjectEvlly.src.Engine.Render
     {
         public Transform transform;
 
+        public float ViewBoxWitdh;
+        public float ViewBoxHeight;
+
         public virtual void TickRender(float time)
         {
 
