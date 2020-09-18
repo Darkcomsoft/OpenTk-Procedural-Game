@@ -24,4 +24,4 @@ jobs:
           CHANNEL: windows
           ITCH_GAME: projectevlly
           ITCH_USER: darckcomsoft
-          PACKAGE: https://github.com/Darkcomsoft/VillagersandKings-GL/blob/master/EvllyEngine/bin/x64/ProjectEvlly-x64.zip
+          PACKAGE: EvllyEngine/bin/x64/ProjectEvlly-x64.zip
