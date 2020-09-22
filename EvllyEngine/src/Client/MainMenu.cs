@@ -140,7 +140,7 @@ namespace ProjectEvlly.src
             _Label.TextColor = Color.White;
 
             Game.GUI.GetCanvas.ShouldDrawBackground = true;
-            Game.GUI.GetCanvas.BackgroundColor = Color.Black;
+            Game.GUI.GetCanvas.BackgroundColor = Color.Red;
 
             OnResize();
         }

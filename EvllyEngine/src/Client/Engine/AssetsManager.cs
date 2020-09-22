@@ -69,6 +69,9 @@ namespace EvllyEngine
             //Load Images
             _Textures.Add("Darkcomsoft", new Texture(AssetsManager.LoadImage("Assets/Images/", "Darkcomsoft", "png")));
 
+            //Load GUI
+            _Textures.Add("Buttom", new Texture(AssetsManager.LoadImage("Assets/UI/", "Buttom", "png")));
+
             //Load Shaders
             SplashScreen.SetState("Loading Shaders", SplashScreenStatus.Loading);
             _Shaders.Add("Default", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "Default")));
@@ -87,7 +90,7 @@ namespace EvllyEngine
             AddTileUv("Water", new Vector2(0.2f, 0.066667f), new Vector2(0.2f, 0f), new Vector2(0.25f, 0.066667f), new Vector2(0.25f, 0f));
 
             //Load Fonts
-            _Fonts.Add("OpenSans", new QFont("OpenSans.ttf", 15, new QFontBuilderConfiguration(true)));
+            _Fonts.Add("OpenSans", new QFont("OpenSans.ttf", 5, new QFontBuilderConfiguration(true)));
             _Fonts.Add("FreePixel", new QFont("/Assets/UI/Fonts/FreePixel.ttf", 12, new QFontBuilderConfiguration(true)));
         }
 

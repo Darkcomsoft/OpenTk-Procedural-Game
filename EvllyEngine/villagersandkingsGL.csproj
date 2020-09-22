@@ -155,10 +155,12 @@
     <Compile Include="src\Client\Entitys\TesteEntityRemote.cs" />
     <Compile Include="src\Client\Client.cs" />
     <Compile Include="src\Client\MainMenu.cs" />
-    <Compile Include="src\Client\UI\GUIBase.cs" />
-    <Compile Include="src\Client\UI\GUIImage.cs" />
+    <Compile Include="src\Client\UI\GUIElements\GUIBase.cs" />
+    <Compile Include="src\Client\UI\GUIElements\GUIButtom.cs" />
+    <Compile Include="src\Client\UI\GUIElements\GUIImage.cs" />
+    <Compile Include="src\Client\UI\GUIMainMenu.cs" />
     <Compile Include="src\Client\UI\GUIRender.cs" />
-    <Compile Include="src\Client\UI\GUITextInput.cs" />
+    <Compile Include="src\Client\UI\GUIElements\GUITextInput.cs" />
     <Compile Include="src\Client\UI\Input\OpenTK.cs" />
     <Compile Include="src\Client\UI\Input\OpenTKAlternative.cs" />
     <Compile Include="src\Client\Net\Network.cs" />
@@ -274,9 +276,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="src\Client\UI\GUITemplate\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

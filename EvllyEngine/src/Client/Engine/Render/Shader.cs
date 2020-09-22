@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
@@ -120,6 +121,15 @@ namespace EvllyEngine
         }
 
         public void SetVector4(string name, Vector4 data)
+        {
+            Use();
+            if (_uniformLocations.TryGetValue(name, out int value))
+            {
+                GL.Uniform4(value, data);
+            }
+        }
+
+        public void SetColor(string name, Color4 data)
         {
             Use();
             if (_uniformLocations.TryGetValue(name, out int value))

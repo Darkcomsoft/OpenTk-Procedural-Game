@@ -57,6 +57,10 @@ namespace EvllyEngine
 
             globalNoise = new FastNoise(GlobalData.Seed);
             globalNoise.SetFrequency(0.0005f);
+
+            globalNoise.SetFractalLacunarity(1.0f);
+            globalNoise.SetFractalGain(4.0f);
+
             globalNoise.SetGradientPerturbAmp(9.0f);
             globalNoise.SetFrequencygrad(0.05f);
 

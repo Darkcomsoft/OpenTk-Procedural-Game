@@ -53,10 +53,15 @@ namespace EvllyEngine
         private bool EngineIsReady = false;
         private int crashTimeOut = 0;
 
+        private int FRB;
+
         protected override void OnLoad(EventArgs e)//Load the Window, but not the systems, loading only the splash screen
         {
             gl.ClearColor(Color.Black);
             Utilitys.CheckGLError("Set ClearColor");
+
+            //Start Gl Frame Buffer
+
 
             VSync = VSyncMode.Off;
             WindowBorder = WindowBorder.Resizable;
@@ -84,7 +89,7 @@ namespace EvllyEngine
                     else
                     {
                         IsDebug = true;
-                        GLBeginMode = BeginMode.LineLoop;
+                        GLBeginMode = BeginMode.Lines;
                     }
                 }
 
@@ -105,9 +110,10 @@ namespace EvllyEngine
             }
 
             Time._DeltaTime = (float)e.Time;
-            Time._Time += e.Time;
+            Time._DTime += e.Time;
+            Time._Time++;
 
-            Time._Tick = (float)Time._Time % 60f;
+            Time._Tick = Time._Time % 60;
 
             if (Time._Time >= double.MaxValue)
             {
@@ -146,8 +152,17 @@ namespace EvllyEngine
             gl.Viewport(0, 0, Width, Height);
 
             if (EngineIsReady)
+            {
                 _GUI.OnResize();
+                _GUIRender.OnResize();
+            }
             base.OnResize(e);
+        }
+
+        protected override void OnKeyPress(KeyPressEventArgs e)
+        {
+            _GUIRender.OnKeyPress(e);
+            base.OnKeyPress(e);
         }
 
         protected override void OnKeyDown(KeyboardKeyEventArgs e)
@@ -319,8 +334,9 @@ namespace EvllyEngine
     public static class Time
     {
         public static float _DeltaTime;
-        public static double _Time;
-        public static float _Tick;
+        public static int _Time;
+        public static double _DTime;
+        public static int _Tick;
     }
 
     public static class MouseCursor

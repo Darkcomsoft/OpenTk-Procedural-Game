@@ -66,8 +66,6 @@ namespace EvllyEngine
                 _playerController.UpdateController();
             }
 
-            Debug.Log("Player is Updating");
-
             if (isMine)//if this is my
             {
                 RPC("RPC_SyncPosition", ProjectEvlly.src.Net.RPCMode.AllNoOwner, transform.Position, transform.Rotation);

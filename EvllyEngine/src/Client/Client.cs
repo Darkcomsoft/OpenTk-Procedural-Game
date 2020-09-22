@@ -22,7 +22,7 @@ namespace ProjectEvlly.src
     /// </summary>
     public class Client : IDisposable
     {
-        public MainMenu _MainMenu;
+        public GUIMainMenu _MainMenu;
         private InGameUI _InGameUI;
         private bool _isPlaying;
 
@@ -88,7 +88,7 @@ namespace ProjectEvlly.src
             }
             else//Menu Update
             {
-                _MainMenu.OnResize();
+                
             }
         }
 
@@ -188,7 +188,9 @@ namespace ProjectEvlly.src
             _RenderSystem.Dispose();
             _RenderSystem = null;
 
-            _MainMenu = new MainMenu(Game.GUI.GetCanvas);
+
+
+            _MainMenu = new GUIMainMenu();
             _isPlaying = false;
         }
 
