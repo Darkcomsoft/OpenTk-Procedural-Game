@@ -43,17 +43,20 @@ namespace EvllyEngine
 #elif Server
 #endif
 
-        public MidleWorld(string _worldName)
+        public MidleWorld()
         {
 #if Client
             Game.MidleWorld = this;
+
+            WorldRuning = true;
+            WorldGeneratorThread = new Thread(new ThreadStart(WorldLooping));
+            WorldGeneratorThread.Name = "WorldGeneratorLoop";
+            WorldGeneratorThread.Start();
 #elif Server
 
 #endif
             LockChunkMap = new object();
             LockToUpdate = new object();
-
-            WorldName = _worldName;
 
             globalNoise = new FastNoise(GlobalData.Seed);
             globalNoise.SetFrequency(0.0005f);
@@ -84,25 +87,6 @@ namespace EvllyEngine
             {
                 
             }
-
-            WorldRuning = true;
-            WorldGeneratorThread = new Thread(new ThreadStart(WorldLooping));
-            WorldGeneratorThread.Name = "WorldGeneratorLoop";
-            WorldGeneratorThread.Start();
-        }
-
-    public void SpawnPlayer(CharSaveInfo charSaveInfo)
-        {
-#if Client
-            if (Network.IsServer)//is singleplayer
-            {
-                Network.SpawnEntity(new PlayerEntity());
-            }
-            else
-            {
-                Network.SpawnEntity(new PlayerEntity());
-            }
-#endif
         }
 
         public override void Tick()

@@ -52,6 +52,8 @@ namespace ProjectEvlly.src.Net
 
         public static Action OnClientStart;
 
+        public static Action OnReceivedServerData;
+
         /// <summary>
         /// Create a server, local server or dedicated server
         /// </summary>
@@ -292,11 +294,21 @@ namespace ProjectEvlly.src.Net
             }
         }
 
+        public static void RequestServerData(string UserName, int UserID)
+        {
+            var om = MyPeer.CreateMessage();
+
+            om.Write((byte)DataType.RequestServerData);
+
+            om.Write(UserName);
+            om.Write(UserID);
+
+            Client.SendMessage(om, DefaultDeliveryMethod);
+        }
+
         private static void AddEntityList(Entity entity)
         {
-            Debug.Log("AddEntity 01");
             Entitys.Add(entity._ViewID, entity);
-            Debug.Log("AddEntity 02");
         }
 
         private static void RemoveEntityList(Entity entity)
@@ -582,8 +594,8 @@ namespace ProjectEvlly.src.Net
 
                                     List<NetViewSerializer> netvi = new List<NetViewSerializer>();
 
-                                    var om = MyPeer.CreateMessage();
-                                    om.Write((byte)DataType.OnConnectData);
+                                    var OuMS = MyPeer.CreateMessage();
+                                    OuMS.Write((byte)DataType.OnConnectData);
 
                                     foreach (var kvp in Entitys.Values)
                                     {
@@ -609,12 +621,12 @@ namespace ProjectEvlly.src.Net
                                     string data = XMLHelper.ToXML(netvi.ToArray());
                                     string compressed = CompressString.StringCompressor.CompressString(data);
 
-                                    om.Write(compressed);
+                                    OuMS.Write(compressed);
 
                                     Debug.Log("ConnectData(XML): " + data);
                                     Debug.Log("ConnectData(CompressString): " + compressed);
 
-                                    Server.SendMessage(om, inc.SenderConnection, DefaultDeliveryMethod);//Send the data to Connection
+                                    Server.SendMessage(OuMS, inc.SenderConnection, DefaultDeliveryMethod);//Send the data to Connection
                                 }
                                 else if (inc.SenderConnection.Status == NetConnectionStatus.RespondedConnect)
                                 {
@@ -873,6 +885,16 @@ namespace ProjectEvlly.src.Net
                     break;
                 case DataType.ExitDimension:
                     break;
+                case DataType.RequestServerData:
+                    string charName = inc.ReadString();
+                    int userId = inc.ReadInt32();
+
+                    //check if this player is the same of the owner id
+
+                    var outms = MyPeer.CreateMessage();
+
+                    Server.SendMessage(outms, inc.SenderConnection, DefaultDeliveryMethod);//Send the data to Connection
+                    break;
                 default:
                     break;
             }
@@ -930,12 +952,24 @@ namespace ProjectEvlly.src.Net
                         Debug.Log("EntityReceived: " + kvp.ViewID);
                         AddEntityFromType(kvp);
                     }
+
+                    if (OnReceivedServerData != null)
+                    {
+                        OnReceivedServerData();
+                    }
                     break;
                 case DataType.ExitDimension:
                     break;
                 case DataType.ServerStop:
                     Debug.Log("Server Stoped!");
                     Disconnect();
+                    break;
+                case DataType.ServerDataReceived:
+
+                    if (OnReceivedServerData != null)
+                    {
+                        OnReceivedServerData();
+                    }
                     break;
                 default:
                     break;
@@ -1410,7 +1444,10 @@ namespace ProjectEvlly.src.Net
         OnConnectData,
 
         ExitDimension,
-        ServerStop
+        ServerStop,
+
+        RequestServerData,
+        ServerDataReceived
     }
 
     public enum RPCMode

@@ -46,7 +46,6 @@ namespace ProjectEvlly
 
             transform = new Transform();
             OnConstruc();
-            OnStart();
 
             Debug.Log("Entity Creator1");
         }

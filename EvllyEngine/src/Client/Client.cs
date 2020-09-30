@@ -13,6 +13,8 @@ using ProjectEvlly.src.save;
 using ProjectEvlly.src.Net;
 using ProjectEvlly.src.Engine.Render;
 using ProjectEvlly.src.Engine;
+using ProjectEvlly.src.User;
+using System.Threading;
 
 namespace ProjectEvlly.src
 {
@@ -23,19 +25,17 @@ namespace ProjectEvlly.src
     public class Client : IDisposable
     {
         public GUIMainMenu _MainMenu;
-        private InGameUI _InGameUI;
-        private bool _isPlaying;
 
         private Sky _Sky;
+        private TickSystem _RenderSystem;
 
-        private MidleWorld _MidleWorld;
-        //private World _TimeWorld;
+        private GamePlay _GamePlayManager;
+
+        private bool _isPlaying = false;
+        public static ClientType _clientType;
 
         public CharSaveInfo[] CharacterSaveList;
-        
         public CharSaveInfo _CharacterInfo;
-
-        private TickSystem _RenderSystem;
 
         public Action<FrameEventArgs> UIDrawUpdate;
 
@@ -44,11 +44,12 @@ namespace ProjectEvlly.src
             Game.Client = this;
 
             _RenderSystem = new TickSystem();
+            
             _Sky = new Sky(AssetsManager.GetShader("Sky"), AssetsManager.GetTexture("devTexture2"));
 
             EvllyEngine.MouseCursor.UnLockCursor();
 
-            CharacterSaveList = SaveManager.LoadChars();
+            CharacterSaveList = SaveManager.LoadChars();//Load All SinglePlayer CharInfo
 
             Network.OnServerStart += OnServerStart;
             Network.OnDisconnect += OnDsiconnect;
@@ -58,7 +59,7 @@ namespace ProjectEvlly.src
 
             LoadMainMenu();
         }
-
+        private bool isPused = true;
         public void Tick()
         {
             Network.NetworkTick();
@@ -66,8 +67,22 @@ namespace ProjectEvlly.src
             if (_isPlaying)
             {
                 _RenderSystem.Tick(Time._DeltaTime);
-
+                _GamePlayManager.Tick();
                 _Sky.Tick();
+
+                if (Input.GetKeyDown(OpenTK.Input.Key.Escape))
+                {
+                    if (isPused)
+                    {
+                        isPused = false;
+                        EvllyEngine.MouseCursor.LockCursor();
+                    }
+                    else
+                    {
+                        isPused = true;
+                        EvllyEngine.MouseCursor.UnLockCursor();
+                    }
+                }
 
                 if (Input.GetKeyDown(Key.F11))
                 {
@@ -80,15 +95,10 @@ namespace ProjectEvlly.src
                         Window.Instance.WindowState = WindowState.Fullscreen;
                     }
                 }
-
-                if (_InGameUI != null)
-                {
-                    _InGameUI.OnResize();
-                }
             }
             else//Menu Update
             {
-                
+                _MainMenu.Tick();
             }
         }
 
@@ -115,14 +125,9 @@ namespace ProjectEvlly.src
                 _MainMenu.Dispose();
             }
 
-            if (_MidleWorld != null)
+            if (_GamePlayManager != null)
             {
-                _MidleWorld.Dispose();
-            }
-
-            if (_InGameUI != null)
-            {
-                _InGameUI.Dispose();
+                _GamePlayManager.Dispose();
             }
 
             if (_RenderSystem != null)
@@ -164,63 +169,58 @@ namespace ProjectEvlly.src
             //Delete World Here
         }
 
-        public void PlaySingleWorld(CharSaveInfo CharacterInfo)
+        public void ConnectToASever(string ip, int port, string pass)
         {
-            _CharacterInfo = CharacterInfo;
-
-            Network.CreateServer("127.0.0.1", 2500, 10);
+            _MainMenu.Open_ConnectingScreen(ClientType.Multiplayer);
+            Network.Connect(ip, port, pass);
         }
 
-        public void LoadMainMenu()
+        public void StartSingleServer()
         {
-            if (_InGameUI != null)
-            {
-                _InGameUI.Dispose();
-                _InGameUI = null;
-            }
+            _MainMenu.Open_ConnectingScreen(ClientType.SinglePlayer);
 
-            if (_MidleWorld != null)
-            {
-                _MidleWorld.Dispose();
-                _MidleWorld = null;
-            }
+            NextFrameQueue.Enqueue(() => { Network.CreateServer("127.0.0.1", 25000, 1); });
+        }
 
-            _RenderSystem.Dispose();
-            _RenderSystem = null;
-
-
-
-            _MainMenu = new GUIMainMenu();
+        private void LoadMainMenu()
+        {
             _isPlaying = false;
+
+            if (_GamePlayManager != null)
+            {
+                _GamePlayManager.Dispose();
+                _GamePlayManager = null;
+            }
+
+            _MainMenu = new GUIMainMenu(this);
         }
 
-        private void LoadPlayingWorld()
+        private void LoadGamePlay()
         {
-            _InGameUI = new InGameUI(Game.GUI.GetCanvas);
-            _RenderSystem = new TickSystem();
+            _isPlaying = true;
 
-            _MidleWorld = new MidleWorld(_CharacterInfo.WorldName);
-            _MidleWorld.SpawnPlayer(_CharacterInfo);
+            _GamePlayManager = new GamePlay(_clientType);
 
             _MainMenu.Dispose();
             _MainMenu = null;
-
-            _isPlaying = true;
         }
 
         private void OnServerStart()
         {
-            LoadPlayingWorld();
+            _clientType = ClientType.SinglePlayer;
+            LoadGamePlay();
         }
 
         private void OnServerClose()
         {
             LoadMainMenu();
+            _clientType = ClientType.Offine;
         }
 
         private void OnDsiconnect()
         {
             LoadMainMenu();
+            _clientType = ClientType.Offine;
         }
 
         private void OnClientStart()
@@ -230,7 +230,8 @@ namespace ProjectEvlly.src
 
         private void OnConnect()
         {
-            LoadPlayingWorld();
+            _clientType = ClientType.Multiplayer;
+            LoadGamePlay();
         }
     }
 
@@ -239,7 +240,6 @@ namespace ProjectEvlly.src
         public static Client Client;
         public static GUI GUI;
         public static MidleWorld MidleWorld;
-        public static InGameUI _InGameUI;
         public static Window Window;
 
         public static MidleWorld GetWorld
@@ -256,5 +256,10 @@ namespace ProjectEvlly.src
                 }
             }
         }
+    }
+
+    public enum ClientType : byte
+    {
+        Offine, SinglePlayer, Multiplayer
     }
 }

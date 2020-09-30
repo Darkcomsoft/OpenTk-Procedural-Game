@@ -40,7 +40,6 @@ namespace EvllyEngine
         private Physics _physics;
         private SplashScreen _SplashScreen;
         private Frustum frustum;
-        private GUI _GUI;
         private GUIRender _GUIRender;
 
         private int FPS;
@@ -60,7 +59,7 @@ namespace EvllyEngine
             gl.ClearColor(Color.Black);
             Utilitys.CheckGLError("Set ClearColor");
 
-            //Start Gl Frame Buffer
+            //Start GL Frame Buffer
 
 
             VSync = VSyncMode.Off;
@@ -75,6 +74,8 @@ namespace EvllyEngine
         }
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
+            NextFrameQueue.Tick();
+
             if (EngineIsReady)
             {
                 UPS = (int)(1f / e.Time);
@@ -94,7 +95,7 @@ namespace EvllyEngine
                 }
 
                 OGame.Tick();
-                _GUI.Tick();
+                //_GUI.Tick();
                 _GUIRender.Tick();
 
                 if (Focused) // check to see if the window is focused  
@@ -126,7 +127,7 @@ namespace EvllyEngine
         {
             FPS = (int)(1f / e.Time);
 
-            gl.Clear();//Clear Buffer
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             Utilitys.CheckGLError("GL.Clear");
 
             if (EngineIsReady)
@@ -134,7 +135,7 @@ namespace EvllyEngine
                 gl.Enable(EnableCap.DepthTest);
                 OGame.Draw(e);
                 gl.Disable(EnableCap.DepthTest);
-                _GUI.DrawUI();
+                //_GUI.DrawUI();
                 _GUIRender.TickRender();
             }
             else
@@ -144,6 +145,7 @@ namespace EvllyEngine
 
             SwapBuffers();
             Utilitys.CheckGLError("Window SwapBuffers");
+            Thread.Sleep(10);
             base.OnRenderFrame(e);
         }
 
@@ -153,7 +155,7 @@ namespace EvllyEngine
 
             if (EngineIsReady)
             {
-                _GUI.OnResize();
+                //_GUI.OnResize();
                 _GUIRender.OnResize();
             }
             base.OnResize(e);
@@ -168,27 +170,27 @@ namespace EvllyEngine
         protected override void OnKeyDown(KeyboardKeyEventArgs e)
         {
             if (EngineIsReady)
-                _GUI.OnKeyDown(e);
+                //_GUI.OnKeyDown(e);
             base.OnKeyDown(e);
         }
 
         protected override void OnKeyUp(KeyboardKeyEventArgs e)
         {
             if (EngineIsReady)
-                _GUI.OnKeyUp(e);
+                //_GUI.OnKeyUp(e);
             base.OnKeyUp(e);
         }
 
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
             if (EngineIsReady)
-                _GUI.OnMouseDown(e);
+                //_GUI.OnMouseDown(e);
             base.OnMouseDown(e);
         }
         protected override void OnMouseUp(MouseButtonEventArgs e)
         {
             if (EngineIsReady)
-                _GUI.OnMouseUp(e);
+                //_GUI.OnMouseUp(e);
             base.OnMouseUp(e);
         }
         protected override void OnMouseWheel(MouseWheelEventArgs e)
@@ -196,7 +198,7 @@ namespace EvllyEngine
             if (EngineIsReady)
             {
                 Input.MouseWheelDelta = e.Delta;
-                _GUI.OnMouseWheel(e);
+                //_GUI.OnMouseWheel(e);
             }
             base.OnMouseWheel(e);
         }
@@ -205,7 +207,7 @@ namespace EvllyEngine
             if (EngineIsReady)
             {
                 Input.GetMouse = e;
-                _GUI.OnMouseMove(e);
+                //_GUI.OnMouseMove(e);
                 _GUIRender.OnMouseMove(e);
             }
             base.OnMouseMove(e);
@@ -222,8 +224,8 @@ namespace EvllyEngine
             SplashScreen.SetState("Starting Physics", SplashScreenStatus.Loading);
             _physics = new Physics();
             _GUIRender = new GUIRender();
-            _GUI = new GUI();
-            _GUI.OnResize();//Resize the GUI
+            //_GUI = new GUI();
+            //_GUI.OnResize();//Resize the GUI
             SplashScreen.SetState("Starting Engine Systems", SplashScreenStatus.Loading);
             //_Sky = new Sky(AssetsManager.GetShader("Default"), AssetsManager.GetTexture("devTexture2"));
             frustum = new Frustum();
@@ -277,11 +279,11 @@ namespace EvllyEngine
                 _physics = null;
             }
 
-            if (_GUI != null)
+            /*if (_GUI != null)
             {
                 _GUI.Dispose();
                 _GUI = null;
-            }
+            }*/
 
             if (_GUIRender != null)
             {
@@ -315,7 +317,7 @@ namespace EvllyEngine
                     _GUIRender = null;
                 }
 
-                _GUI.Dispose();
+                //_GUI.Dispose();
             }
             else
             {

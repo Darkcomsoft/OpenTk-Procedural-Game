@@ -26,6 +26,9 @@ namespace ProjectEvlly.src.UI
         private Color4 HoverColor;
         private Color4 ClickColor;
 
+        public bool ShowBackGround = true;
+        public bool EnabledInput = true;
+
         private bool IsReady = false;
 
         private bool IP_Hover = false;
@@ -138,7 +141,7 @@ namespace ProjectEvlly.src.UI
             IsReady = true;
         }
 
-        public virtual void Tick()
+        /*public virtual void Tick()
         {
             if (Enabled)
             {
@@ -152,7 +155,7 @@ namespace ProjectEvlly.src.UI
                     
                 }
             }
-        }
+        }*/
 
         public void TickRender()
         {
@@ -161,7 +164,6 @@ namespace ProjectEvlly.src.UI
                 RenderBefor();
 
                 GL.Enable(EnableCap.Blend);
-                GL.Enable(EnableCap.Texture2D);
                 GL.Disable(EnableCap.DepthTest);
                 GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
@@ -172,32 +174,34 @@ namespace ProjectEvlly.src.UI
 
                 TickRenderCustom();//use the ui elements custom values, like images, text etc.
 
-                if (IP_Hover)
+                if (ShowBackGround)
                 {
-                    if (IP_Cliked)
+                    if (IP_Hover)
                     {
-                        GUIRender.GetShader.SetColor("MainColor", ClickColor);
+                        if (IP_Cliked)
+                        {
+                            GUIRender.GetShader.SetColor("MainColor", ClickColor);
+                        }
+                        else
+                        {
+                            GUIRender.GetShader.SetColor("MainColor", HoverColor);
+                        }
                     }
                     else
                     {
-                        GUIRender.GetShader.SetColor("MainColor", HoverColor);
+                        GUIRender.GetShader.SetColor("MainColor", NormalColor);
                     }
-                }
-                else
-                {
-                    GUIRender.GetShader.SetColor("MainColor", NormalColor);
-                }
 
-                GUIRender.GetShader.SetMatrix4("projection", _projection);
+                    GUIRender.GetShader.SetMatrix4("projection", _projection);
 
-                GL.DrawElements(BeginMode.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
+                    GL.DrawElements(BeginMode.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
+                }
 
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
                 GL.BindVertexArray(0);
 
                 GL.Enable(EnableCap.DepthTest);
                 GL.Disable(EnableCap.Blend);
-                GL.Disable(EnableCap.Texture2D);
 
                 RenderAfter();
             }
@@ -205,7 +209,7 @@ namespace ProjectEvlly.src.UI
 
         public virtual void OnResize()
         {
-            if (IsReady && Enabled)
+            if (IsReady)
             {
                 _projection = Matrix4.CreateOrthographicOffCenter(Window.Instance.ClientRectangle.Left, Window.Instance.ClientRectangle.Right, Window.Instance.ClientRectangle.Bottom, Window.Instance.ClientRectangle.Top, 0f, 5.0f);
 
@@ -213,11 +217,37 @@ namespace ProjectEvlly.src.UI
 
                 SetFinalRectangle();
 
-                GL.BindVertexArray(VAO);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-                GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * Vector2.SizeInBytes, _vertices, BufferUsageHint.StreamDraw);
-                GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 0, 0);
-                GL.EnableVertexAttribArray(0);
+                if (ShowBackGround)
+                {
+                    GL.BindVertexArray(VAO);
+                    GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+                    GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * Vector2.SizeInBytes, _vertices, BufferUsageHint.StreamDraw);
+                    GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 0, 0);
+                    GL.EnableVertexAttribArray(0);
+                }
+
+                IsReady = true;
+            }
+        }
+
+        private void RefreshData()
+        {
+            if (IsReady)
+            {
+                _projection = Matrix4.CreateOrthographicOffCenter(Window.Instance.ClientRectangle.Left, Window.Instance.ClientRectangle.Right, Window.Instance.ClientRectangle.Bottom, Window.Instance.ClientRectangle.Top, 0f, 5.0f);
+
+                IsReady = false;
+
+                SetFinalRectangle();
+
+                if (ShowBackGround)
+                {
+                    GL.BindVertexArray(VAO);
+                    GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+                    GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * Vector2.SizeInBytes, _vertices, BufferUsageHint.StreamDraw);
+                    GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 0, 0);
+                    GL.EnableVertexAttribArray(0);
+                }
 
                 IsReady = true;
             }
@@ -255,6 +285,9 @@ namespace ProjectEvlly.src.UI
         {
             _FinalRectangle = _Rectangle;
 
+            //_FinalRectangle.Width = _Rectangle.Width / (Window.Instance.Width + Window.Instance.Height / 2);
+            //_FinalRectangle.Height = _Rectangle.Height / (Window.Instance.Height + Window.Instance.Width / 2);
+
             switch (_Dock)
             {
                 case UIDock.Cennter:
@@ -267,7 +300,7 @@ namespace ProjectEvlly.src.UI
                     break;
                 case UIDock.CenterBottom:
                     _FinalRectangle.X = (Window.Instance.Width / 2) + _Rectangle.X - (_Rectangle.Width / 2);
-                    _FinalRectangle.Y = Window.Instance.Height + _Rectangle.Y - (_Rectangle.Height);
+                    _FinalRectangle.Y = Window.Instance.Height - _Rectangle.Y - (_Rectangle.Height);
                     break;
                 case UIDock.CenterLeft:
                     _FinalRectangle.X = _Rectangle.X + (_Rectangle.Width / _Rectangle.Width) - 1;
@@ -282,16 +315,16 @@ namespace ProjectEvlly.src.UI
                     _FinalRectangle.Y = _Rectangle.Y + (_Rectangle.Height / _Rectangle.Height) - 1;
                     break;
                 case UIDock.TopRight:
-                    _FinalRectangle.X = (Window.Instance.Width) + _Rectangle.X - (_Rectangle.Width);
+                    _FinalRectangle.X = (Window.Instance.Width) - _Rectangle.X - (_Rectangle.Width);
                     _FinalRectangle.Y = _Rectangle.Y + (_Rectangle.Height / _Rectangle.Height) - 1;
                     break;
                 case UIDock.BottomLeft:
                     _FinalRectangle.X = _Rectangle.X + (_Rectangle.Width / _Rectangle.Width) - 1;
-                    _FinalRectangle.Y = Window.Instance.Height + _Rectangle.Y - (_Rectangle.Height);
+                    _FinalRectangle.Y = Window.Instance.Height - _Rectangle.Y - (_Rectangle.Height);
                     break;
                 case UIDock.BottomRight:
-                    _FinalRectangle.X = (Window.Instance.Width) + _Rectangle.X - (_Rectangle.Width);
-                    _FinalRectangle.Y = Window.Instance.Height + _Rectangle.Y - (_Rectangle.Height);
+                    _FinalRectangle.X = (Window.Instance.Width) - _Rectangle.X - (_Rectangle.Width);
+                    _FinalRectangle.Y = Window.Instance.Height - _Rectangle.Y - (_Rectangle.Height);
                     break;
 
 
@@ -319,6 +352,14 @@ namespace ProjectEvlly.src.UI
                     _FinalRectangle.Y = _Rectangle.Y + (_Rectangle.Height / 2);
 
                     _FinalRectangle.Height = Window.Instance.Height - _Rectangle.Height;
+                    break;
+                case UIDock.ScreenSize:
+                    _FinalRectangle.Width = Window.Instance.Width - _Rectangle.Width;
+                    _FinalRectangle.Height = Window.Instance.Height - _Rectangle.Height;
+                    break;
+                case UIDock.ScreenSizeRatio:
+                    _FinalRectangle.Width = (Window.Instance.Width + Window.Instance.Height / 2) - _Rectangle.Width;
+                    _FinalRectangle.Height = (Window.Instance.Height + Window.Instance.Width / 2) - _Rectangle.Height;
                     break;
             }
 
@@ -388,6 +429,14 @@ namespace ProjectEvlly.src.UI
             _Dock = uIDock;
         }
 
+        /// <summary>
+        /// Used when you cant wait for next frame, this is gona render the at the current frame
+        /// </summary>
+        public virtual void ForceRender()
+        {
+            TickRender();
+        }
+
         public virtual void SetPosition(int x, int y)
         {
             _Rectangle.X = x;
@@ -402,6 +451,13 @@ namespace ProjectEvlly.src.UI
             _Rectangle.Height = Height;
 
             OnResize();
+        }
+
+        public void SetBackColors(Color4 nColor, Color4 hColor, Color4 cColor)
+        {
+            NormalColor = nColor;
+            HoverColor = hColor;
+            ClickColor = cColor;
         }
 
         public virtual void Dispose()

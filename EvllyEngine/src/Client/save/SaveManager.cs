@@ -45,28 +45,28 @@ namespace ProjectEvlly.src.save
         }
 
         #region PlayerSave
-        public static void SavePlayer(PlayerSaveInfo info, string userid)
+        public static void SavePlayer(PlayerSaveInfo info, string userid, string universename)
         {
-            CreateDirectory(Game.GetWorld.WorldName);
+            CreateDirectory(universename);
 
             BinaryFormatter bf = new BinaryFormatter();
-            FileStream file = File.Create(Path.GetFullPath("Saves./" + Game.GetWorld.WorldName + "./player./" + userid + ".database"));
+            FileStream file = File.Create(Path.GetFullPath("Saves./" + universename + "./player./" + userid + ".database"));
 
             bf.Serialize(file, info);
             file.Close();
         }
 
-        public static void DeletPlayer(string userid)
+        public static void DeletPlayer(string userid, string universename)
         {
-            File.Delete(Path.GetFullPath("Saves./" + Game.GetWorld.WorldName + "./player./" + userid + ".database"));
+            File.Delete(Path.GetFullPath("Saves./" + universename + "./player./" + userid + ".database"));
         }
 
-        public static PlayerSaveInfo LoadPlayer(string userid)
+        public static PlayerSaveInfo LoadPlayer(string userid, string universename)
         {
-            if (File.Exists(Path.GetFullPath("Saves./" + Game.GetWorld.WorldName + "./player./" + userid + ".database")))
+            if (File.Exists(Path.GetFullPath("Saves./" + universename + "./player./" + userid + ".database")))
             {
                 BinaryFormatter bf = new BinaryFormatter();
-                FileStream file = File.Open(Path.GetFullPath("Saves./" + Game.GetWorld.WorldName + "./player./" + userid + ".database"), FileMode.Open);
+                FileStream file = File.Open(Path.GetFullPath("Saves./" + universename + "./player./" + userid + ".database"), FileMode.Open);
 
                 PlayerSaveInfo dataa = (PlayerSaveInfo)bf.Deserialize(file);
                 file.Close();
@@ -74,7 +74,7 @@ namespace ProjectEvlly.src.save
                 return dataa;
             }
 
-            Debug.Log("Dont found this Player File " + Path.GetFullPath("Saves./" + Game.GetWorld.WorldName + "./player./" + userid + ".database"));
+            Debug.Log("Dont found this Player File " + Path.GetFullPath("Saves./" + universename + "./player./" + userid + ".database"));
             return new PlayerSaveInfo();
         }
         #endregion

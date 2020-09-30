@@ -6,8 +6,9 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using QuickFont;
 using OpenTK;
+using ProjectEvlly.src.UI.Font;
+using OpenTK.Graphics;
 
 namespace ProjectEvlly.src.UI.GUIElements
 {
@@ -15,69 +16,52 @@ namespace ProjectEvlly.src.UI.GUIElements
     {
         public string TextureName;
 
-        public string FontName = "OpenSans";
-        public string Text;
+        public string FontName = "PixelFont2";
         public Color TextColor = Color.Black;
 
-        private QFontDrawing _drawing;
-        private QFontRenderOptions RendeTextOption;
+        private FontRender fontRender;
 
-        private Vector3 Pos;
-        private SizeF MaxSize;
-
-        public GUIButtom(Rectangle rec) : base(rec)
+        public GUIButtom(string Text, Rectangle rec) : base(rec)
         {
-            Start();
+            Start(Text);
         }
 
-        public GUIButtom(Rectangle rec, UIDock uIDock) : base(rec, uIDock)
+        public GUIButtom(string Text,Rectangle rec, UIDock uIDock) : base(rec, uIDock)
         {
-            Start();
+            Start(Text);
         }
 
-        private void Start()
+        private void Start(string text)
         {
-            _drawing = new QFontDrawing();
-            RendeTextOption = new QFontRenderOptions
-            {
-                WordWrap = true,
-                Colour = TextColor,
-                DropShadowActive = false,
-                //ClippingRectangle = GetRectangle
-            };
-            
-            _drawing.ProjectionMatrix = Matrix4.CreateOrthographicOffCenter(Window.Instance.ClientRectangle.X, Window.Instance.ClientRectangle.Width, Window.Instance.ClientRectangle.Y, Window.Instance.ClientRectangle.Height, 0f, 5.0f);
-
-            Pos = new Vector3(GetRectangle.X + (GetRectangle.Width / 2), GetRectangle.Y + (GetRectangle.Height / 2), 0);
-            MaxSize = new SizeF(GetRectangle.Width, GetRectangle.Height);
+            fontRender = new FontRender(text, 22, FontName, new Vector2(0f, 0f), GetRectangle.Width, GetRectangle);
         }
 
         public override void OnResize()
         {
-            Pos = new Vector3(GetRectangle.X + (GetRectangle.Width / 2), GetRectangle.Y + (GetRectangle.Height / 2), 0);
-            MaxSize = new SizeF(GetRectangle.Width, GetRectangle.Height);
-
-            _drawing.ProjectionMatrix = Matrix4.CreateOrthographicOffCenter(Window.Instance.ClientRectangle.X, Window.Instance.ClientRectangle.Width, Window.Instance.ClientRectangle.Y, Window.Instance.ClientRectangle.Height, 0f, 5.0f);
-
-            //RendeTextOption.ClippingRectangle = GetRectangle;
+            if (fontRender != null)
+            {
+                fontRender.Resize(GetRectangle);
+            }
             base.OnResize();
         }
 
         public override void RenderAfter()
         {
-            _drawing.DrawingPrimitives.Clear();
-
-            _drawing.Print(AssetsManager.GetFont(FontName), Text, Pos, MaxSize, QFontAlignment.Centre, RendeTextOption);
-
-            _drawing.RefreshBuffers();
-            _drawing.Draw();
+            if (fontRender != null)
+            {
+                fontRender.TickRender();
+            }
             base.RenderAfter();
         }
 
         public override void Dispose()
         {
-            _drawing.Dispose();
-            RendeTextOption = null;
+            if (fontRender != null)
+            {
+                fontRender.Dispose();
+            }
+            //_drawing.Dispose();
+            //RendeTextOption = null;
             base.Dispose();
         }
 
@@ -101,6 +85,30 @@ namespace ProjectEvlly.src.UI.GUIElements
         public override void Click()
         {
             base.Click();
+        }
+
+        public void SetText(string text)
+        {
+            if (fontRender != null)
+            {
+                fontRender.UpdateText(text);
+            }
+        }
+
+        public void SetColor(Color4 color)
+        {
+            if (fontRender != null)
+            {
+                fontRender.SetColor(color);
+            }
+        }
+
+        public void SetTextAling(TextAling textAling)
+        {
+            if (fontRender != null)
+            {
+                fontRender.textAling = textAling;
+            }
         }
     }
 }

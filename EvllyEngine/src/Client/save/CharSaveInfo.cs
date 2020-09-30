@@ -10,9 +10,9 @@ namespace ProjectEvlly.src.save
     public struct CharSaveInfo
     {
         public string CharName;
-        public string WorldName;
+        public WorldType WorldName;
 
-        public CharSaveInfo(string charName, string worldName)
+        public CharSaveInfo(string charName, WorldType worldName)
         {
             CharName = charName;
             WorldName = worldName;

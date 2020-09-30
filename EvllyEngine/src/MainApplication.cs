@@ -8,12 +8,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using ProjectEvlly.src;
 using System.Windows;
+using ProjectEvlly.src.User;
 
 namespace EvllyEngine
 {
     class MainApplication
     {
-        [STAThread]
+        private static AuthManager auth = new AuthManager();
+
         public static void Main()
         {
 #if Client
@@ -23,11 +25,6 @@ namespace EvllyEngine
             {
                 try
                 {
-                    game.RenderFrame += (sender, e) =>
-                    {
-                        Thread.Sleep(10);
-                    };
-
                     game.Run();
                 }
                 catch (OutOfMemoryException memoryEx)

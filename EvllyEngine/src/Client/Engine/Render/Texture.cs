@@ -39,14 +39,14 @@ namespace EvllyEngine
             //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
 
-        public Texture(ImageFile imageData, TextureMinFilter textureMinFilter, TextureMagFilter textureMagFilter, TextureUnit textureUnit = TextureUnit.Texture0)
+        public Texture(ImageFile imageData, TextureMinFilter textureMinFilter, TextureMagFilter textureMagFilter)
         {
             _Width = imageData._width;
             _Height = imageData._height;
 
             Handle = GL.GenTexture();
 
-            Use(textureUnit);
+            Use();
 
             GL.TexImage2D(_TextureTarget, 0, _PixelInternalFormat, _Width, _Height, 0, _PixelFormat, PixelType.UnsignedByte, imageData._ImgData);
 

@@ -118,8 +118,6 @@ namespace ProjectEvlly
             {
                 if (!HasError)//Display normal splashscreen
                 {
-                    gl.ClearColor(Color.Black);
-
                     gl.Clear();
                     gl.Disable(EnableCap.DepthTest);
 
@@ -154,7 +152,6 @@ namespace ProjectEvlly
                     gl.Disable(EnableCap.Blend);
                     gl.Enable(EnableCap.DepthTest);
 
-                    gl.ClearColor(Color.DeepSkyBlue);
                     Window.Instance.SwapBuffers();
                 }
                 else//Display a error screen

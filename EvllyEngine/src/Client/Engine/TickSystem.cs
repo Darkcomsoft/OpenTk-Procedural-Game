@@ -85,23 +85,28 @@ namespace ProjectEvlly.src.Engine
 
         public void Dispose()
         {
-            while (toRemove.Count > 0)
+            if (toRemove != null)
             {
-                RenderEntityBase entity = toRemove.Dequeue();
+                while (toRemove.Count > 0)
+                {
+                    RenderEntityBase entity = toRemove.Dequeue();
 
-                if (renderEntityBases.Contains(entity))
-                {
-                    renderEntityBases.Remove(entity);
-                }
-                else if (renderEntityBasesT.Contains(entity))
-                {
-                    renderEntityBasesT.Remove(entity);
+                    if (renderEntityBases.Contains(entity))
+                    {
+                        renderEntityBases.Remove(entity);
+                    }
+                    else if (renderEntityBasesT.Contains(entity))
+                    {
+                        renderEntityBasesT.Remove(entity);
+                    }
+
+                    if (entity != null)
+                    {
+                        entity.Dispose();
+                    }
                 }
 
-                if (entity != null)
-                {
-                    entity.Dispose();
-                }
+                toRemove.Clear();
             }
 
             /*foreach (var item in renderEntityBases)
@@ -114,10 +119,20 @@ namespace ProjectEvlly.src.Engine
                 item.Dispose();
             }*/
 
-            toRemove.Clear();
-            renderEntityBases.Clear();
-            renderEntityBasesT.Clear();
-            TickList.Clear();
+            if (renderEntityBases != null)
+            {
+                renderEntityBases.Clear();
+            }
+
+            if (renderEntityBasesT != null)
+            {
+                renderEntityBasesT.Clear();
+            }
+
+            if (TickList != null)
+            {
+                TickList.Clear();
+            }
 
             toRemove = null;
             renderEntityBases = null;

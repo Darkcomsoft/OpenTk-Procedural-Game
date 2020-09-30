@@ -15,8 +15,6 @@ namespace EvllyEngine
 {
     public class PlayerEntity : Entity
     {
-        public static PlayerEntity Instance;
-
         private PlayerController _playerController;
 
         public Block CurrentBlock;
@@ -27,15 +25,8 @@ namespace EvllyEngine
 #elif Server
 #endif
 
-        public PlayerEntity()
-        {
-            Instance = this;
-        }
-
-        public PlayerEntity(NetViewSerializer entity) : base(entity)
-        {
-            
-        }
+        public PlayerEntity() { }
+        public PlayerEntity(NetViewSerializer entity) : base(entity) { }
 
         public override void OnStart()
         {

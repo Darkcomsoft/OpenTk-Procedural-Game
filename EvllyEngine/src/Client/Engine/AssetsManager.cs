@@ -16,6 +16,7 @@ using System.Threading;
 using ProjectEvlly;
 using QuickFont;
 using QuickFont.Configuration;
+using ProjectEvlly.src.UI.Font;
 
 namespace EvllyEngine
 {
@@ -29,6 +30,8 @@ namespace EvllyEngine
         private Dictionary<string, Mesh> _Models;
         private Dictionary<string, QFont> _Fonts;
 
+        private Dictionary<string, FontType> _NewFonts;
+
         private Dictionary<string, Vector2[]> _Tiles;
 
         public AssetsManager() 
@@ -39,6 +42,7 @@ namespace EvllyEngine
             _Shaders = new Dictionary<string, Shader>();
             _Models = new Dictionary<string, Mesh>();
             _Fonts = new Dictionary<string, QFont>();
+            _NewFonts = new Dictionary<string, FontType>();
 
             _Tiles = new Dictionary<string, Vector2[]>();
         }
@@ -68,9 +72,14 @@ namespace EvllyEngine
 
             //Load Images
             _Textures.Add("Darkcomsoft", new Texture(AssetsManager.LoadImage("Assets/Images/", "Darkcomsoft", "png")));
+            _Textures.Add("VaKLogoYellow", new Texture(AssetsManager.LoadImage("Assets/Images/", "VaKLogoYellow", "png")));
+            _Textures.Add("BackGround", new Texture(AssetsManager.LoadImage("Assets/Images/", "BackGround", "png")));
 
             //Load GUI
+            SplashScreen.SetState("Loading GUI Assets", SplashScreenStatus.Loading);
             _Textures.Add("Buttom", new Texture(AssetsManager.LoadImage("Assets/UI/", "Buttom", "png")));
+            _Textures.Add("SidePanel", new Texture(AssetsManager.LoadImage("Assets/UI/", "SidePanel", "png")));
+            _Textures.Add("Panel01", new Texture(AssetsManager.LoadImage("Assets/UI/", "Panel01", "png")));
 
             //Load Shaders
             SplashScreen.SetState("Loading Shaders", SplashScreenStatus.Loading);
@@ -81,6 +90,7 @@ namespace EvllyEngine
             _Shaders.Add("GUI", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "GUI")));
             _Shaders.Add("Sky", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "Sky")));
             _Shaders.Add("Cloud", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "Cloud")));
+            _Shaders.Add("Font", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "Font")));
 
             //Load TileUvs
             SplashScreen.SetState("Loading Tile UVs", SplashScreenStatus.Loading);
@@ -90,8 +100,11 @@ namespace EvllyEngine
             AddTileUv("Water", new Vector2(0.2f, 0.066667f), new Vector2(0.2f, 0f), new Vector2(0.25f, 0.066667f), new Vector2(0.25f, 0f));
 
             //Load Fonts
+            SplashScreen.SetState("Loading Fonts", SplashScreenStatus.Loading);
             _Fonts.Add("OpenSans", new QFont("OpenSans.ttf", 5, new QFontBuilderConfiguration(true)));
             _Fonts.Add("FreePixel", new QFont("/Assets/UI/Fonts/FreePixel.ttf", 12, new QFontBuilderConfiguration(true)));
+            _NewFonts.Add("PixelFont", LoadFont("Assets/UI/Fonts/", "PixelFont"));
+            _NewFonts.Add("PixelFont2", LoadFont("Assets/UI/Fonts/", "PixelFont2"));
         }
 
         public void UnloadAll()
@@ -111,9 +124,22 @@ namespace EvllyEngine
                 item.Value.Clear();
             }
 
+            foreach (var item in _Fonts)
+            {
+                item.Value.Dispose();
+            }
+
+            foreach (var item in _NewFonts)
+            {
+                item.Value.Dispose();
+            }
+
             _Textures.Clear();
             _Models.Clear();
             _Shaders.Clear();
+            _Fonts.Clear();
+            _NewFonts.Clear();
+            _Tiles.Clear();
 
             Engine_Error.Clear();
             Engine_Error = null;
@@ -121,6 +147,9 @@ namespace EvllyEngine
             _Textures = null;
             _Models = null;
             _Shaders = null;
+            _Tiles = null;
+            _Fonts = null;
+            _NewFonts = null;
 
             GCollector.Collect();
         }
@@ -168,6 +197,32 @@ namespace EvllyEngine
 
             return processor.Load();
         }
+        public FontType LoadFont(string path, string file)
+        {
+            string fontFile = string.Concat(path, file, ".fnt");
+            string fontAtlas = string.Concat(path, file, ".png");
+
+            if (!File.Exists(fontFile) || !File.Exists(fontAtlas))
+            {
+                Debug.LogError("Shader Files Can't be found!");
+                throw new Exception("Shader Files Can't be found!");
+            }
+
+            return new FontType(fontFile, fontAtlas);
+        }
+        public static ImageFile LoadImage(string path)
+        {
+            using (var image = new Bitmap(path))
+            {
+                //image.RotateFlip(RotateFlipType.RotateNoneFlipY);
+
+                //image.MakeTransparent();
+                var data = image.LockBits(new Rectangle(0, 0, image.Width, image.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+
+                return new ImageFile(data.Scan0, data.Width, data.Height);
+            }
+        }
+
 
         public static Texture GetTexture(string TextureName)
         {
@@ -202,8 +257,19 @@ namespace EvllyEngine
                 throw new Exception("Dont Exist this Assets: " + ShaderName);
             }
         }
+        public static FontType GetFont(string FontName)
+        {
+            if (AssetsManager.instance._NewFonts.TryGetValue(FontName, out FontType font))
+            {
+                return font;
+            }
+            else
+            {
+                throw new Exception("Dont Exist this Assets: " + FontName);
+            }
+        }
 
-        public static QFont GetFont(string FontName)
+        /*public static QFont GetFont(string FontName)
         {
             if (AssetsManager.instance._Fonts.TryGetValue(FontName, out QFont font))
             {
@@ -213,7 +279,7 @@ namespace EvllyEngine
             {
                 throw new Exception("Dont Exist this Assets: " + font);
             }
-        }
+        }*/
 
         public static void UseTexture(string TextureName)
         {

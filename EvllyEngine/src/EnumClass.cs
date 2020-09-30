@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace ProjectEvlly.src
 {
+    public enum WorldType : byte
+    {
+        MidleWorld, CaveWorld
+    }
+
     public enum TypeBlock : byte
     {
         Air, Grass, Dirt, Sand

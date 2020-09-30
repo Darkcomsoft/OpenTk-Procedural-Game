@@ -11,8 +11,6 @@ namespace ProjectEvlly.src.World
 {
     public class WorldBase : ScriptBase
     {
-        public string WorldName;
-
         public WorldBase()
         {
 #if Client

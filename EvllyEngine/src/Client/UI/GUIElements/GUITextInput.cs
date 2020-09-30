@@ -81,7 +81,7 @@ namespace ProjectEvlly.src.UI
             RendeTextOption.ClippingRectangle = GetRectangle;
             
 
-            if (Value.Equals(string.Empty))
+            /*if (Value.Equals(string.Empty))
             {
                 if (Time._Time % 60 <= 20 && IsFocused)
                 {
@@ -104,7 +104,7 @@ namespace ProjectEvlly.src.UI
                 {
                     _drawing.Print(AssetsManager.GetFont(FontName), Value + " ", Pos, MaxSize, QFontAlignment.Justify, RendeTextOption);
                 }
-            }
+            }*/
 
             _drawing.RefreshBuffers();
             _drawing.Draw();
