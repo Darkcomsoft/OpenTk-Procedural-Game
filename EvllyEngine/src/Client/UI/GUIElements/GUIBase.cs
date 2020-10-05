@@ -25,14 +25,17 @@ namespace ProjectEvlly.src.UI
         private Color4 NormalColor;
         private Color4 HoverColor;
         private Color4 ClickColor;
+        private Color4 FocusedColor;
+        private Color4 NoInteractColor;
 
         public bool ShowBackGround = true;
-        public bool EnabledInput = true;
 
         private bool IsReady = false;
+        private bool CanShowFocus = false;
 
         private bool IP_Hover = false;
         private bool IP_Cliked = false;
+        private bool IP_Interact = true;
         /// <summary>
         /// Activated is if the focus of the input is this
         /// </summary>
@@ -59,6 +62,7 @@ namespace ProjectEvlly.src.UI
             NormalColor = Color4.White;
             HoverColor = Color4.Gray;
             ClickColor = Color4.Black;
+            NoInteractColor = Color4.Gray;
 
             SetFinalRectangle();
 
@@ -76,13 +80,15 @@ namespace ProjectEvlly.src.UI
             NormalColor = Color4.White;
             HoverColor = Color4.Gray;
             ClickColor = Color4.Black;
+            FocusedColor = Color4.PapayaWhip;
+            NoInteractColor = Color4.Gray;
 
             SetFinalRectangle();
 
             SetGLBuffer();
         }
 
-        public GUIBase(Rectangle rec, UIDock uIDock, Color4 nColor, Color4 hColor, Color4 cColor)
+        public GUIBase(Rectangle rec, UIDock uIDock, Color4 nColor, Color4 hColor, Color4 cColor, Color4 fColor)
         {
             GUIRender.AddGuiElement(this);
 
@@ -93,6 +99,8 @@ namespace ProjectEvlly.src.UI
             NormalColor = nColor;
             HoverColor = hColor;
             ClickColor = cColor;
+            FocusedColor = fColor;
+            NoInteractColor = Color4.Gray;
 
             SetFinalRectangle();
 
@@ -176,20 +184,55 @@ namespace ProjectEvlly.src.UI
 
                 if (ShowBackGround)
                 {
-                    if (IP_Hover)
+                    if (IP_Interact)
                     {
-                        if (IP_Cliked)
+                        if (CanShowFocus)
                         {
-                            GUIRender.GetShader.SetColor("MainColor", ClickColor);
+                            if (IP_Focused)
+                            {
+                                GUIRender.GetShader.SetColor("MainColor", FocusedColor);
+                            }
+                            else
+                            {
+                                if (IP_Hover)
+                                {
+                                    if (IP_Cliked)
+                                    {
+                                        GUIRender.GetShader.SetColor("MainColor", ClickColor);
+                                    }
+                                    else
+                                    {
+                                        GUIRender.GetShader.SetColor("MainColor", HoverColor);
+                                    }
+                                }
+                                else
+                                {
+                                    GUIRender.GetShader.SetColor("MainColor", NormalColor);
+                                }
+                            }
                         }
                         else
                         {
-                            GUIRender.GetShader.SetColor("MainColor", HoverColor);
+                            if (IP_Hover)
+                            {
+                                if (IP_Cliked)
+                                {
+                                    GUIRender.GetShader.SetColor("MainColor", ClickColor);
+                                }
+                                else
+                                {
+                                    GUIRender.GetShader.SetColor("MainColor", HoverColor);
+                                }
+                            }
+                            else
+                            {
+                                GUIRender.GetShader.SetColor("MainColor", NormalColor);
+                            }
                         }
                     }
                     else
                     {
-                        GUIRender.GetShader.SetColor("MainColor", NormalColor);
+                        GUIRender.GetShader.SetColor("MainColor", NoInteractColor);
                     }
 
                     GUIRender.GetShader.SetMatrix4("projection", _projection);
@@ -429,6 +472,26 @@ namespace ProjectEvlly.src.UI
             _Dock = uIDock;
         }
 
+        public virtual void ShowFocus()
+        {
+            CanShowFocus = true;
+        }
+
+        public virtual void HideFocus()
+        {
+            CanShowFocus = false;
+        }
+
+        public virtual void Interactable()
+        {
+            IP_Interact = true;
+        }
+
+        public virtual void NoInteractable()
+        {
+            IP_Interact = false;
+        }
+
         /// <summary>
         /// Used when you cant wait for next frame, this is gona render the at the current frame
         /// </summary>
@@ -453,11 +516,17 @@ namespace ProjectEvlly.src.UI
             OnResize();
         }
 
-        public void SetBackColors(Color4 nColor, Color4 hColor, Color4 cColor)
+        public void SetBackColors(Color4 nColor, Color4 hColor, Color4 cColor, Color4 fColor)
         {
             NormalColor = nColor;
             HoverColor = hColor;
             ClickColor = cColor;
+            FocusedColor = fColor;
+        }
+
+        public virtual void SetInteractColor(Color4 color)
+        {
+            NoInteractColor = color;
         }
 
         public virtual void Dispose()
@@ -492,5 +561,6 @@ namespace ProjectEvlly.src.UI
         public bool IsEnabled { get { return Enabled; } }
         public bool IsHover { get { return IP_Hover; } }
         public bool IsFocused { get { return IP_Focused; } }
+        public bool IsInteract { get { return IP_Interact; } }
     }
 }

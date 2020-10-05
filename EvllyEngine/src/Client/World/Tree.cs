@@ -30,7 +30,7 @@ namespace EvllyEngine
             float a = (float)rand.NextDouble();
             float b = (float)rand.NextDouble();
 
-            float ChunkSeed = position.X * a + position.Z * b + Time._DeltaTime;
+            float ChunkSeed = position.X * a + position.Z * b;
 
             transform.Position = position;
             transform.Rotation = new Quaternion(MathHelper.DegreesToRadians((float)new System.Random((int)ChunkSeed).Next(0, 10)), MathHelper.DegreesToRadians((float)new System.Random((int)ChunkSeed).Next(0,90)), MathHelper.DegreesToRadians((float)new System.Random((int)ChunkSeed).Next(0, 5)));
@@ -53,6 +53,7 @@ namespace EvllyEngine
         public void OnDestroy()
         {
             _boxCollider.OnDestroy();
+            _meshRender.Dispose();
 
             transform = null;
 

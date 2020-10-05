@@ -17,27 +17,37 @@ namespace ProjectEvlly.src.UI
         public GUIImage(Rectangle rec) : base(rec)
         {
             TextureName = "";
+            NoInteractable();
+            HideFocus();
         }
 
         public GUIImage(Rectangle rec, UIDock uIDock) : base(rec, uIDock)
         {
             TextureName = "";
+            NoInteractable();
+            HideFocus();
         }
 
 
         public GUIImage(Rectangle rec, string Image) : base(rec)
         {
             TextureName = Image;
+            NoInteractable();
+            HideFocus();
         }
 
         public GUIImage(Rectangle rec, UIDock uIDock, string Image) : base(rec, uIDock)
         {
             TextureName = Image;
+            NoInteractable();
+            HideFocus();
         }
 
-        public GUIImage(Rectangle rec, UIDock uIDock, string Image, Color4 nColor, Color4 hColor, Color4 cColor) : base(rec, uIDock, nColor, hColor, cColor)
+        public GUIImage(Rectangle rec, UIDock uIDock, string Image, Color4 nColor, Color4 hColor, Color4 cColor, Color4 fColor) : base(rec, uIDock, nColor, hColor, cColor, fColor)
         {
             TextureName = Image;
+            NoInteractable();
+            HideFocus();
         }
 
         public override void RenderCustomValues()

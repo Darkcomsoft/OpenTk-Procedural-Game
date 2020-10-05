@@ -1,7 +1,6 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -50,7 +49,7 @@ namespace ProjectEvlly.src.World
                     _shader.Use();
                 }*/
 
-                System.Random random = new Random(transform.GetHashCode());
+                System.Random random = new System.Random(transform.GetHashCode());
 
                 animTime = random.Next();
 
@@ -142,9 +141,11 @@ namespace ProjectEvlly.src.World
                 _shader.SetFloat("time", Time._Tick);
 
                 //Set The Fog Values(this need to be in all mesh with use fog)
-                _shader.SetFloat("FOG_Density", Fog.Density);
-                _shader.SetFloat("FOG_Gradiante", Fog.Distance);
-                _shader.SetVector4("FOG_Color", Fog.FogColor);
+                _shader.SetFloat("FOG_Density", Environment.Density);
+                _shader.SetFloat("FOG_Gradiante", Environment.Distance);
+                _shader.SetColor("FOG_Color", Environment.FogColor);
+
+                _shader.SetColor("AmbienceColor", Environment.AmbienceColor);
 
                 GL.BindVertexArray(VAO);
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, IBO);

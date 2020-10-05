@@ -19,7 +19,7 @@ namespace EvllyEngine
     public class MidleWorld : WorldBase
     {
         public static int ChunkSize = 10;
-        public int renderDistanceXZ = 100;
+        public int renderDistanceXZ = 50;
         public int renderDistanceY = 30;
         public bool WorldRuning { get; private set; }
         private bool CanDestroyWorld = false;
@@ -55,6 +55,8 @@ namespace EvllyEngine
 #elif Server
 
 #endif
+            GlobalData.Seed = System.DateTime.Now.GetHashCode() * System.DateTime.UtcNow.GetHashCode();
+
             LockChunkMap = new object();
             LockToUpdate = new object();
 
@@ -111,7 +113,7 @@ namespace EvllyEngine
 
         private void WorldLooping()//this is a other thread looping
         {
-            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(MyHandler);
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
             while (WorldRuning)
             {
@@ -129,7 +131,7 @@ namespace EvllyEngine
             CanDestroyWorld = true;
         }
 
-        static void MyHandler(object sender, UnhandledExceptionEventArgs e)
+        private static void CurrentDomain_UnhandledException(Object sender, UnhandledExceptionEventArgs e)
         {
             try
             {
@@ -147,6 +149,8 @@ namespace EvllyEngine
                     Environment.Exit(1);
                 }
             }
+
+            // It should terminate our main thread so Application.Exit() is unnecessary here
         }
 
         public void CheckViewDistance()

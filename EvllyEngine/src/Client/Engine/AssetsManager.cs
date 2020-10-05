@@ -17,6 +17,7 @@ using ProjectEvlly;
 using QuickFont;
 using QuickFont.Configuration;
 using ProjectEvlly.src.UI.Font;
+using ProjectEvlly.src.Engine.Render;
 
 namespace EvllyEngine
 {
@@ -26,6 +27,7 @@ namespace EvllyEngine
         private Mesh Engine_Error;
 
         private Dictionary<string, Texture> _Textures;
+        private Dictionary<string, CubeMapTexture> _CubeTextures;
         private Dictionary<string, Shader> _Shaders;
         private Dictionary<string, Mesh> _Models;
         private Dictionary<string, QFont> _Fonts;
@@ -39,6 +41,7 @@ namespace EvllyEngine
             instance = this;
 
             _Textures = new Dictionary<string, Texture>();
+            _CubeTextures = new Dictionary<string, CubeMapTexture>();
             _Shaders = new Dictionary<string, Shader>();
             _Models = new Dictionary<string, Mesh>();
             _Fonts = new Dictionary<string, QFont>();
@@ -58,6 +61,7 @@ namespace EvllyEngine
             _Models.Add("Cube", LoadModel("Assets/Models/", "Cube"));
             _Models.Add("SkyCube", LoadModel("Assets/Models/", "SkyCube"));
             _Models.Add("SwordMetal", LoadModel("Assets/Models/", "SwordMetal"));
+            _Models.Add("SkySphere", LoadModel("Assets/Models/", "SkySphere"));
 
             //Load Textures
             SplashScreen.SetState("Loading Textures", SplashScreenStatus.Loading);
@@ -69,6 +73,11 @@ namespace EvllyEngine
             _Textures.Add("Water", new Texture(AssetsManager.LoadImage("Assets/Texture/", "Water", "png")));
             _Textures.Add("Water2", new Texture(AssetsManager.LoadImage("Assets/Texture/", "Water2", "png")));
             _Textures.Add("Cloud", new Texture(AssetsManager.LoadImage("Assets/Texture/", "Cloud", "png")));
+            
+
+            //Load CubeMaps
+            _CubeTextures.Add("SkyBoxTeste", new CubeMapTexture(AssetsManager.LoadCubeImages("Assets/Texture/CubeMap/", "SkyBoxTeste", "jpg")));
+            _CubeTextures.Add("Skyboxmidle", new CubeMapTexture(AssetsManager.LoadCubeImages("Assets/Texture/CubeMap/", "Skyboxmidle", "png")));
 
             //Load Images
             _Textures.Add("Darkcomsoft", new Texture(AssetsManager.LoadImage("Assets/Images/", "Darkcomsoft", "png")));
@@ -98,6 +107,7 @@ namespace EvllyEngine
             AddTileUv("Dirt", new Vector2(0.55f, 0.066667f), new Vector2(0.55f, 0f), new Vector2(0.6f, 0.066667f), new Vector2(0.6f, 0f));
             AddTileUv("Sand", new Vector2(0.8f, 0.066667f), new Vector2(0.8f, 0f), new Vector2(0.85f, 0.066667f), new Vector2(0.85f, 0f));
             AddTileUv("Water", new Vector2(0.2f, 0.066667f), new Vector2(0.2f, 0f), new Vector2(0.25f, 0.066667f), new Vector2(0.25f, 0f));
+            AddTileUv("Snow", new Vector2(0.7f, 0.066667f), new Vector2(0.7f, 0f), new Vector2(0.75f, 0.066667f), new Vector2(0.75f, 0f));
 
             //Load Fonts
             SplashScreen.SetState("Loading Fonts", SplashScreenStatus.Loading);
@@ -111,7 +121,12 @@ namespace EvllyEngine
         {
             foreach (var item in _Textures)
             {
-                item.Value.Delete();
+                item.Value.Dispose();
+            }
+
+            foreach (var item in _CubeTextures)
+            {
+                item.Value.Dispose();
             }
 
             foreach (var item in _Shaders)
@@ -185,6 +200,61 @@ namespace EvllyEngine
                 return new ImageFile(data.Scan0, data.Width, data.Height);
             }
         }
+        public static ImageFile[] LoadCubeImages(string path, string file, string extensio)
+        {
+            List<ImageFile> files = new List<ImageFile>();
+
+            string finalPath = path + file + "/";
+
+            for (int i = 0; i < 6; i++)
+            {
+                string finalFileName = file;
+                RotateFlipType rotate = RotateFlipType.RotateNoneFlipNone;
+                if (i == 0)
+                {
+                    finalFileName = file + "_rt";
+                }
+                else if (i == 1)
+                {
+                    finalFileName = file + "_dn";
+                }
+                else if (i == 2)
+                {
+                    finalFileName = file + "_bk";
+                }
+                else if (i == 3)
+                {
+                    finalFileName = file + "_lf";
+                }
+                else if (i == 4)
+                {
+                    finalFileName = file + "_up";
+                    rotate = RotateFlipType.Rotate90FlipNone;
+                }
+                else if (i == 5)
+                {
+                    finalFileName = file + "_ft";
+                }
+
+                if (!File.Exists(string.Concat(finalPath, finalFileName, "." + extensio)))
+                {
+                    Debug.LogError("Texture Files Can't be found At: " + string.Concat(finalPath, finalFileName, "." + extensio));
+                    throw new Exception("Texture Files Can't be found At: " + string.Concat(finalPath, finalFileName, "." + extensio));
+                }
+
+                using (var image = new Bitmap(string.Concat(finalPath, finalFileName, "." + extensio)))
+                {
+                    image.RotateFlip(rotate);
+
+                    //image.MakeTransparent();
+                    var data = image.LockBits(new Rectangle(0, 0, image.Width, image.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+
+                    files.Add(new ImageFile(data.Scan0, data.Width, data.Height));
+                }
+            }
+
+            return files.ToArray();
+        }
         public static Mesh LoadModel(string path, string file)
         {
             if (!File.Exists(string.Concat(path, file, ".dae")))
@@ -227,6 +297,17 @@ namespace EvllyEngine
         public static Texture GetTexture(string TextureName)
         {
             if (AssetsManager.instance._Textures.TryGetValue(TextureName, out Texture texture))
+            {
+                return texture;
+            }
+            else
+            {
+                throw new Exception("Dont Exist this Assets: " + TextureName);
+            }
+        }
+        public static CubeMapTexture GetCubeMap(string TextureName)
+        {
+            if (AssetsManager.instance._CubeTextures.TryGetValue(TextureName, out CubeMapTexture texture))
             {
                 return texture;
             }

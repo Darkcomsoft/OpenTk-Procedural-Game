@@ -135,7 +135,8 @@
     <Compile Include="src\Client\Engine\Physics\BoxCollider.cs" />
     <Compile Include="src\Client\Engine\Camera.cs" />
     <Compile Include="src\Client\Engine\Physics\MeshCollider.cs" />
-    <Compile Include="src\Client\Engine\Render\Fog.cs" />
+    <Compile Include="src\Client\Engine\Render\CubeMapTexture.cs" />
+    <Compile Include="src\Client\Engine\Render\Environment.cs" />
     <Compile Include="src\Client\Engine\Render\Frustum.cs" />
     <Compile Include="src\Client\Engine\Render\MeshRender.cs" />
     <Compile Include="src\Client\Engine\Render\RenderEntityBase.cs" />
@@ -167,6 +168,7 @@
     <Compile Include="src\Client\UI\GUIRender.cs" />
     <Compile Include="src\Client\UI\GUIElements\GUITextInput.cs" />
     <Compile Include="src\Client\UI\GameUI.cs" />
+    <Compile Include="src\Client\UI\GUITemplate\PauseMenu.cs" />
     <Compile Include="src\Client\UI\GUITemplate\PrepareGUI.cs" />
     <Compile Include="src\Client\UI\Input\OpenTK.cs" />
     <Compile Include="src\Client\UI\Input\OpenTKAlternative.cs" />
@@ -180,8 +182,9 @@
     <Compile Include="src\Client\User\AuthManager.cs" />
     <Compile Include="src\Client\World\Biomes\BiomeData.cs" />
     <Compile Include="src\Client\World\Biomes\OakForest.cs" />
-    <Compile Include="src\Client\World\WaterMeshRender.cs" />
     <Compile Include="src\Client\World\ChunkMeshRender.cs" />
+    <Compile Include="src\Client\World\WaterMeshRender.cs" />
+    <Compile Include="src\Client\World\ChunkCloudRender.cs" />
     <Compile Include="src\Client\World\WorldManager.cs" />
     <Compile Include="src\Commands.cs" />
     <Compile Include="src\EnumClass.cs" />

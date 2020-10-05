@@ -26,7 +26,6 @@ namespace ProjectEvlly.src
     {
         public GUIMainMenu _MainMenu;
 
-        private Sky _Sky;
         private TickSystem _RenderSystem;
 
         private GamePlay _GamePlayManager;
@@ -44,8 +43,6 @@ namespace ProjectEvlly.src
             Game.Client = this;
 
             _RenderSystem = new TickSystem();
-            
-            _Sky = new Sky(AssetsManager.GetShader("Sky"), AssetsManager.GetTexture("devTexture2"));
 
             EvllyEngine.MouseCursor.UnLockCursor();
 
@@ -59,7 +56,7 @@ namespace ProjectEvlly.src
 
             LoadMainMenu();
         }
-        private bool isPused = true;
+
         public void Tick()
         {
             Network.NetworkTick();
@@ -68,21 +65,6 @@ namespace ProjectEvlly.src
             {
                 _RenderSystem.Tick(Time._DeltaTime);
                 _GamePlayManager.Tick();
-                _Sky.Tick();
-
-                if (Input.GetKeyDown(OpenTK.Input.Key.Escape))
-                {
-                    if (isPused)
-                    {
-                        isPused = false;
-                        EvllyEngine.MouseCursor.LockCursor();
-                    }
-                    else
-                    {
-                        isPused = true;
-                        EvllyEngine.MouseCursor.UnLockCursor();
-                    }
-                }
 
                 if (Input.GetKeyDown(Key.F11))
                 {
@@ -106,7 +88,7 @@ namespace ProjectEvlly.src
         {
             if (_isPlaying)
             {
-                _Sky.Draw(e);
+                _GamePlayManager.TickRender();
                 _RenderSystem.RenderTick((float)e.Time);
                 Utilitys.CheckGLError("End Of DrawUpdate");
             }
@@ -134,7 +116,6 @@ namespace ProjectEvlly.src
             {
                 _RenderSystem.Dispose();
             }
-            _Sky.Dispose();
 
             Network.OnServerStart -= OnServerStart;
             Network.OnDisconnect -= OnDsiconnect;
@@ -241,6 +222,7 @@ namespace ProjectEvlly.src
         public static GUI GUI;
         public static MidleWorld MidleWorld;
         public static Window Window;
+        public static GamePlay GamePlay;
 
         public static MidleWorld GetWorld
         {

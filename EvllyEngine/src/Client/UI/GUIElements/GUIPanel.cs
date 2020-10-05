@@ -17,32 +17,42 @@ namespace ProjectEvlly.src.UI
         public GUIPanel(Rectangle rec) : base(rec)
         {
             TextureName = "";
-            EnabledInput = false;
+            SetInteractColor(Color4.White);
+            NoInteractable();
+            HideFocus();
         }
 
         public GUIPanel(Rectangle rec, UIDock uIDock) : base(rec, uIDock)
         {
             TextureName = "";
-            EnabledInput = false;
+            SetInteractColor(Color4.White);
+            NoInteractable();
+            HideFocus();
         }
 
 
         public GUIPanel(Rectangle rec, string Image) : base(rec)
         {
             TextureName = Image;
-            EnabledInput = false;
+            SetInteractColor(Color4.White);
+            NoInteractable();
+            HideFocus();
         }
 
         public GUIPanel(Rectangle rec, UIDock uIDock, string Image) : base(rec, uIDock)
         {
             TextureName = Image;
-            EnabledInput = false;
+            SetInteractColor(Color4.White);
+            NoInteractable();
+            HideFocus();
         }
 
-        public GUIPanel(Rectangle rec, UIDock uIDock, string Image, Color4 nColor, Color4 hColor, Color4 cColor) : base(rec, uIDock, nColor, hColor, cColor)
+        public GUIPanel(Rectangle rec, UIDock uIDock, string Image, Color4 nColor, Color4 hColor, Color4 cColor, Color4 fColor) : base(rec, uIDock, nColor, hColor, cColor, fColor)
         {
             TextureName = Image;
-            EnabledInput = false;
+            SetInteractColor(Color4.White);
+            NoInteractable();
+            HideFocus();
         }
 
         public override void RenderCustomValues()

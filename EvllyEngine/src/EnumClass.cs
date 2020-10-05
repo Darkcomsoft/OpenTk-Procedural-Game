@@ -13,7 +13,7 @@ namespace ProjectEvlly.src
 
     public enum TypeBlock : byte
     {
-        Air, Grass, Dirt, Sand
+        Air, Grass, Dirt, Sand, Snow
     }
 
     public enum TreeType : byte

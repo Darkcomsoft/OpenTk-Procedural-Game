@@ -3,26 +3,18 @@ layout (location = 0) in vec4 position;
 layout (location = 1) in vec2 aTexCoord;
 layout (location = 2) in vec3 Normals;
 
-out vec2 texCoord;
-out float visiblity;
+out vec3 texCoord;
 
 uniform mat4 world;
 uniform mat4 view;
 uniform mat4 projection;
-
-uniform float FOG_Density; 
-uniform float FOG_Gradiante;
 
 void main()
 {
 	vec4 worldPosition = position * world;
 	vec4 posRelativeCamera = worldPosition * view;
 
-	texCoord = aTexCoord;
-	
-	/*float distance = length(posRelativeCamera.xyz);
-    visiblity = exp(-pow((distance * FOG_Density), FOG_Gradiante));
-    visiblity = clamp(visiblity, 0.0, 1.0);*/
-	
+	texCoord = position.xyz;
+
 	gl_Position = posRelativeCamera * projection;
 }

@@ -52,6 +52,7 @@ namespace ProjectEvlly.src
             _CharacterController = new CharacterController();
 
             _CharacterController.Body.Position = new BEPUutilities.Vector3(playerEntity.transform.Position.X, playerEntity.transform.Position.Y, playerEntity.transform.Position.Z);
+            //_CharacterController.Body.BecomeKinematic();
             Physics.Add(_CharacterController);
         }
 
@@ -63,7 +64,7 @@ namespace ProjectEvlly.src
             {
                 
             }*/
-            
+
             /*if (_PlayerCamera._cameraTrnasform.Position.Y + _playerEntity.transform.Position.Y < -1)
             {
                 Fog.Density = 0.4f;
@@ -79,28 +80,30 @@ namespace ProjectEvlly.src
                 gl.ClearColor(new Color4(0, 0.7490196f, 1, 1));
             }*/
 
+            #region CalculateMouseInput
+            var mouse = Mouse.GetState();
+
+            if (_firstMove) // this bool variable is initially set to true
+            {
+                _lastPos = new Vector2(mouse.X, mouse.Y);
+                _firstMove = false;
+            }
+            else
+            {
+                // Calculate the offset of the mouse position
+                var deltaX = mouse.X - _lastPos.X;
+                var deltaY = mouse.Y - _lastPos.Y;
+                _lastPos = new Vector2(mouse.X, mouse.Y);
+
+
+                // Apply the camera pitch and yaw (we clamp the pitch in the camera class)
+                Yaw -= deltaX * sensitivity * Time._DeltaTime;
+                Pitch -= deltaY * sensitivity * Time._DeltaTime; // reversed since y-coordinates range from bottom to top
+            }
+            #endregion
+
             if (EvllyEngine.MouseCursor.MouseLocked)
             {
-                var mouse = Mouse.GetState();
-
-                if (_firstMove) // this bool variable is initially set to true
-                {
-                    _lastPos = new Vector2(mouse.X, mouse.Y);
-                    _firstMove = false;
-                }
-                else
-                {
-                    // Calculate the offset of the mouse position
-                    var deltaX = mouse.X - _lastPos.X;
-                    var deltaY = mouse.Y - _lastPos.Y;
-                    _lastPos = new Vector2(mouse.X, mouse.Y);
-
-
-                    // Apply the camera pitch and yaw (we clamp the pitch in the camera class)
-                    Yaw -= deltaX * sensitivity * Time._DeltaTime;
-                    Pitch -= deltaY * sensitivity * Time._DeltaTime; // reversed since y-coordinates range from bottom to top
-                }
-
                 mouseRotationBuffer.X = Yaw;
                 mouseRotationBuffer.Y = Pitch;
 

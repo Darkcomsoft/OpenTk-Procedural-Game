@@ -122,7 +122,7 @@ namespace ProjectEvlly.src.UI
 
                 foreach (var item in GuiBaseList)
                 {
-                    if (item.EnabledInput)
+                    if (item.IsInteract)
                     {
                         if (item.IsEnabled)
                         {

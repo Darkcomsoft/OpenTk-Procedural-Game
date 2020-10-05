@@ -34,6 +34,10 @@ namespace ProjectEvlly.src.UI.GUIElements
         private void Start(string text)
         {
             fontRender = new FontRender(text, 22, FontName, new Vector2(0f, 0f), GetRectangle.Width, GetRectangle);
+
+            NoInteractable();
+            HideFocus();
+            ShowBackGround = false;
         }
 
         public override void OnResize()

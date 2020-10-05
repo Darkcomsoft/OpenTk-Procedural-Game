@@ -8,10 +8,12 @@ in float visiblity;
 uniform sampler2D texture0;
 uniform vec4 FOG_Color;
 
+uniform vec4 AmbienceColor;
+
 void main()
 {
-    color = texture(texture0, texCoord);
-    //color = mix(FOG_Color,color,visiblity);
+    color = mix(vec4(1,1,1, 0.5), texture(texture0, texCoord), visiblity);
+	
 
     if (color.a < 0.5){
         discard;

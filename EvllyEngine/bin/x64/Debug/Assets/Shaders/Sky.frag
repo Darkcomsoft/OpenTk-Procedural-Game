@@ -2,14 +2,21 @@
 
 layout(location = 0) out vec4 color;
 
-in vec2 texCoord;
-in float visiblity;
+in vec3 texCoord;
 
-uniform sampler2D texture0;
-uniform vec4 FOG_Color;
+uniform samplerCube texture0;
+
+uniform vec4 SKY_Color;
+uniform vec4 SKY_HoriColor;
 
 void main()
 {
-    color = texture(texture0, texCoord);
-	//color = mix(FOG_Color, color, visiblity);
+    //color = texture(texture0, texCoord);
+	float dis = length(texCoord.y) / 0.5;
+	
+	if (texCoord.y < 0){
+		dis = 0;
+	}
+	
+	color += mix(SKY_HoriColor, SKY_Color, dis);
 }

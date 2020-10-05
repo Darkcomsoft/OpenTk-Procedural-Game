@@ -189,7 +189,7 @@ namespace ProjectEvlly
             _drawing.Dispose();
 
             _Shader.Delete();
-            _texture.Delete();
+            _texture.Dispose();
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
             GL.BindVertexArray(0);

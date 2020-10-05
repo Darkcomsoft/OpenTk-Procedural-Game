@@ -51,33 +51,36 @@ namespace ProjectEvlly.src.Engine
 
         public void RenderTick(float time)
         {
-            //Frustum.Instance.CalculateFrustum(Camera.Main._projection, Camera.Main.viewMatrix);
-
-            for (int i = 0; i < renderEntityBases.Count; i++)
+            if (Camera.Main != null)
             {
-                if (renderEntityBases[i] != null)
+                Frustum.Instance.CalculateFrustum(Camera.Main._projection, Camera.Main.viewMatrix);
+
+                for (int i = 0; i < renderEntityBases.Count; i++)
                 {
-                    /*if (Frustum.Instance.VolumeVsFrustum(renderEntityBases[i].transform.Position.X, renderEntityBases[i].transform.Position.Y, renderEntityBases[i].transform.Position.Z, renderEntityBases[i].ViewBoxWitdh, renderEntityBases[i].ViewBoxHeight, renderEntityBases[i].ViewBoxWitdh))
+                    if (renderEntityBases[i] != null)
                     {
+                        /*if (Frustum.Instance.VolumeVsFrustum(renderEntityBases[i].transform.Position.X, renderEntityBases[i].transform.Position.Y, renderEntityBases[i].transform.Position.Z, renderEntityBases[i].ViewBoxWitdh, renderEntityBases[i].ViewBoxHeight, renderEntityBases[i].ViewBoxWitdh))
+                        {
+                            renderEntityBases[i].TickRender(time);
+                        }*/
+
                         renderEntityBases[i].TickRender(time);
-                    }*/
-
-                    renderEntityBases[i].TickRender(time);
+                    }
                 }
-            }
 
-            for (int i = 0; i < renderEntityBasesT.Count; i++)
-            {
-                if (renderEntityBasesT[i] != null)
+                for (int i = 0; i < renderEntityBasesT.Count; i++)
                 {
-                    /*if (Vector3.Distance(renderEntityBasesT[i].transform.Position, Camera.Main._transformParent.Position) <= 100)
+                    if (renderEntityBasesT[i] != null)
                     {
-                        renderEntityBasesT[i].TickRender(time);
-                    }*/
+                        /*if (Frustum.Instance.VolumeVsFrustum(renderEntityBasesT[i].transform.Position.X, renderEntityBasesT[i].transform.Position.Y, renderEntityBasesT[i].transform.Position.Z, renderEntityBasesT[i].ViewBoxWitdh, renderEntityBasesT[i].ViewBoxHeight, renderEntityBasesT[i].ViewBoxWitdh))
+                        {
+                            renderEntityBases[i].TickRender(time);
+                        }*/
 
-                    if (Vector3.Distance(renderEntityBasesT[i].transform.Position, Camera.Main._transformParent.Position) <= 100)
-                    {
-                        renderEntityBasesT[i].TickRender(time);
+                        if (Vector3.Distance(renderEntityBasesT[i].transform.Position, Camera.Main._transformParent.Position) <= 100)
+                        {
+                            renderEntityBasesT[i].TickRender(time);
+                        }
                     }
                 }
             }

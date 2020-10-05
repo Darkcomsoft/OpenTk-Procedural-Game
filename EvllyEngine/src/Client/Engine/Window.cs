@@ -145,7 +145,7 @@ namespace EvllyEngine
 
             SwapBuffers();
             Utilitys.CheckGLError("Window SwapBuffers");
-            Thread.Sleep(10);
+            Thread.Sleep(60 / 4);
             base.OnRenderFrame(e);
         }
 
@@ -240,7 +240,7 @@ namespace EvllyEngine
         {
             Exception e = (Exception)args.ExceptionObject;
             Debug.LogError("GameLoop: Unhandled exception: " + args.ExceptionObject);
-            Environment.Exit(2);
+            System.Environment.Exit(2);
         }
 
         public void Crash()

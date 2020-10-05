@@ -15,16 +15,21 @@ uniform float time;
 uniform float FOG_Density; 
 uniform float FOG_Gradiante;
 
+const float Profudensity = 0.010; 
+const float Profugradiante = 1.5; 
+
 void main()
 {
 	vec4 worldPosition = position * world;
 	vec4 posRelativeCamera = worldPosition * view;
 
-	texCoord = aTexCoord;
-	texCoord += vec2(time, time) / 60;
+
+	float timeFinal = time / 200;
+
+	texCoord = aTexCoord * vec2(0.1,0.1) + vec2(-timeFinal, timeFinal);
 	
-	float distance = length(posRelativeCamera.xyz);
-    visiblity = exp(-pow((distance * FOG_Density), FOG_Gradiante));
+	float dis = length(posRelativeCamera.xyz);
+    visiblity = exp(-pow((dis * Profudensity), Profugradiante));
     visiblity = clamp(visiblity, 0.0, 1.0);
 	
 	gl_Position = posRelativeCamera * projection;

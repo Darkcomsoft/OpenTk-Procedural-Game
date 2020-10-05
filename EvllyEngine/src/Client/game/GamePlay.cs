@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ProjectEvlly.src
@@ -29,6 +30,8 @@ namespace ProjectEvlly.src
 
         public GamePlay(ClientType SessionType)
         {
+            Game.GamePlay = this;
+
             _SessionType = SessionType;
 
             _InGameUI = new GameUI();
@@ -52,6 +55,12 @@ namespace ProjectEvlly.src
         public void Tick()
         {
             _InGameUI.Tick();
+            _skyTime.Tick();
+        }
+
+        public void TickRender()
+        {
+            _skyTime.TickRender();
         }
 
         public void Dispose()
@@ -67,6 +76,7 @@ namespace ProjectEvlly.src
         private void LoadWorld()
         {
             _worldManager.LoadWorld(new MidleWorld());
+            Thread.Sleep(100);
             SpawnPlayer();
         }
 
@@ -89,6 +99,24 @@ namespace ProjectEvlly.src
         private void OnReceivedServerData()
         {
             
+        }
+
+        internal void PlayClick()
+        {
+            switch (_SessionType)
+            {
+                case ClientType.SinglePlayer:
+                    LoadWorld();
+                    break;
+                case ClientType.Multiplayer:
+                    
+                    break;
+            }
+        }
+
+        internal void DeleteClick()
+        {
+
         }
     }
 }

@@ -7,7 +7,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace EvllyEngine
 {
-    public class Texture
+    public class Texture : IDisposable
     {
         public int Handle;
         public int _Width;
@@ -65,7 +65,7 @@ namespace EvllyEngine
             GL.BindTexture(_TextureTarget, Handle);
         }
 
-        public void Delete()
+        public void Dispose()
         {
             GL.DeleteTexture(Handle);
             _imagePixel = null;

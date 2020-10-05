@@ -39,16 +39,19 @@ namespace ProjectEvlly.src.UI
 
             imgteste = new GUIImage(new System.Drawing.Rectangle(0, 0, 0, 0), UIDock.ScreenSizeRatio);
             imgteste.TextureName = "BackGround";
-            imgteste.EnabledInput = false;
-            imgteste.SetBackColors(new Color4(102,70,36,255), Color4.White, Color4.White);
+            imgteste.NoInteractable();
+            imgteste.SetBackColors(new Color4(102,70,36,255), Color4.White, Color4.White, Color4.White);
+            imgteste.SetInteractColor(new Color4(102, 70, 36, 255));
 
             Logo = new GUIImage(new System.Drawing.Rectangle(0, 135, 350, 50), UIDock.Cennter);
             Logo.TextureName = "VaKLogoYellow";
-            Logo.EnabledInput = false;
+            Logo.SetBackColors(Color4.White, Color4.White, Color4.White, Color4.White);
+            Logo.NoInteractable();
+            Logo.SetInteractColor(Color4.White);
 
             PlaySingleButtom = new GUIButtom("SinglePlayer", new System.Drawing.Rectangle(0, 55, 200, 50), UIDock.Cennter);
             PlaySingleButtom.SetColor(Color4.White);
-            PlaySingleButtom.SetBackColors(Color4.White, Color4.Gray, Color4.Gray);
+            PlaySingleButtom.SetBackColors(Color4.White, Color4.Gray, Color4.Gray, Color4.White);
             PlaySingleButtom.TextureName = "Buttom";
             PlaySingleButtom.OnClick += PlayButtomClick;
 
@@ -84,7 +87,7 @@ namespace ProjectEvlly.src.UI
         {
             connectionBackgorund = new GUIImage(new System.Drawing.Rectangle(0, 0, 0, 0), UIDock.ScreenSizeRatio);
             connectionBackgorund.TextureName = "BackGround";
-            connectionBackgorund.EnabledInput = false;
+            connectionBackgorund.NoInteractable();
             connectionBackgorund.Disable();
 
             connectionTextInfo = new GUILable("Null Connection Screen Info", new System.Drawing.Rectangle(0, 0, 200, 20), UIDock.Cennter);

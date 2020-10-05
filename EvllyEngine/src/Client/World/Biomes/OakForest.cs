@@ -11,14 +11,12 @@ namespace ProjectEvlly.src.World.Biomes
     {
         public static BiomeData GetBiome(int x, int z, Chunk chunk)
         {
-            FastNoise noiseFast = new FastNoise(GlobalData.Seed);
             FastNoise noiseFast2 = new FastNoise(GlobalData.Seed);
             System.Random rand = new Random((int)chunk.GetSeed * chunk.GetHashCode() * x - z);
 
-            noiseFast.SetFrequency(0.005f);
             noiseFast2.SetFrequency(0.05f);
 
-            float noise = noiseFast.GetPerlin(x, z) * noiseFast2.GetPerlinFractal(x, z);
+            float noise = noiseFast2.GetPerlinFractal(x, z);
 
             if (noise <= 0.15f)
             {
@@ -30,7 +28,7 @@ namespace ProjectEvlly.src.World.Biomes
             }
             else
             {
-                if (rand.Next(0, 20) == 1)
+                if (rand.Next(0, 20) <= 5)
                 {
                     return new BiomeData(noise, TypeBlock.Grass, BlockVariant.none, TreeType.Oak);
                 }
