@@ -145,7 +145,7 @@ namespace EvllyEngine
 
                     MidleWorld.globalNoise.GradientPerturbFractal(ref pos.X, ref pos.Y, ref pos.Z);
 
-                    blocks[x, z] = new Block(x + (int)transform.Position.X, z + (int)transform.Position.Z, transform.Position, MidleWorld.globalNoise.GetPerlin(pos.X, pos.Y) * 50, this);
+                    blocks[x, z] = new Block(x + (int)transform.Position.X, z + (int)transform.Position.Z, transform.Position, MidleWorld.globalNoise.GetPerlinFractal(pos.X, pos.Y) * 150, this);
                 }
             }
 
@@ -308,7 +308,7 @@ namespace EvllyEngine
                 {
                     if (blocks[x, z].treeType != TreeType.none)
                     {
-                        _trees.Add(new Tree(new Vector3(blocks[x, z].x, blocks[x, z].height, blocks[x, z].z)));
+                        _trees.Add(new Tree(new Vector3(blocks[x, z].x, blocks[x, z].height, blocks[x, z].z), blocks[x, z].treeType));
                     }
                 }
             }
@@ -416,7 +416,7 @@ namespace EvllyEngine
             MidleWorld.biomeNoise.GradientPerturbFractal(ref XX, ref ZZ);
 
             heatValue = Math.Abs(MidleWorld.biomeNoise.GetCellular(XX, ZZ));
-            MoistureValue = Math.Abs(MidleWorld.biomeNoise.GetCellular(XX - ZZ, ZZ - XX));
+            MoistureValue = Math.Abs(MidleWorld.biomeNoise.GetCellular(XX, ZZ));
 
             if (heatValue <= GlobalData.ColdestValue)
             {
@@ -507,9 +507,7 @@ namespace EvllyEngine
                         biomeData._treeType = TreeType.none;
                         break;
                     case BiomeType.Ice:
-                        biomeData = OakForest.GetBiome(x, z, chunk);
-                        biomeData._typeBlock = TypeBlock.Snow;
-                        biomeData._treeType = TreeType.none;
+                        biomeData = SnowForest.GetBiome(x, z, chunk);
                         break;
                     case BiomeType.Tundra:
                         biomeData = OakForest.GetBiome(x, z, chunk);
@@ -533,7 +531,7 @@ namespace EvllyEngine
 
                 Type = biomeData._typeBlock;
                 treeType = biomeData._treeType;
-                height += biomeData._Height + height;
+                height += biomeData._Height + height / 50;
             }
         }
 

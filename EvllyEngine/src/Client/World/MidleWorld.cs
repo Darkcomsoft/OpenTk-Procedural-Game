@@ -19,7 +19,7 @@ namespace EvllyEngine
     public class MidleWorld : WorldBase
     {
         public static int ChunkSize = 10;
-        public int renderDistanceXZ = 50;
+        public int renderDistanceXZ = 100;
         public int renderDistanceY = 30;
         public bool WorldRuning { get; private set; }
         private bool CanDestroyWorld = false;
@@ -74,11 +74,12 @@ namespace EvllyEngine
 
 
             biomeNoise = new FastNoise(GlobalData.Seed);
-            biomeNoise.SetFrequency(0.05f);
-            biomeNoise.SetGradientPerturbAmp(30f);
-            biomeNoise.SetCellularNoiseLookup(new FastNoise());
+            biomeNoise.SetFrequency(0.005f);
+            biomeNoise.SetGradientPerturbAmp(20f);
+            biomeNoise.SetFrequencygrad(0.06f);
+            //biomeNoise.SetCellularNoiseLookup(biomeNoise);
             biomeNoise.SetCellularDistanceFunction(FastNoise.CellularDistanceFunction.Manhattan);
-            biomeNoise.SetCellularReturnType(FastNoise.CellularReturnType.NoiseLookup);
+            biomeNoise.SetCellularReturnType(FastNoise.CellularReturnType.CellValue);
 
             //LoadTheWorld if has a save
             if (SaveManager.LoadWorld())//Have a Save

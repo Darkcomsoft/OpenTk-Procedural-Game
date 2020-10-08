@@ -13,34 +13,34 @@ namespace ProjectEvlly.src.save
     {
         public static void CreateDirectory(string WorldName)
         {
-            if (!Directory.Exists(Path.GetFullPath("Saves./")))
+            if (!Directory.Exists(Path.GetFullPath("Saves/")))
             {
-                Directory.CreateDirectory(Path.GetFullPath("Saves./"));
+                Directory.CreateDirectory(Path.GetFullPath("Saves/"));
             }
 
-            if (!Directory.Exists(Path.GetFullPath("Saves./" + WorldName + "./")))
+            if (!Directory.Exists(Path.GetFullPath("Saves/" + WorldName + "/")))
             {
-                Directory.CreateDirectory(Path.GetFullPath("Saves./" + WorldName + "./"));
+                Directory.CreateDirectory(Path.GetFullPath("Saves/" + WorldName + "/"));
             }
 
-            if (!Directory.Exists(Path.GetFullPath("Saves./" + WorldName + "./chunks./")))
+            if (!Directory.Exists(Path.GetFullPath("Saves/" + WorldName + "/chunks/")))
             {
-                Directory.CreateDirectory(Path.GetFullPath("Saves./" + WorldName + "./chunks./"));
+                Directory.CreateDirectory(Path.GetFullPath("Saves/" + WorldName + "/chunks/"));
             }
 
-            if (!Directory.Exists(Path.GetFullPath("Saves./" + WorldName + "./city./")))
+            if (!Directory.Exists(Path.GetFullPath("Saves/" + WorldName + "/city/")))
             {
-                Directory.CreateDirectory(Path.GetFullPath("Saves./" + WorldName + "./city./"));
+                Directory.CreateDirectory(Path.GetFullPath("Saves/" + WorldName + "/city/"));
             }
 
-            if (!Directory.Exists(Path.GetFullPath("Saves./" + WorldName + "./player./")))
+            if (!Directory.Exists(Path.GetFullPath("Saves/" + WorldName + "/player/")))
             {
-                Directory.CreateDirectory(Path.GetFullPath("Saves./" + WorldName + "./player./"));
+                Directory.CreateDirectory(Path.GetFullPath("Saves./" + WorldName + "/player/"));
             }
 
-            if (!Directory.Exists(Path.GetFullPath("Saves./" + WorldName + "./Entity./")))
+            if (!Directory.Exists(Path.GetFullPath("Saves/" + WorldName + "/Entity/")))
             {
-                Directory.CreateDirectory(Path.GetFullPath("Saves./" + WorldName + "./Entity./"));
+                Directory.CreateDirectory(Path.GetFullPath("Saves/" + WorldName + "/Entity/"));
             }
         }
 
@@ -50,7 +50,7 @@ namespace ProjectEvlly.src.save
             CreateDirectory(universename);
 
             BinaryFormatter bf = new BinaryFormatter();
-            FileStream file = File.Create(Path.GetFullPath("Saves./" + universename + "./player./" + userid + ".database"));
+            FileStream file = File.Create(Path.GetFullPath("Saves/" + universename + "/player/" + userid + ".database"));
 
             bf.Serialize(file, info);
             file.Close();
@@ -58,15 +58,15 @@ namespace ProjectEvlly.src.save
 
         public static void DeletPlayer(string userid, string universename)
         {
-            File.Delete(Path.GetFullPath("Saves./" + universename + "./player./" + userid + ".database"));
+            File.Delete(Path.GetFullPath("Saves/" + universename + "/player/" + userid + ".database"));
         }
 
         public static PlayerSaveInfo LoadPlayer(string userid, string universename)
         {
-            if (File.Exists(Path.GetFullPath("Saves./" + universename + "./player./" + userid + ".database")))
+            if (File.Exists(Path.GetFullPath("Saves/" + universename + "/player/" + userid + ".database")))
             {
                 BinaryFormatter bf = new BinaryFormatter();
-                FileStream file = File.Open(Path.GetFullPath("Saves./" + universename + "./player./" + userid + ".database"), FileMode.Open);
+                FileStream file = File.Open(Path.GetFullPath("Saves/" + universename + "/player/" + userid + ".database"), FileMode.Open);
 
                 PlayerSaveInfo dataa = (PlayerSaveInfo)bf.Deserialize(file);
                 file.Close();
@@ -74,7 +74,7 @@ namespace ProjectEvlly.src.save
                 return dataa;
             }
 
-            Debug.Log("Dont found this Player File " + Path.GetFullPath("Saves./" + universename + "./player./" + userid + ".database"));
+            Debug.Log("Dont found this Player File " + Path.GetFullPath("Saves/" + universename + "/player/" + userid + ".database"));
             return new PlayerSaveInfo();
         }
         #endregion
@@ -82,13 +82,13 @@ namespace ProjectEvlly.src.save
         #region CharacterSave
         public static void SaveChars(CharSaveInfo[] info)
         {
-            if (!Directory.Exists(Path.GetFullPath("Saves./")))
+            if (!Directory.Exists(Path.GetFullPath("Saves/")))
             {
-                Directory.CreateDirectory(Path.GetFullPath("Saves./"));
+                Directory.CreateDirectory(Path.GetFullPath("Saves/"));
             }
 
             BinaryFormatter bf = new BinaryFormatter();
-            FileStream file = File.Create(Path.GetFullPath("Saves./characters.database"));
+            FileStream file = File.Create(Path.GetFullPath("Saves/characters.database"));
 
             bf.Serialize(file, info);
             file.Close();
@@ -96,15 +96,15 @@ namespace ProjectEvlly.src.save
 
         public static void DeletChars()
         {
-            File.Delete(Path.GetFullPath("Saves./characters.database"));
+            File.Delete(Path.GetFullPath("Saves/characters.database"));
         }
 
         public static CharSaveInfo[] LoadChars()
         {
-            if (File.Exists(Path.GetFullPath("Saves./characters.database")))
+            if (File.Exists(Path.GetFullPath("Saves/characters.database")))
             {
                 BinaryFormatter bf = new BinaryFormatter();
-                FileStream file = File.Open(Path.GetFullPath("Saves./characters.database"), FileMode.Open);
+                FileStream file = File.Open(Path.GetFullPath("Saves/characters.database"), FileMode.Open);
 
                 CharSaveInfo[] dataa = (CharSaveInfo[])bf.Deserialize(file);
                 file.Close();
@@ -112,7 +112,7 @@ namespace ProjectEvlly.src.save
                 return dataa;
             }
 
-            Debug.Log("Dont found this Player File " + Path.GetFullPath("Saves./characters.database"));
+            Debug.Log("Dont found this Player File " + Path.GetFullPath("Saves/characters.database"));
             return new CharSaveInfo[] { };
         }
         #endregion

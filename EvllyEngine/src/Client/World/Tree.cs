@@ -18,7 +18,7 @@ namespace EvllyEngine
         private MeshRender _meshRender;
         private BoxCollider _boxCollider;
 
-        public Tree(Vector3 position)
+        public Tree(Vector3 position, TreeType treeType)
         {
             HP = 100;
             MaxHP = 100;
@@ -39,10 +39,21 @@ namespace EvllyEngine
 
             transform.Size = new Vector3(1, 1, 1);
 
-            _meshRender = new MeshRender(transform, AssetsManager.GetMesh("oak"), AssetsManager.GetShader("Default"), AssetsManager.GetTexture("SpritesTreeHigt"));
+            switch (treeType)
+            {
+                case TreeType.Oak:
+                    _meshRender = new MeshRender(transform, AssetsManager.GetMesh("oak"), AssetsManager.GetShader("Default"), AssetsManager.GetTexture("SpritesTreeHigt"));
+                    break;
+                case TreeType.Pine:
+                    _meshRender = new MeshRender(transform, AssetsManager.GetMesh("Pine01"), AssetsManager.GetShader("Default"), AssetsManager.GetTexture("SpritesTreeHigt"));
+                    break;
+                case TreeType.PineSnow:
+                    _meshRender = new MeshRender(transform, AssetsManager.GetMesh("Pine01"), AssetsManager.GetShader("Default"), AssetsManager.GetTexture("SpritesTreeHigt_Snow"));
+                    break;
+            }
 
             _meshRender.ViewBoxWitdh = 3;
-            _meshRender.ViewBoxWitdh = 5;
+            _meshRender.ViewBoxHeight = 5;
 
             //_meshRender.Transparency = true;
             _meshRender._cullType = OpenTK.Graphics.OpenGL.CullFaceMode.FrontAndBack;

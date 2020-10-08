@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ProjectEvlly.src.World.Biomes
 {
-    public static class OakForest
+    public static class SnowForest
     {
         public static BiomeData GetBiome(int x, int z, Chunk chunk)
         {
@@ -18,17 +18,13 @@ namespace ProjectEvlly.src.World.Biomes
 
             float noise = noiseFast2.GetPerlinFractal(x, z);
 
-            if (rand.Next(0, 100) <= 3)
+            if (rand.Next(0, 100) <= 5)
             {
-                return new BiomeData(noise, TypeBlock.Grass, BlockVariant.none, TreeType.Oak);
-            }
-            else if(rand.Next(0, 100) <= 5)
-            {
-                return new BiomeData(noise, TypeBlock.Grass, BlockVariant.none, TreeType.Oak);
+                return new BiomeData(noise, TypeBlock.Snow, BlockVariant.none, TreeType.PineSnow);
             }
             else
             {
-                return new BiomeData(noise, TypeBlock.Grass, BlockVariant.none, TreeType.none);
+                return new BiomeData(noise, TypeBlock.Snow, BlockVariant.none, TreeType.none);
             }
         }
     }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ProjectEvlly.src.Engine.Render;
+using ProjectEvlly.src.World;
 
 namespace ProjectEvlly.src.Engine
 {
@@ -14,10 +15,8 @@ namespace ProjectEvlly.src.Engine
         public static TickSystem Instance;
 
         private List<ScriptBase> TickList = new List<ScriptBase>();
-
         private List<RenderEntityBase> renderEntityBases = new List<RenderEntityBase>();
         private List<RenderEntityBase> renderEntityBasesT = new List<RenderEntityBase>();
-        private Queue<RenderEntityBase> toRemove = new Queue<RenderEntityBase>();
 
         public TickSystem()
         {
@@ -33,20 +32,6 @@ namespace ProjectEvlly.src.Engine
                     TickList[i].Tick();
                 }
             }
-
-            while (toRemove.Count > 0)
-            {
-                RenderEntityBase entity = toRemove.Dequeue();
-                if (renderEntityBases.Contains(entity))
-                {
-                    renderEntityBases.Remove(entity);
-                }
-                else
-                {
-                    renderEntityBasesT.Remove(entity);
-                }
-                entity.Dispose();
-            }
         }
 
         public void RenderTick(float time)
@@ -59,12 +44,10 @@ namespace ProjectEvlly.src.Engine
                 {
                     if (renderEntityBases[i] != null)
                     {
-                        /*if (Frustum.Instance.VolumeVsFrustum(renderEntityBases[i].transform.Position.X, renderEntityBases[i].transform.Position.Y, renderEntityBases[i].transform.Position.Z, renderEntityBases[i].ViewBoxWitdh, renderEntityBases[i].ViewBoxHeight, renderEntityBases[i].ViewBoxWitdh))
+                        if (Frustum.Instance.VolumeVsFrustum(renderEntityBases[i].transform.Position.X, renderEntityBases[i].transform.Position.Y, renderEntityBases[i].transform.Position.Z, renderEntityBases[i].ViewBoxWitdh, renderEntityBases[i].ViewBoxHeight, renderEntityBases[i].ViewBoxWitdh))
                         {
                             renderEntityBases[i].TickRender(time);
-                        }*/
-
-                        renderEntityBases[i].TickRender(time);
+                        }
                     }
                 }
 
@@ -72,14 +55,22 @@ namespace ProjectEvlly.src.Engine
                 {
                     if (renderEntityBasesT[i] != null)
                     {
-                        /*if (Frustum.Instance.VolumeVsFrustum(renderEntityBasesT[i].transform.Position.X, renderEntityBasesT[i].transform.Position.Y, renderEntityBasesT[i].transform.Position.Z, renderEntityBasesT[i].ViewBoxWitdh, renderEntityBasesT[i].ViewBoxHeight, renderEntityBasesT[i].ViewBoxWitdh))
+                        if (Frustum.Instance.VolumeVsFrustum(renderEntityBasesT[i].transform.Position.X, renderEntityBasesT[i].transform.Position.Y, renderEntityBasesT[i].transform.Position.Z, renderEntityBasesT[i].ViewBoxWitdh, renderEntityBasesT[i].ViewBoxHeight, renderEntityBasesT[i].ViewBoxWitdh))
                         {
-                            renderEntityBases[i].TickRender(time);
-                        }*/
-
-                        if (Vector3.Distance(renderEntityBasesT[i].transform.Position, Camera.Main._transformParent.Position) <= 100)
-                        {
-                            renderEntityBasesT[i].TickRender(time);
+                            if (renderEntityBasesT[i].GetType() != typeof(WaterMeshRender))
+                            {
+                                if (Vector3.Distance(renderEntityBasesT[i].transform.Position, Camera.Main._transformParent.Position) <= 30)
+                                {
+                                    renderEntityBasesT[i].TickRender(time);
+                                }
+                            }
+                            else
+                            {
+                                if (Vector3.Distance(renderEntityBasesT[i].transform.Position, Camera.Main._transformParent.Position) <= 100)
+                                {
+                                    renderEntityBasesT[i].TickRender(time);
+                                }
+                            }
                         }
                     }
                 }
@@ -88,30 +79,6 @@ namespace ProjectEvlly.src.Engine
 
         public void Dispose()
         {
-            if (toRemove != null)
-            {
-                while (toRemove.Count > 0)
-                {
-                    RenderEntityBase entity = toRemove.Dequeue();
-
-                    if (renderEntityBases.Contains(entity))
-                    {
-                        renderEntityBases.Remove(entity);
-                    }
-                    else if (renderEntityBasesT.Contains(entity))
-                    {
-                        renderEntityBasesT.Remove(entity);
-                    }
-
-                    if (entity != null)
-                    {
-                        entity.Dispose();
-                    }
-                }
-
-                toRemove.Clear();
-            }
-
             /*foreach (var item in renderEntityBases)
             {
                 item.Dispose();
@@ -137,7 +104,6 @@ namespace ProjectEvlly.src.Engine
                 TickList.Clear();
             }
 
-            toRemove = null;
             renderEntityBases = null;
             renderEntityBasesT = null;
             TickList = null;
@@ -150,12 +116,6 @@ namespace ProjectEvlly.src.Engine
 
         public static void RemoveRenderItem(RenderEntityBase entityRender)
         {
-            //TickSystem.Instance.toRemove.Enqueue(entityRender);
-            TickSystem.Instance.renderEntityBases.Remove(entityRender);
-        }
-
-        public static void InstaRemoveRenderItem(RenderEntityBase entityRender)
-        {
             TickSystem.Instance.renderEntityBases.Remove(entityRender);
         }
 
@@ -165,12 +125,6 @@ namespace ProjectEvlly.src.Engine
         }
 
         public static void RemoveRenderItemT(RenderEntityBase entityRender)
-        {
-            //TickSystem.Instance.toRemove.Enqueue(entityRender);
-            TickSystem.Instance.renderEntityBasesT.Remove(entityRender);
-        }
-
-        public static void InstaRemoveRenderItemT(RenderEntityBase entityRender)
         {
             TickSystem.Instance.renderEntityBasesT.Remove(entityRender);
         }

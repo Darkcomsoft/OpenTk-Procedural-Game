@@ -56,8 +56,11 @@ namespace EvllyEngine
             Engine_Error = LoadModel("Assets/Models/", "error");
 
             //Load Mesh
-            SplashScreen.SetState("Loading Models", SplashScreenStatus.Loading);
-            _Models.Add("oak", LoadModel("Assets/Models/", "oak"));
+            SplashScreen.SetState("Loading Models Trees", SplashScreenStatus.Loading);
+            _Models.Add("oak", LoadModel("Assets/Models/Trees/", "oak"));
+            _Models.Add("Pine01", LoadModel("Assets/Models/Trees/", "Pine01"));
+
+            SplashScreen.SetState("Loading Others Models", SplashScreenStatus.Loading);
             _Models.Add("Cube", LoadModel("Assets/Models/", "Cube"));
             _Models.Add("SkyCube", LoadModel("Assets/Models/", "SkyCube"));
             _Models.Add("SwordMetal", LoadModel("Assets/Models/", "SwordMetal"));
@@ -69,6 +72,7 @@ namespace EvllyEngine
             _Textures.Add("devTexture2", new Texture(AssetsManager.LoadImage("Assets/Texture/", "devTexture2", "png")));
             _Textures.Add("TileAtlas", new Texture(AssetsManager.LoadImage("Assets/Texture/", "TileAtlas", "png")));
             _Textures.Add("SpritesTreeHigt", new Texture(AssetsManager.LoadImage("Assets/Texture/", "SpritesTreeHigt", "png")));
+            _Textures.Add("SpritesTreeHigt_Snow", new Texture(AssetsManager.LoadImage("Assets/Texture/", "SpritesTreeHigt_Snow", "png")));
             _Textures.Add("MetalSword", new Texture(AssetsManager.LoadImage("Assets/Texture/", "MetalSword", "png")));
             _Textures.Add("Water", new Texture(AssetsManager.LoadImage("Assets/Texture/", "Water", "png")));
             _Textures.Add("Water2", new Texture(AssetsManager.LoadImage("Assets/Texture/", "Water2", "png")));

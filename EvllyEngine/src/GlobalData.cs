@@ -14,6 +14,8 @@ namespace ProjectEvlly.src
         public const string AppName = "ProjectEvlly";
         public const string Version = "InDev V:0.0.0";
 
+        public static int TargetFrameRate = 60;
+
         public static int Seed;
 
         #region BiomesValues

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +14,7 @@ using ProjectEvlly.src.Utility;
 
 namespace ProjectEvlly.src
 {
-    public class PlayerController : IDisposable
+    public class PlayerController : System.IDisposable
     {
         private PlayerEntity _playerEntity;
 
@@ -31,7 +30,7 @@ namespace ProjectEvlly.src
         private Vector3 mouseRotationBuffer;
 
         private Vector2 _lastPos;
-        private bool _firstMove;
+        private bool _firstMove = true;
 
         public float Yaw { get; private set; }
         public float Pitch { get; private set; }
@@ -65,20 +64,24 @@ namespace ProjectEvlly.src
                 
             }*/
 
-            /*if (_PlayerCamera._cameraTrnasform.Position.Y + _playerEntity.transform.Position.Y < -1)
+            if (_PlayerCamera._cameraTrnasform.Position.Y + _playerEntity.transform.Position.Y < -1)
             {
-                Fog.Density = 0.4f;
-                Fog.Distance = 0.5f;
-                Fog.FogColor = new Vector4(0, 0, 0.5450981f, 1);
-                gl.ClearColor(Color4.DarkBlue);
+                Environment.Density = 0.4f;
+                Environment.Distance = 0.5f;
+                Environment.FogColor = Color4.DarkBlue;
+
+                Environment.SkyColor = Color4.DarkBlue;
+                Environment.SkyHorizonColor = Color4.DarkBlue;
             }
             else
             {
-                Fog.Density = 0.014f;
-                Fog.Distance = 3.5f;
-                Fog.FogColor = new Vector4(0, 0.7490196f, 1, 1);
-                gl.ClearColor(new Color4(0, 0.7490196f, 1, 1));
-            }*/
+                Environment.Density = 0.014f;
+                Environment.Distance = 3.5f;
+                Environment.FogColor = Color4.SkyBlue;
+
+                Environment.SkyColor = Color4.DeepSkyBlue;
+                Environment.SkyHorizonColor = Color4.SkyBlue;
+            }
 
             #region CalculateMouseInput
             var mouse = Mouse.GetState();

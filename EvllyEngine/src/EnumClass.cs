@@ -18,7 +18,7 @@ namespace ProjectEvlly.src
 
     public enum TreeType : byte
     {
-        none, Oak
+        none, Oak, Pine, PineSnow
     }
 
     public enum BlockVariant : byte

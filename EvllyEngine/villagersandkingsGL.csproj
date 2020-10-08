@@ -181,6 +181,7 @@
     <Compile Include="src\Client\UI\RectangleMesh.cs" />
     <Compile Include="src\Client\User\AuthManager.cs" />
     <Compile Include="src\Client\World\Biomes\BiomeData.cs" />
+    <Compile Include="src\Client\World\Biomes\SnowForest.cs" />
     <Compile Include="src\Client\World\Biomes\OakForest.cs" />
     <Compile Include="src\Client\World\ChunkMeshRender.cs" />
     <Compile Include="src\Client\World\WaterMeshRender.cs" />

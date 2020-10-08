@@ -61,6 +61,7 @@ namespace EvllyEngine
 
             //Start GL Frame Buffer
 
+            GlobalData.TargetFrameRate = 60;
 
             VSync = VSyncMode.Off;
             WindowBorder = WindowBorder.Resizable;

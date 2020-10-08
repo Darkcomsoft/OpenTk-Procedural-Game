@@ -61,6 +61,8 @@ namespace ProjectEvlly.src
         {
             Network.NetworkTick();
 
+            ProjectEvlly.src.Engine.Render.Environment.AmbienceColor = OpenTK.Graphics.Color4.White;
+
             if (_isPlaying)
             {
                 _RenderSystem.Tick(Time._DeltaTime);

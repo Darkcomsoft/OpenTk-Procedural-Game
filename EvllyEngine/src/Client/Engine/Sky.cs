@@ -94,8 +94,8 @@ namespace ProjectEvlly
                 _shader.SetMatrix4("view", Camera.Main.viewMatrix);
                 _shader.SetMatrix4("projection", Camera.Main._projection);
 
-                _shader.SetColor("SKY_Color", SkyTime.Color);
-                _shader.SetColor("SKY_HoriColor", SkyTime.HorizonColor);
+                _shader.SetColor("SKY_Color", Environment.SkyColor);
+                _shader.SetColor("SKY_HoriColor", Environment.SkyHorizonColor);
 
                 GL.DrawElements(BeginMode.Triangles, _mesh._indices.Length, DrawElementsType.UnsignedInt, 0);
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);

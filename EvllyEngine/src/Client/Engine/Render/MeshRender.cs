@@ -70,7 +70,7 @@ namespace EvllyEngine
             GL.VertexAttribPointer(3, 3, VertexAttribPointerType.Float, false, 0, 0);
             GL.EnableVertexAttribArray(3);
 
-            TickSystem.AddRenderItem(this);
+            TickSystem.AddRenderItemT(this);
         }
 
         public override void TickRender(float time)
@@ -79,7 +79,7 @@ namespace EvllyEngine
             {
                 if (Transparency)
                 {
-                    GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.ConstantAlpha);
+                    GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
                     GL.Enable(EnableCap.Blend);
                 }
 
@@ -129,7 +129,7 @@ namespace EvllyEngine
 
         public override void Dispose()
         {
-            TickSystem.RemoveRenderItem(this);
+            TickSystem.RemoveRenderItemT(this);
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
             GL.BindVertexArray(0);
