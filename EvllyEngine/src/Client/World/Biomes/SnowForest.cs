@@ -11,20 +11,22 @@ namespace ProjectEvlly.src.World.Biomes
     {
         public static BiomeData GetBiome(int x, int z, Chunk chunk)
         {
+            FastNoise noiseFast = new FastNoise(GlobalData.Seed);
             FastNoise noiseFast2 = new FastNoise(GlobalData.Seed);
-            System.Random rand = new Random((int)chunk.GetSeed * chunk.GetHashCode() * x - z);
+           System.Random rand = new Random(GlobalData.Seed - (int)chunk.GetSeed * chunk.GetHashCode() * x + z - chunk.transform.Position.GetHashCode());
 
-            noiseFast2.SetFrequency(0.05f);
+            noiseFast.SetFrequency(0.009f);
+            noiseFast2.SetFrequency(0.009f);
 
-            float noise = noiseFast2.GetPerlinFractal(x, z);
+            float noise =  noiseFast.GetPerlinFractal(x, z) * 100;
 
             if (rand.Next(0, 100) <= 5)
             {
-                return new BiomeData(noise, TypeBlock.Snow, BlockVariant.none, TreeType.PineSnow);
+                return new BiomeData(noise * noiseFast2.GetPerlinFractal(x, z), TypeBlock.Snow, BlockVariant.none, TreeType.PineSnow);
             }
             else
             {
-                return new BiomeData(noise, TypeBlock.Snow, BlockVariant.none, TreeType.none);
+                return new BiomeData(noise * noiseFast2.GetPerlinFractal(x, z), TypeBlock.Snow, BlockVariant.none, TreeType.none);
             }
         }
     }

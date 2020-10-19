@@ -1,38 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using System.Drawing;
-using OpenTK.Graphics.OpenGL;
-using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 using System.Drawing.Imaging;
-using System.Xml;
 using ProjectEvlly.src.Utility;
 using OpenTK;
-using System.Runtime.CompilerServices;
-using System.Threading;
 using ProjectEvlly;
-using QuickFont;
-using QuickFont.Configuration;
 using ProjectEvlly.src.UI.Font;
 using ProjectEvlly.src.Engine.Render;
+using ProjectEvlly.src.Engine.Sound;
+using OpenTK.Graphics;
 
 namespace EvllyEngine
 {
-    public class AssetsManager
+    public class AssetsManager : IDisposable
     {
         public static AssetsManager instance;
-        private Mesh Engine_Error;
 
         private Dictionary<string, Texture> _Textures;
         private Dictionary<string, CubeMapTexture> _CubeTextures;
         private Dictionary<string, Shader> _Shaders;
         private Dictionary<string, Mesh> _Models;
-        private Dictionary<string, QFont> _Fonts;
-
-        private Dictionary<string, FontType> _NewFonts;
+        private Dictionary<string, AudioClip> _Sounds;
+        private Dictionary<string, FontType> _Fonts;
 
         private Dictionary<string, Vector2[]> _Tiles;
 
@@ -44,18 +34,16 @@ namespace EvllyEngine
             _CubeTextures = new Dictionary<string, CubeMapTexture>();
             _Shaders = new Dictionary<string, Shader>();
             _Models = new Dictionary<string, Mesh>();
-            _Fonts = new Dictionary<string, QFont>();
-            _NewFonts = new Dictionary<string, FontType>();
+            _Sounds = new Dictionary<string, AudioClip>();
+            _Fonts = new Dictionary<string, FontType>();
 
             _Tiles = new Dictionary<string, Vector2[]>();
+
+            LoadAssets();
         }
 
-        public void LoadAssets()
+        private void LoadAssets()
         {
-            SplashScreen.SetState("Loading Error Model", SplashScreenStatus.Loading);
-            Engine_Error = LoadModel("Assets/Models/", "error");
-
-            //Load Mesh
             SplashScreen.SetState("Loading Models Trees", SplashScreenStatus.Loading);
             _Models.Add("oak", LoadModel("Assets/Models/Trees/", "oak"));
             _Models.Add("Pine01", LoadModel("Assets/Models/Trees/", "Pine01"));
@@ -65,8 +53,8 @@ namespace EvllyEngine
             _Models.Add("SkyCube", LoadModel("Assets/Models/", "SkyCube"));
             _Models.Add("SwordMetal", LoadModel("Assets/Models/", "SwordMetal"));
             _Models.Add("SkySphere", LoadModel("Assets/Models/", "SkySphere"));
+            _Models.Add("Ship01", LoadModel("Assets/Models/", "Ship01"));
 
-            //Load Textures
             SplashScreen.SetState("Loading Textures", SplashScreenStatus.Loading);
             _Textures.Add("devTexture", new Texture(AssetsManager.LoadImage("Assets/Texture/", "devTexture", "jpg")));
             _Textures.Add("devTexture2", new Texture(AssetsManager.LoadImage("Assets/Texture/", "devTexture2", "png")));
@@ -77,24 +65,24 @@ namespace EvllyEngine
             _Textures.Add("Water", new Texture(AssetsManager.LoadImage("Assets/Texture/", "Water", "png")));
             _Textures.Add("Water2", new Texture(AssetsManager.LoadImage("Assets/Texture/", "Water2", "png")));
             _Textures.Add("Cloud", new Texture(AssetsManager.LoadImage("Assets/Texture/", "Cloud", "png")));
-            
+            _Textures.Add("TextureTeste04", new Texture(AssetsManager.LoadImage("Assets/Texture/", "TextureTeste04", "png")));
 
-            //Load CubeMaps
-            _CubeTextures.Add("SkyBoxTeste", new CubeMapTexture(AssetsManager.LoadCubeImages("Assets/Texture/CubeMap/", "SkyBoxTeste", "jpg")));
-            _CubeTextures.Add("Skyboxmidle", new CubeMapTexture(AssetsManager.LoadCubeImages("Assets/Texture/CubeMap/", "Skyboxmidle", "png")));
+            SplashScreen.SetState("Loading Sounds", SplashScreenStatus.Loading);
+            _Sounds.Add("Teste", new AudioClip("Assets/Sound/", "Teste"));
 
-            //Load Images
+            SplashScreen.SetState("Loading CubeMaps", SplashScreenStatus.Loading);
+            _CubeTextures.Add("Example", new CubeMapTexture(AssetsManager.LoadCubeImages("Assets/Texture/CubeMap/", "Example", "png")));
+
+            SplashScreen.SetState("Loading Images", SplashScreenStatus.Loading);
             _Textures.Add("Darkcomsoft", new Texture(AssetsManager.LoadImage("Assets/Images/", "Darkcomsoft", "png")));
             _Textures.Add("VaKLogoYellow", new Texture(AssetsManager.LoadImage("Assets/Images/", "VaKLogoYellow", "png")));
             _Textures.Add("BackGround", new Texture(AssetsManager.LoadImage("Assets/Images/", "BackGround", "png")));
 
-            //Load GUI
             SplashScreen.SetState("Loading GUI Assets", SplashScreenStatus.Loading);
             _Textures.Add("Buttom", new Texture(AssetsManager.LoadImage("Assets/UI/", "Buttom", "png")));
             _Textures.Add("SidePanel", new Texture(AssetsManager.LoadImage("Assets/UI/", "SidePanel", "png")));
             _Textures.Add("Panel01", new Texture(AssetsManager.LoadImage("Assets/UI/", "Panel01", "png")));
 
-            //Load Shaders
             SplashScreen.SetState("Loading Shaders", SplashScreenStatus.Loading);
             _Shaders.Add("Default", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "Default")));
             _Shaders.Add("TerrainDefault", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "TerrainDefault")));
@@ -105,23 +93,19 @@ namespace EvllyEngine
             _Shaders.Add("Cloud", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "Cloud")));
             _Shaders.Add("Font", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "Font")));
 
-            //Load TileUvs
-            SplashScreen.SetState("Loading Tile UVs", SplashScreenStatus.Loading);
+            SplashScreen.SetState("Setting-UP Tile UVs", SplashScreenStatus.Loading);
             AddTileUv("Grass", new Vector2(0.15f, 0.066667f), new Vector2(0.15f, 0f), new Vector2(0.2f, 0.066667f), new Vector2(0.2f, 0f));
             AddTileUv("Dirt", new Vector2(0.55f, 0.066667f), new Vector2(0.55f, 0f), new Vector2(0.6f, 0.066667f), new Vector2(0.6f, 0f));
             AddTileUv("Sand", new Vector2(0.8f, 0.066667f), new Vector2(0.8f, 0f), new Vector2(0.85f, 0.066667f), new Vector2(0.85f, 0f));
             AddTileUv("Water", new Vector2(0.2f, 0.066667f), new Vector2(0.2f, 0f), new Vector2(0.25f, 0.066667f), new Vector2(0.25f, 0f));
             AddTileUv("Snow", new Vector2(0.7f, 0.066667f), new Vector2(0.7f, 0f), new Vector2(0.75f, 0.066667f), new Vector2(0.75f, 0f));
 
-            //Load Fonts
             SplashScreen.SetState("Loading Fonts", SplashScreenStatus.Loading);
-            _Fonts.Add("OpenSans", new QFont("OpenSans.ttf", 5, new QFontBuilderConfiguration(true)));
-            _Fonts.Add("FreePixel", new QFont("/Assets/UI/Fonts/FreePixel.ttf", 12, new QFontBuilderConfiguration(true)));
-            _NewFonts.Add("PixelFont", LoadFont("Assets/UI/Fonts/", "PixelFont"));
-            _NewFonts.Add("PixelFont2", LoadFont("Assets/UI/Fonts/", "PixelFont2"));
+            _Fonts.Add("PixelFont", LoadFont("Assets/UI/Fonts/", "PixelFont"));
+            _Fonts.Add("PixelFont2", LoadFont("Assets/UI/Fonts/", "PixelFont2"));
         }
 
-        public void UnloadAll()
+        public void Dispose()
         {
             foreach (var item in _Textures)
             {
@@ -140,7 +124,7 @@ namespace EvllyEngine
 
             foreach (var item in _Models)
             {
-                item.Value.Clear();
+                item.Value.Dispose();
             }
 
             foreach (var item in _Fonts)
@@ -148,27 +132,24 @@ namespace EvllyEngine
                 item.Value.Dispose();
             }
 
-            foreach (var item in _NewFonts)
+            foreach (var item in _Sounds)
             {
                 item.Value.Dispose();
             }
 
+            _Sounds.Clear();
             _Textures.Clear();
             _Models.Clear();
             _Shaders.Clear();
             _Fonts.Clear();
-            _NewFonts.Clear();
             _Tiles.Clear();
 
-            Engine_Error.Clear();
-            Engine_Error = null;
-
+            _Sounds = null;
             _Textures = null;
             _Models = null;
             _Shaders = null;
             _Tiles = null;
             _Fonts = null;
-            _NewFonts = null;
 
             GCollector.Collect();
         }
@@ -297,7 +278,17 @@ namespace EvllyEngine
             }
         }
 
-
+        public static int GetSound(string soundName)
+        {
+            if (AssetsManager.instance._Sounds.TryGetValue(soundName, out AudioClip clip))
+            {
+                return clip.GetHandler();
+            }
+            else
+            {
+                return 0;
+            }
+        }
         public static Texture GetTexture(string TextureName)
         {
             if (AssetsManager.instance._Textures.TryGetValue(TextureName, out Texture texture))
@@ -344,7 +335,7 @@ namespace EvllyEngine
         }
         public static FontType GetFont(string FontName)
         {
-            if (AssetsManager.instance._NewFonts.TryGetValue(FontName, out FontType font))
+            if (AssetsManager.instance._Fonts.TryGetValue(FontName, out FontType font))
             {
                 return font;
             }
@@ -354,18 +345,7 @@ namespace EvllyEngine
             }
         }
 
-        /*public static QFont GetFont(string FontName)
-        {
-            if (AssetsManager.instance._Fonts.TryGetValue(FontName, out QFont font))
-            {
-                return font;
-            }
-            else
-            {
-                throw new Exception("Dont Exist this Assets: " + font);
-            }
-        }*/
-
+        #region UseFunctions
         public static void UseTexture(string TextureName)
         {
             if (AssetsManager.instance._Textures.TryGetValue(TextureName, out Texture texture))
@@ -384,59 +364,68 @@ namespace EvllyEngine
 
         public static void ShaderSet(string ShaderName, string name, Matrix4 value)
         {
-            if (AssetsManager.instance._Shaders.TryGetValue(ShaderName, out Shader texture))
+            if (AssetsManager.instance._Shaders.TryGetValue(ShaderName, out Shader shader))
             {
-                texture.SetMatrix4(name, value);
+                shader.SetMatrix4(name, value);
             }
         }
 
         public static void ShaderSet(string ShaderName, string name, Matrix4d value)
         {
-            if (AssetsManager.instance._Shaders.TryGetValue(ShaderName, out Shader texture))
+            if (AssetsManager.instance._Shaders.TryGetValue(ShaderName, out Shader shader))
             {
-                texture.SetMatrix4d(name, value);
+                shader.SetMatrix4d(name, value);
             }
         }
 
         public static void ShaderSet(string ShaderName, string name, int value)
         {
-            if (AssetsManager.instance._Shaders.TryGetValue(ShaderName, out Shader texture))
+            if (AssetsManager.instance._Shaders.TryGetValue(ShaderName, out Shader shader))
             {
-                texture.SetInt(name, value);
+                shader.SetInt(name, value);
             }
         }
 
         public static void ShaderSet(string ShaderName, string name, float value)
         {
-            if (AssetsManager.instance._Shaders.TryGetValue(ShaderName, out Shader texture))
+            if (AssetsManager.instance._Shaders.TryGetValue(ShaderName, out Shader shader))
             {
-                texture.SetFloat(name, value);
+                shader.SetFloat(name, value);
             }
         }
 
         public static void ShaderSet(string ShaderName, string name, bool value)
         {
-            if (AssetsManager.instance._Shaders.TryGetValue(ShaderName, out Shader texture))
+            if (AssetsManager.instance._Shaders.TryGetValue(ShaderName, out Shader shader))
             {
-                texture.Setbool(name, value);
+                shader.Setbool(name, value);
             }
         }
 
         public static void ShaderSet(string ShaderName, string name, Vector3 value)
         {
-            if (AssetsManager.instance._Shaders.TryGetValue(ShaderName, out Shader texture))
+            if (AssetsManager.instance._Shaders.TryGetValue(ShaderName, out Shader shader))
             {
-                texture.SetVector3(name, value);
+                shader.SetVector3(name, value);
             }
         }
 
         public static void ShaderSet(string ShaderName, string name, Vector4 value)
         {
-            if (AssetsManager.instance._Shaders.TryGetValue(ShaderName, out Shader texture))
+            if (AssetsManager.instance._Shaders.TryGetValue(ShaderName, out Shader shader))
             {
-                texture.SetVector4(name, value);
+                shader.SetVector4(name, value);
             }
         }
+
+        public static void ShaderSet(string ShaderName, string name, Color4 value)
+        {
+            if (AssetsManager.instance._Shaders.TryGetValue(ShaderName, out Shader shader))
+            {
+                shader.SetColor(name, value);
+            }
+        }
+        #endregion
 
         public void AddTileUv(string tileName,Vector2 point1, Vector2 point2, Vector2 point3, Vector2 point4)
         {
@@ -449,7 +438,6 @@ namespace EvllyEngine
 
             _Tiles.Add(tileName, uvs);
         }
-
         public static Vector2[] GetTileUV(string tileName)
         {
             if (AssetsManager.instance._Tiles.TryGetValue(tileName, out Vector2[] arraylist))
@@ -461,8 +449,6 @@ namespace EvllyEngine
                 throw new Exception("Dont Found this Tile UV: " + tileName);
             }
         }
-
-        public Mesh GetErrorMesh { get { return Engine_Error; } }
     }
 }
 

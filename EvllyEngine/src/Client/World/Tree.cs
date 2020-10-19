@@ -33,7 +33,7 @@ namespace EvllyEngine
             float ChunkSeed = position.X * a + position.Z * b;
 
             transform.Position = position;
-            transform.Rotation = new Quaternion(MathHelper.DegreesToRadians((float)new System.Random((int)ChunkSeed).Next(0, 10)), MathHelper.DegreesToRadians((float)new System.Random((int)ChunkSeed).Next(0,90)), MathHelper.DegreesToRadians((float)new System.Random((int)ChunkSeed).Next(0, 5)));
+            transform.Rotation = new Quaternion(MathHelper.DegreesToRadians((float)new System.Random((int)ChunkSeed).Next(-10, 10)), MathHelper.DegreesToRadians((float)new System.Random((int)ChunkSeed).Next(0,90)), MathHelper.DegreesToRadians((float)new System.Random((int)ChunkSeed).Next(-10, 10)));
 
             float size = ProjectEvlly.src.Utility.Random.Range(1.5f, 2f, (int)ChunkSeed);
 

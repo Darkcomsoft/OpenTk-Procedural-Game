@@ -14,8 +14,8 @@ namespace ProjectEvlly.src.game
 
         public SkyTime()
         {
-            _Sky = new Sky(AssetsManager.GetShader("Sky"), AssetsManager.GetCubeMap("Skyboxmidle"));
-            Environment.AmbienceColor = Color4.AntiqueWhite;
+            _Sky = new Sky(AssetsManager.GetShader("Sky"));
+            Environment.AmbienceColor = Color4.FloralWhite;
             Environment.FogColor = Color4.SkyBlue;
         }
 

@@ -45,16 +45,6 @@ namespace EvllyEngine
 
         public MidleWorld()
         {
-#if Client
-            Game.MidleWorld = this;
-
-            WorldRuning = true;
-            WorldGeneratorThread = new Thread(new ThreadStart(WorldLooping));
-            WorldGeneratorThread.Name = "WorldGeneratorLoop";
-            WorldGeneratorThread.Start();
-#elif Server
-
-#endif
             GlobalData.Seed = System.DateTime.Now.GetHashCode() * System.DateTime.UtcNow.GetHashCode();
 
             LockChunkMap = new object();
@@ -70,16 +60,15 @@ namespace EvllyEngine
             globalNoise.SetFrequencygrad(0.05f);
 
             globalNoise2 = new FastNoise(GlobalData.Seed * 15);
-            globalNoise2.SetFrequency(0.0009f);
+            globalNoise2.SetFrequency(0.005f);
 
 
             biomeNoise = new FastNoise(GlobalData.Seed);
             biomeNoise.SetFrequency(0.005f);
-            biomeNoise.SetGradientPerturbAmp(20f);
-            biomeNoise.SetFrequencygrad(0.06f);
-            //biomeNoise.SetCellularNoiseLookup(biomeNoise);
+            biomeNoise.SetGradientPerturbAmp(30f);
+            biomeNoise.SetCellularNoiseLookup(new FastNoise());
             biomeNoise.SetCellularDistanceFunction(FastNoise.CellularDistanceFunction.Manhattan);
-            biomeNoise.SetCellularReturnType(FastNoise.CellularReturnType.CellValue);
+            biomeNoise.SetCellularReturnType(FastNoise.CellularReturnType.NoiseLookup);
 
             //LoadTheWorld if has a save
             if (SaveManager.LoadWorld())//Have a Save
@@ -90,6 +79,17 @@ namespace EvllyEngine
             {
                 
             }
+
+#if Client
+            Game.MidleWorld = this;
+
+            WorldRuning = true;
+            WorldGeneratorThread = new Thread(new ThreadStart(WorldLooping));
+            WorldGeneratorThread.Name = "WorldGeneratorLoop";
+            WorldGeneratorThread.Start();
+#elif Server
+
+#endif
         }
 
         public override void Tick()

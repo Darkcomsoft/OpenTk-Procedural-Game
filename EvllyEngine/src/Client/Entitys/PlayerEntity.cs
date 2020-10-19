@@ -35,8 +35,9 @@ namespace EvllyEngine
 
         public override void OnStart()
         {
+            System.Random rand = new Random(GlobalData.Seed);
+            //transform.Position = new Vector3(rand.Next(-100,100), 30, rand.Next(-100, 100));
             transform.Position = new Vector3(0, 30, 0);
-
 #if Client
             if (isMine)
             {

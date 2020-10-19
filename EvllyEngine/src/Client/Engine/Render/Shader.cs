@@ -58,7 +58,11 @@ namespace EvllyEngine
             int status;
             GL.GetProgram(program, GetProgramParameterName.LinkStatus, out status);
             if (status == 0)
+            {
                 Debug.LogError(String.Format("Error linking program: {0}", GL.GetProgramInfoLog(program)));
+                GL.DeleteProgram(program);
+                return 0;
+            }
 
             GL.DeleteShader(vert_shader);
             GL.DeleteShader(frag_shader);

@@ -54,7 +54,7 @@ namespace ProjectEvlly.src.UI
 
         public GUIBase(Rectangle rec)
         {
-            GUIRender.AddGuiElement(this);
+            GUI.AddGuiElement(this);
 
             _Rectangle = rec;
             Enabled = true;
@@ -71,7 +71,7 @@ namespace ProjectEvlly.src.UI
 
         public GUIBase(Rectangle rec, UIDock uIDock)
         {
-            GUIRender.AddGuiElement(this);
+            GUI.AddGuiElement(this);
 
             _Rectangle = rec;
             _Dock = uIDock;
@@ -90,7 +90,7 @@ namespace ProjectEvlly.src.UI
 
         public GUIBase(Rectangle rec, UIDock uIDock, Color4 nColor, Color4 hColor, Color4 cColor, Color4 fColor)
         {
-            GUIRender.AddGuiElement(this);
+            GUI.AddGuiElement(this);
 
             _Rectangle = rec;
             _Dock = uIDock;
@@ -178,7 +178,7 @@ namespace ProjectEvlly.src.UI
                 GL.BindVertexArray(VAO);
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, IBO);
 
-                GUIRender.GetShader.Use();
+                GUI.GetShader.Use();
 
                 TickRenderCustom();//use the ui elements custom values, like images, text etc.
 
@@ -190,7 +190,7 @@ namespace ProjectEvlly.src.UI
                         {
                             if (IP_Focused)
                             {
-                                GUIRender.GetShader.SetColor("MainColor", FocusedColor);
+                                GUI.GetShader.SetColor("MainColor", FocusedColor);
                             }
                             else
                             {
@@ -198,16 +198,16 @@ namespace ProjectEvlly.src.UI
                                 {
                                     if (IP_Cliked)
                                     {
-                                        GUIRender.GetShader.SetColor("MainColor", ClickColor);
+                                        GUI.GetShader.SetColor("MainColor", ClickColor);
                                     }
                                     else
                                     {
-                                        GUIRender.GetShader.SetColor("MainColor", HoverColor);
+                                        GUI.GetShader.SetColor("MainColor", HoverColor);
                                     }
                                 }
                                 else
                                 {
-                                    GUIRender.GetShader.SetColor("MainColor", NormalColor);
+                                    GUI.GetShader.SetColor("MainColor", NormalColor);
                                 }
                             }
                         }
@@ -217,25 +217,25 @@ namespace ProjectEvlly.src.UI
                             {
                                 if (IP_Cliked)
                                 {
-                                    GUIRender.GetShader.SetColor("MainColor", ClickColor);
+                                    GUI.GetShader.SetColor("MainColor", ClickColor);
                                 }
                                 else
                                 {
-                                    GUIRender.GetShader.SetColor("MainColor", HoverColor);
+                                    GUI.GetShader.SetColor("MainColor", HoverColor);
                                 }
                             }
                             else
                             {
-                                GUIRender.GetShader.SetColor("MainColor", NormalColor);
+                                GUI.GetShader.SetColor("MainColor", NormalColor);
                             }
                         }
                     }
                     else
                     {
-                        GUIRender.GetShader.SetColor("MainColor", NoInteractColor);
+                        GUI.GetShader.SetColor("MainColor", NoInteractColor);
                     }
 
-                    GUIRender.GetShader.SetMatrix4("projection", _projection);
+                    GUI.GetShader.SetMatrix4("projection", _projection);
 
                     GL.DrawElements(BeginMode.Triangles, _indices.Length, DrawElementsType.UnsignedInt, 0);
                 }
@@ -298,7 +298,7 @@ namespace ProjectEvlly.src.UI
 
         private void TickRenderCustom()
         {
-            GUIRender.GetShader.Setbool("HaveTexture", false);
+            GUI.GetShader.Setbool("HaveTexture", false);
 
             RenderCustomValues();
         }
@@ -531,7 +531,7 @@ namespace ProjectEvlly.src.UI
 
         public virtual void Dispose()
         {
-            GUIRender.RemoveGuiElement(this);
+            GUI.RemoveGuiElement(this);
 
             if (IsReady)
             {

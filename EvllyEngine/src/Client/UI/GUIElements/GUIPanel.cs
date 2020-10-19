@@ -62,11 +62,11 @@ namespace ProjectEvlly.src.UI
                 if (!TextureName.Equals(string.Empty))
                 {
                     AssetsManager.UseTexture(TextureName);
-                    GUIRender.GetShader.Setbool("HaveTexture", true);
+                    GUI.GetShader.Setbool("HaveTexture", true);
                 }
                 else
                 {
-                    GUIRender.GetShader.Setbool("HaveTexture", false);
+                    GUI.GetShader.Setbool("HaveTexture", false);
                 }
             }
             base.RenderCustomValues();

@@ -41,12 +41,14 @@ namespace ProjectEvlly
             RendeTextOption = new QFontRenderOptions
             {
                 WordWrap = true,
-                Colour = Color.White,
+                Colour = Color.Black,
                 DropShadowActive = false
             };
 
+            GL.ClearColor(Color4.White);
+
             _Shader = new Shader(AssetsManager.LoadShader("Assets/Shaders/", "UI"));
-            _texture = new Texture(AssetsManager.LoadImage("Assets/Images/", "Darkcomsoft", "png"), TextureMinFilter.Linear, TextureMagFilter.Linear);
+            _texture = new Texture(AssetsManager.LoadImage("Assets/Images/", "Darkcomsoft_New", "png"), TextureMinFilter.Linear, TextureMagFilter.Linear);
             CreateMesh();
 
             IBO = GL.GenBuffer();
@@ -181,6 +183,8 @@ namespace ProjectEvlly
                 default:
                     break;
             }
+
+            System.Threading.Thread.Sleep(100);
         }
 
         public void Dispose()

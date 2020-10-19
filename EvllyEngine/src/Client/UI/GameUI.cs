@@ -8,6 +8,7 @@ using OpenTK.Graphics;
 using EvllyEngine;
 using ProjectEvlly.src.UI.GUITemplate;
 using ProjectEvlly.src.save;
+using OpenTK.Input;
 
 namespace ProjectEvlly.src.UI
 {
@@ -16,11 +17,14 @@ namespace ProjectEvlly.src.UI
         private GUILable VersionText;
         private GUILable debugText;
 
+        private InGameTollTip inGameTollTip;
+
         private PrepareGUI _PrepareGUI;
 
         private Dictionary<string, InGuiGame> GuiList = new Dictionary<string, InGuiGame>();
 
         private bool Paused = false;
+        private bool TollTip = false;
 
         public GameUI()
         {
@@ -36,13 +40,15 @@ namespace ProjectEvlly.src.UI
             debugText.SetTextAling(Font.TextAling.Left);
             debugText.ShowBackGround = false;
 
+            inGameTollTip = new InGameTollTip();
+
             //Add Gui Instances here
             GuiList.Add("PauseMenu", new PauseMenu());
         }
 
         public void Tick()
         {
-            debugText.SetText("FPS:(" + Window.Instance.GetFPS + ") Tick:" + Time._Tick);
+            debugText.SetText(string.Format("FPS:({0})  UPS:({1})  Tick%60:({2})  Time:({3})", Time.FPS, Time.UPS, Time._Tick, Time._Time));
 
             MenusInput();
         }
@@ -51,6 +57,8 @@ namespace ProjectEvlly.src.UI
         {
             VersionText.Dispose();
             debugText.Dispose();
+
+            inGameTollTip.Dispose();
 
             _PrepareGUI.Dispose();
 
@@ -84,6 +92,20 @@ namespace ProjectEvlly.src.UI
 
         private void MenusInput()
         {
+            if (Input.GetKeyDown(MouseButton.Middle))
+            {
+                if (TollTip)
+                {
+                    inGameTollTip.Disable();
+                    TollTip = false;
+                }
+                else
+                {
+                    inGameTollTip.Enable();
+                    TollTip = true;
+                }
+            }
+
             if (Input.GetKeyDown(OpenTK.Input.Key.Escape))
             {
                 if (Paused)

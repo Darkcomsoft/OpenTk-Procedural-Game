@@ -5,7 +5,7 @@ layout (location = 2) in vec2 aTexCoord;
 layout (location = 3) in vec3 Normals;
 
 out vec2 texCoord;
-out vec4 colortest;
+out vec4 TileColor;
 out vec3 N;
 out float visiblity;
 
@@ -24,8 +24,6 @@ void main()
 	float xcoord = position.x - Normals.x;
     float zcoord = position.z - Normals.z;
     float ycoord = position.y - Normals.y;
-     
-	//colortest = vec4(Normals.x,Normals.y,Normals.z,1);
 
     N = Normals;
 	
@@ -39,7 +37,7 @@ void main()
     // so use x and y to sample texture
     //texCoord = vec2(xcoord,ycoord); //third projection
 
-	//frag_colors = colors;
+	TileColor = colors;
 	texCoord = aTexCoord;
 	
     float distance = length(posRelativeCamera.xyz);

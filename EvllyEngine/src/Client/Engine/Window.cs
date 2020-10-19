@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
-using System.Runtime.InteropServices;
 using System.Threading;
 using ProjectEvlly;
 using ProjectEvlly.src.Net;
@@ -19,8 +10,8 @@ using ProjectEvlly.src.UI;
 using ProjectEvlly.src.Utility;
 using System.Drawing;
 using ProjectEvlly.src;
-using System.Net;
 using ProjectEvlly.src.Engine.Render;
+using ProjectEvlly.src.Engine;
 
 namespace EvllyEngine
 {
@@ -40,10 +31,8 @@ namespace EvllyEngine
         private Physics _physics;
         private SplashScreen _SplashScreen;
         private Frustum frustum;
-        private GUIRender _GUIRender;
-
-        private int FPS;
-        private int UPS;
+        private SoundSystem _soundSystem;
+        private GUI _GUIRender;
 
         private bool IsDebug = false;//this is not the visual studio solution plataform, is for testing debugs things like OpenGL Render only lines of meshes
         private BeginMode GLBeginMode = BeginMode.Triangles;
@@ -67,7 +56,7 @@ namespace EvllyEngine
             WindowBorder = WindowBorder.Resizable;
 
             _SplashScreen = new SplashScreen();
-
+            
             currentDomain = AppDomain.CurrentDomain;
             currentDomain.UnhandledException += new UnhandledExceptionEventHandler(MyHandler);
 
@@ -75,12 +64,13 @@ namespace EvllyEngine
         }
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            NextFrameQueue.Tick();
+            Time._DeltaTime = (float)e.Time;
+            Time._DTime += e.Time;
 
+            NextFrameQueue.Tick();
+            
             if (EngineIsReady)
             {
-                UPS = (int)(1f / e.Time);
-
                 if (Input.GetKeyDown(Key.F4))
                 {
                     if (IsDebug)
@@ -96,7 +86,6 @@ namespace EvllyEngine
                 }
 
                 OGame.Tick();
-                //_GUI.Tick();
                 _GUIRender.Tick();
 
                 if (Focused) // check to see if the window is focused  
@@ -111,23 +100,12 @@ namespace EvllyEngine
                 LoadGame();
             }
 
-            Time._DeltaTime = (float)e.Time;
-            Time._DTime += e.Time;
-            Time._Time++;
-
-            Time._Tick = Time._Time % 60;
-
-            if (Time._Time >= double.MaxValue)
-            {
-                Time._Time = -Time._Time;
-            }
+            Time.UPS = (int)(1f / e.Time);
             base.OnUpdateFrame(e);
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            FPS = (int)(1f / e.Time);
-
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             Utilitys.CheckGLError("GL.Clear");
 
@@ -136,17 +114,22 @@ namespace EvllyEngine
                 gl.Enable(EnableCap.DepthTest);
                 OGame.Draw(e);
                 gl.Disable(EnableCap.DepthTest);
-                //_GUI.DrawUI();
                 _GUIRender.TickRender();
-            }
-            else
-            {
-
             }
 
             SwapBuffers();
             Utilitys.CheckGLError("Window SwapBuffers");
-            Thread.Sleep(60 / 4);
+
+            Time.FPS = (int)(1f / e.Time);
+
+            Time._Time++;
+            Time._Tick = Time._Time % 60;
+
+            if (Time._Time >= double.MaxValue)
+            {
+                Time._Time = -Time._Time;
+            }
+            Thread.Sleep(60 / 5);
             base.OnRenderFrame(e);
         }
 
@@ -156,7 +139,6 @@ namespace EvllyEngine
 
             if (EngineIsReady)
             {
-                //_GUI.OnResize();
                 _GUIRender.OnResize();
             }
             base.OnResize(e);
@@ -168,47 +150,10 @@ namespace EvllyEngine
             base.OnKeyPress(e);
         }
 
-        protected override void OnKeyDown(KeyboardKeyEventArgs e)
-        {
-            if (EngineIsReady)
-                //_GUI.OnKeyDown(e);
-            base.OnKeyDown(e);
-        }
-
-        protected override void OnKeyUp(KeyboardKeyEventArgs e)
-        {
-            if (EngineIsReady)
-                //_GUI.OnKeyUp(e);
-            base.OnKeyUp(e);
-        }
-
-        protected override void OnMouseDown(MouseButtonEventArgs e)
-        {
-            if (EngineIsReady)
-                //_GUI.OnMouseDown(e);
-            base.OnMouseDown(e);
-        }
-        protected override void OnMouseUp(MouseButtonEventArgs e)
-        {
-            if (EngineIsReady)
-                //_GUI.OnMouseUp(e);
-            base.OnMouseUp(e);
-        }
-        protected override void OnMouseWheel(MouseWheelEventArgs e)
-        {
-            if (EngineIsReady)
-            {
-                Input.MouseWheelDelta = e.Delta;
-                //_GUI.OnMouseWheel(e);
-            }
-            base.OnMouseWheel(e);
-        }
         protected override void OnMouseMove(MouseMoveEventArgs e)
         {
             if (EngineIsReady)
             {
-                Input.GetMouse = e;
-                //_GUI.OnMouseMove(e);
                 _GUIRender.OnMouseMove(e);
             }
             base.OnMouseMove(e);
@@ -218,23 +163,28 @@ namespace EvllyEngine
         {
             GameLoaded = true;//let this on the top
 
+            SplashScreen.SetState("Starting SoundEngine...", SplashScreenStatus.Loading);
+            _soundSystem = new SoundSystem();
+            
             SplashScreen.SetState("Loading Assets...", SplashScreenStatus.Loading);
             _assetsManager = new AssetsManager();
-            _assetsManager.LoadAssets();//Load All Assets
 
             SplashScreen.SetState("Starting Physics", SplashScreenStatus.Loading);
             _physics = new Physics();
-            _GUIRender = new GUIRender();
-            //_GUI = new GUI();
-            //_GUI.OnResize();//Resize the GUI
-            SplashScreen.SetState("Starting Engine Systems", SplashScreenStatus.Loading);
-            //_Sky = new Sky(AssetsManager.GetShader("Default"), AssetsManager.GetTexture("devTexture2"));
-            frustum = new Frustum();
-            OGame = new Client();
-            SplashScreen.SetState("Setting-Up OpenGL", SplashScreenStatus.Loading);
-            EngineIsReady = true;
 
-            SplashScreen.SetState("Finished Loading.", SplashScreenStatus.finished);
+            SplashScreen.SetState("Starting GUI", SplashScreenStatus.Loading);
+            _GUIRender = new GUI();
+
+            SplashScreen.SetState("Starting Frustum", SplashScreenStatus.Loading);
+            frustum = new Frustum();
+
+            SplashScreen.SetState("Starting Client", SplashScreenStatus.Loading);
+            OGame = new Client();
+
+            SplashScreen.SetState("Setting-Up OpenGL", SplashScreenStatus.Loading);
+
+            SplashScreen.SetState("Finished Loading. We Good to Go (:", SplashScreenStatus.finished);
+            EngineIsReady = true;
         }
 
         static void MyHandler(object sender, UnhandledExceptionEventArgs args)
@@ -292,8 +242,10 @@ namespace EvllyEngine
                 _GUIRender = null;
             }
 
-            _assetsManager.UnloadAll();
+            _assetsManager.Dispose();
             _assetsManager = null;
+
+            _soundSystem.Dispose();
 
             GameLoaded = false;
             EngineIsReady = false;
@@ -309,7 +261,7 @@ namespace EvllyEngine
                 //_Sky.OnDestroy();
 
                 OGame.Dispose();
-                _assetsManager.UnloadAll();
+                _assetsManager.Dispose();
                 _physics.Dispose();
 
                 if (_GUIRender != null)
@@ -318,7 +270,10 @@ namespace EvllyEngine
                     _GUIRender = null;
                 }
 
-                //_GUI.Dispose();
+                _soundSystem.Dispose();
+
+                GameLoaded = false;
+                EngineIsReady = false;
             }
             else
             {
@@ -330,8 +285,6 @@ namespace EvllyEngine
         }
 
         public static BeginMode GetGLBeginMode{ get { return Window.Instance.GLBeginMode; } }
-        public int GetFPS { get { return FPS; } }
-        public int GetUPS { get { return UPS; } }
     }
 
     public static class Time
@@ -340,6 +293,9 @@ namespace EvllyEngine
         public static int _Time;
         public static double _DTime;
         public static int _Tick;
+
+        public static int FPS;
+        public static int UPS;
     }
 
     public static class MouseCursor

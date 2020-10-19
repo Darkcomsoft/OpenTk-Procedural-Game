@@ -19,7 +19,7 @@ namespace ProjectEvlly.src
         private PlayerEntity _playerEntity;
 
         private float MoveSpeed = 0.3f;
-        private float sensitivity = 0.2f;
+        private float sensitivity = 0.1f;
 
         const float characterHeight = 1;
         const float characterWidth = 0.5f;
@@ -34,6 +34,8 @@ namespace ProjectEvlly.src
 
         public float Yaw { get; private set; }
         public float Pitch { get; private set; }
+
+        private bool DevSpeed = false;
 
         CharacterController _CharacterController;
 
@@ -63,6 +65,18 @@ namespace ProjectEvlly.src
             {
                 
             }*/
+
+            if (Input.GetKeyDown(Key.F5))
+            {
+                if (DevSpeed)
+                {
+                    DevSpeed = false;
+                }
+                else
+                {
+                    DevSpeed = true;
+                }
+            }
 
             if (_PlayerCamera._cameraTrnasform.Position.Y + _playerEntity.transform.Position.Y < -1)
             {
@@ -100,8 +114,8 @@ namespace ProjectEvlly.src
 
 
                 // Apply the camera pitch and yaw (we clamp the pitch in the camera class)
-                Yaw -= deltaX * sensitivity * Time._DeltaTime;
-                Pitch -= deltaY * sensitivity * Time._DeltaTime; // reversed since y-coordinates range from bottom to top
+                Yaw -= deltaX * sensitivity / 20f;
+                Pitch -= deltaY * sensitivity / 20f; // reversed since y-coordinates range from bottom to top
             }
             #endregion
 
@@ -127,19 +141,19 @@ namespace ProjectEvlly.src
 
                 if (Input.GetKey(Key.W))
                 {
-                    moveVector += new Vector2(0, 1);
+                    moveVector += new Vector2(0, 1) * Time._DeltaTime;
                 }
                 if (Input.GetKey(Key.S))
                 {
-                    moveVector += new Vector2(0, -1);
+                    moveVector += new Vector2(0, -1) * Time._DeltaTime;
                 }
                 if (Input.GetKey(Key.A))
                 {
-                    moveVector += new Vector2(-1, 0);
+                    moveVector += new Vector2(-1, 0) * Time._DeltaTime;
                 }
                 if (Input.GetKey(Key.D))
                 {
-                    moveVector += new Vector2(1, 0);
+                    moveVector += new Vector2(1, 0) * Time._DeltaTime;
                 }
 
                 if (Input.GetKey(Key.ShiftLeft))
@@ -150,8 +164,14 @@ namespace ProjectEvlly.src
                 {
                     MoveSpeed = 3f;
                 }
-
-                _CharacterController.StandingSpeed = MoveSpeed * 2;
+                if (DevSpeed)
+                {
+                    _CharacterController.StandingSpeed = MoveSpeed * 15;
+                }
+                else
+                {
+                    _CharacterController.StandingSpeed = MoveSpeed * 2;
+                }
 
                 if (Input.GetKey(Key.Z))
                     _CharacterController.StanceManager.DesiredStance = Stance.Prone;

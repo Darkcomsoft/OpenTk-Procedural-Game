@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("EvllyEngine")]
+[assembly: AssemblyTitle("ProjectEvlly")]
 [assembly: AssemblyDescription("A game engine, made by estevao from darkcomsoft")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Darkcomsoft")]
-[assembly: AssemblyProduct("EvllyEngine.Properties")]
+[assembly: AssemblyProduct("ProjectEvlly")]
 [assembly: AssemblyCopyright("Copyright (c) 2020 Darkcomsoft")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

@@ -1,5 +1,4 @@
 ﻿using EvllyEngine;
-using Gwen.Control.Property;
 using OpenTK.Graphics;
 using ProjectEvlly.src.Net;
 using ProjectEvlly.src.save;
@@ -99,7 +98,7 @@ namespace ProjectEvlly.src.UI
 
         public void Tick()
         {
-            debugText.SetText("FPS:(" + EvllyEngine.Window.Instance.GetFPS + ") Tick:" + Time._Tick);
+            debugText.SetText(string.Format("FPS:({0})  UPS:({1})  Tick%60:({2})  Time:({3})", Time.FPS, Time.UPS, Time._Tick, Time._Time));
         }
 
         public void Dispose()

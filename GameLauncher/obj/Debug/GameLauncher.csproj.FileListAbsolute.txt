@@ -1,0 +1,15 @@
+C:\Users\estev\Documents\GitHub\VillagersandKings-GL\GameLauncher\bin\Debug\GameLauncher.exe.config
+C:\Users\estev\Documents\GitHub\VillagersandKings-GL\GameLauncher\bin\Debug\GameLauncher.exe
+C:\Users\estev\Documents\GitHub\VillagersandKings-GL\GameLauncher\bin\Debug\GameLauncher.pdb
+C:\Users\estev\Documents\GitHub\VillagersandKings-GL\GameLauncher\obj\Debug\GameLauncher.csprojAssemblyReference.cache
+C:\Users\estev\Documents\GitHub\VillagersandKings-GL\GameLauncher\obj\Debug\MainWindow.g.cs
+C:\Users\estev\Documents\GitHub\VillagersandKings-GL\GameLauncher\obj\Debug\App.g.cs
+C:\Users\estev\Documents\GitHub\VillagersandKings-GL\GameLauncher\obj\Debug\GameLauncher_MarkupCompile.cache
+C:\Users\estev\Documents\GitHub\VillagersandKings-GL\GameLauncher\obj\Debug\GameLauncher_MarkupCompile.lref
+C:\Users\estev\Documents\GitHub\VillagersandKings-GL\GameLauncher\obj\Debug\MainWindow.baml
+C:\Users\estev\Documents\GitHub\VillagersandKings-GL\GameLauncher\obj\Debug\GameLauncher.g.resources
+C:\Users\estev\Documents\GitHub\VillagersandKings-GL\GameLauncher\obj\Debug\GameLauncher.Properties.Resources.resources
+C:\Users\estev\Documents\GitHub\VillagersandKings-GL\GameLauncher\obj\Debug\GameLauncher.csproj.GenerateResource.cache
+C:\Users\estev\Documents\GitHub\VillagersandKings-GL\GameLauncher\obj\Debug\GameLauncher.csproj.CoreCompileInputs.cache
+C:\Users\estev\Documents\GitHub\VillagersandKings-GL\GameLauncher\obj\Debug\GameLauncher.exe
+C:\Users\estev\Documents\GitHub\VillagersandKings-GL\GameLauncher\obj\Debug\GameLauncher.pdb

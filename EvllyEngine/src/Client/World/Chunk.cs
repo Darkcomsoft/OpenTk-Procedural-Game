@@ -6,6 +6,7 @@ using ProjectEvlly;
 using ProjectEvlly.src;
 using ProjectEvlly.src.Engine;
 using ProjectEvlly.src.Engine.Render;
+using ProjectEvlly.src.game;
 using ProjectEvlly.src.World;
 using ProjectEvlly.src.World.Biomes;
 using System;
@@ -102,12 +103,12 @@ namespace EvllyEngine
 
             if (ChunkMesh != null)
             {
-                ChunkMesh.Clear();
+                ChunkMesh.Dispose();
             }
 
             if (WaterMesh != null)
             {
-                WaterMesh.Clear();
+                WaterMesh.Dispose();
             }
 
             if (_meshCollider != null)
@@ -145,7 +146,7 @@ namespace EvllyEngine
 
                     MidleWorld.globalNoise.GradientPerturbFractal(ref pos.X, ref pos.Y, ref pos.Z);
 
-                    blocks[x, z] = new Block(x + (int)transform.Position.X, z + (int)transform.Position.Z, transform.Position, MidleWorld.globalNoise.GetPerlinFractal(pos.X, pos.Y) * 150, this);
+                    blocks[x, z] = new Block(x + (int)transform.Position.X, z + (int)transform.Position.Z, transform.Position, MidleWorld.globalNoise.GetPerlinFractal(pos.X, pos.Y) * 300, this);
                 }
             }
 
@@ -275,7 +276,7 @@ namespace EvllyEngine
                     _meshCollider = new MeshCollider(transform, ChunkMesh._vertices, ChunkMesh._indices);
                 }
 
-                if (_meshRender != null && _waterMeshRender != null)
+                if (_meshRender != null)
                 {
                     _meshRender.UpdateMeshRender(ChunkMesh);
                 }
@@ -284,14 +285,23 @@ namespace EvllyEngine
                     _meshRender = new ChunkMeshRender(transform, ChunkMesh, AssetsManager.GetShader("TerrainDefault"), AssetsManager.GetTexture("TileAtlas"));
 
                     _meshRender.ViewBoxWitdh = 10;
-                    _meshRender.ViewBoxHeight = 10;
+                    _meshRender.ViewBoxHeight = 1000;
+                }
+            }
 
-                    //Water
+            if (WaterMesh != null)
+            {
+                if (_waterMeshRender != null)
+                {
+                    //_meshRender.UpdateMeshRender(ChunkMesh);
+                }
+                else
+                {
                     _waterMeshRender = new WaterMeshRender(transform, WaterMesh, AssetsManager.GetShader("Water"), AssetsManager.GetTexture("Water"), AssetsManager.GetTexture("Water2"));
                     _waterMeshRender.Transparency = true;
 
                     _waterMeshRender.ViewBoxWitdh = 10;
-                    _waterMeshRender.ViewBoxHeight = 10;
+                    _waterMeshRender.ViewBoxHeight = 1000;
                 }
             }
 
@@ -353,10 +363,10 @@ namespace EvllyEngine
             {
                 if (ChunkMesh != null)
                 {
-                    ChunkMesh.Clear();
+                    ChunkMesh.Dispose();
                 }
 
-                ChunkMesh = new Mesh(data._vertices.ToArray(), data._UVs.ToArray(), new Color4[] { }, data._triangles.ToArray());
+                ChunkMesh = new Mesh(data._vertices.ToArray(), data._UVs.ToArray(), data._colors.ToArray(), data._triangles.ToArray());
 
                 VoxelMesh mesh = data.MakeWatersMehs(blocks);
 
@@ -399,8 +409,12 @@ namespace EvllyEngine
             index = 0;
             x = _x;
             z = _z;
-            System.Random rand = new System.Random(0 + x * z);
-            height = _Height;
+
+            float xDistance = (float)Math.Pow(Math.Abs(x), 2);
+            float yDistance = (float)Math.Pow(Math.Abs(z), 2);
+            float distance = (float)Math.Sqrt(xDistance + yDistance) / 500f;
+
+            height = _Height - distance;
 
             Chunk = chunkPosition;
 
@@ -408,11 +422,9 @@ namespace EvllyEngine
             HeatType HeatType;
             MoistureType MoistureType;
 
-            
-
             float XX = x;
             float ZZ = z;
-
+            
             MidleWorld.biomeNoise.GradientPerturbFractal(ref XX, ref ZZ);
 
             heatValue = Math.Abs(MidleWorld.biomeNoise.GetCellular(XX, ZZ));
@@ -469,6 +481,7 @@ namespace EvllyEngine
             }
 
             TileBiome = GlobalData.BiomeTable[(int)MoistureType, (int)HeatType];
+            //TileBiome = BiomeType.Woodland;
             #endregion
 
             treeType = TreeType.none;
@@ -481,6 +494,7 @@ namespace EvllyEngine
             }
             else if (height < -2f)
             {
+                TileBiome = BiomeType.Ocean;
                 Type = TypeBlock.Sand;
             }
             else
@@ -512,12 +526,10 @@ namespace EvllyEngine
                     case BiomeType.Tundra:
                         biomeData = OakForest.GetBiome(x, z, chunk);
                         biomeData._treeType = TreeType.none;
-                        biomeData._Height *= 4;
-                        biomeData._typeBlock = TypeBlock.Dirt;
+                        biomeData._typeBlock = TypeBlock.Grass;
                         break;
                     case BiomeType.Woodland:
                         biomeData = OakForest.GetBiome(x, z, chunk);
-                        biomeData._Height *= 2;
                         break;
                     case BiomeType.Bench:
                         biomeData = OakForest.GetBiome(x, z, chunk);
@@ -531,7 +543,7 @@ namespace EvllyEngine
 
                 Type = biomeData._typeBlock;
                 treeType = biomeData._treeType;
-                height += biomeData._Height + height / 50;
+                height = Math.Abs(biomeData._Height + _Height / 10f);
             }
         }
 
@@ -660,10 +672,10 @@ namespace EvllyEngine
                         _triangles.Add(3 + verticesNum);
                         verticesNum += 4;
 
-                        _colors.Add(new Color4(1, 1, 1, 1));
-                        _colors.Add(new Color4(1, 1, 1, 1));
-                        _colors.Add(new Color4(1, 1, 1, 1));
-                        _colors.Add(new Color4(1, 1, 1, 1));
+                        _colors.Add(Get.TileColors(tile[x, z].TileBiome));
+                        _colors.Add(Get.TileColors(tile[x, z].TileBiome));
+                        _colors.Add(Get.TileColors(tile[x, z].TileBiome));
+                        _colors.Add(Get.TileColors(tile[x, z].TileBiome));
 
                         _UVs.AddRange(AssetsManager.GetTileUV(tile[x, z].Type.ToString()));
                     }

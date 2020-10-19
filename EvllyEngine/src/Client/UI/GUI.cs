@@ -1,124 +1,231 @@
-﻿using EvllyEngine;
-using OpenTK.Graphics.OpenGL;
-using OpenTK.Graphics;
-using OpenTK;
+﻿using OpenTK;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Gwen.Control;
-using Gwen.Control.Layout;
-using ProjectEvlly.src.Utility;
+using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
+using EvllyEngine;
+using System.Drawing;
 using OpenTK.Input;
+using ProjectEvlly.src.Utility;
 
 namespace ProjectEvlly.src.UI
 {
-    public class GUI
+    public class GUI : IDisposable
     {
-        private Gwen.Input.OpenTK input;
-        private Gwen.Renderer.OpenTK renderer;
-        private Gwen.Skin.Base skin;
-        private Gwen.Control.Canvas canvas;
-        private Gwen.UnitTest.UnitTest test;
+        public static GUI Instance; 
 
-        private Matrix4 _projectionMatrix;
+        private Shader _Shader;
+        private Shader _FontShader;
 
-        public Gwen.Control.Canvas GetCanvas { get { return canvas; } }
+        private List<GUIBase> GuiBaseList;
+
+        public static float GUISize = 2;
+
+        private GUIBase UpUI;
+        private GUIBase FocusedUI;
+        private bool pressed;
 
         public GUI()
         {
-            Game.GUI = this;
+            Instance = this;
 
-            SplashScreen.SetState("Setting-UP UI.Render", SplashScreenStatus.Loading);
-            renderer = new Gwen.Renderer.OpenTK();
-            SplashScreen.SetState("Loading UI.Skins", SplashScreenStatus.Loading);
-            skin = new Gwen.Skin.TexturedBase(renderer, "Assets/UI/Colorize.png");
+            GuiBaseList = new List<GUIBase>();
 
-            SplashScreen.SetState("Loading UI.Fonts", SplashScreenStatus.Loading);
-            skin.DefaultFont = new Gwen.Font(renderer, "Arial", 10);
-            SplashScreen.SetState("Setting-UP UI.Canvas", SplashScreenStatus.Loading);
-            canvas = new Gwen.Control.Canvas(skin);
-
-            SplashScreen.SetState("Starting UI.Input", SplashScreenStatus.Loading);
-            input = new Gwen.Input.OpenTK(Window.Instance);
-            input.Initialize(canvas);
-
-            SplashScreen.SetState("Setting-UP UI.FinalSettings", SplashScreenStatus.Loading);
-            canvas.SetSize(Window.Instance.Width, Window.Instance.Height);
-            canvas.ShouldDrawBackground = false;
-            canvas.BackgroundColor = Color.FromArgb(255, 150, 170, 170);
-
-            //test = new Gwen.UnitTest.UnitTest(canvas);
-            SplashScreen.SetState("Finishe Loading UI!", SplashScreenStatus.Loading);
-        }
-
-        public void OnResize()
-        {
-            _projectionMatrix = Matrix4.CreateTranslation(new Vector3(-Window.Instance.Width / 2.0f, -Window.Instance.Height / 2.0f, 0)) * Matrix4.CreateScale(new Vector3(1, -1, 1)) * Matrix4.CreateOrthographic(Window.Instance.Width, Window.Instance.Height, -1.0f, 1.0f);
-
-            renderer.Resize(ref _projectionMatrix, Window.Instance.Width, Window.Instance.Height);
-            canvas.SetSize(Window.Instance.Width, Window.Instance.Height);
-        }
-
-        public void OnKeyDown(KeyboardKeyEventArgs e)
-        {
-            if (!EvllyEngine.MouseCursor.MouseLocked)
-                input.ProcessKeyDown(e);
-        }
-
-        public void OnKeyUp(KeyboardKeyEventArgs e)
-        {
-            if (!EvllyEngine.MouseCursor.MouseLocked)
-                input.ProcessKeyUp(e);
-        }
-
-        public void OnMouseDown(MouseButtonEventArgs e)
-        {
-            if (!EvllyEngine.MouseCursor.MouseLocked)
-                input.ProcessMouseMessage(e);
-        }
-        public void OnMouseUp(MouseButtonEventArgs e)
-        {
-            if (!EvllyEngine.MouseCursor.MouseLocked)
-                input.ProcessMouseMessage(e);
-        }
-        public void OnMouseWheel(MouseWheelEventArgs e)
-        {
-            if (!EvllyEngine.MouseCursor.MouseLocked)
-                input.ProcessMouseMessage(e);
-        }
-        public void OnMouseMove(MouseMoveEventArgs e)
-        {
-            if (!EvllyEngine.MouseCursor.MouseLocked)
-                input.ProcessMouseMessage(e);
+            _Shader = AssetsManager.GetShader("GUI");
+            _FontShader = AssetsManager.GetShader("Font");
         }
 
         public void Tick()
         {
-            renderer.Update(Time._DeltaTime);
-        }
-
-        public void DrawUI()
-        {
-            if ((Time._Tick) == 0)
+            if (pressed)
             {
-                if (renderer.TextCacheSize > 1000)// each cached string is an allocated texture, flush the cache once in a while in your real project
+                if (Mouse.GetCursorState().LeftButton == ButtonState.Released)
                 {
-                    renderer.FlushTextCache();
+                    if (UpUI != null)
+                    {
+                        UpUI.ClickReleased();
+                    }
+                    pressed = false;
+                }
+            }
+            else
+            {
+                if (Mouse.GetCursorState().LeftButton == ButtonState.Pressed)
+                {
+                    if (UpUI != null)
+                    {
+                        if (UpUI.IsHover)
+                        {
+                            if (FocusedUI != null)
+                            {
+                                FocusedUI.UnFocus();
+                            }
+
+                            UpUI.Click();
+                            FocusedUI = UpUI;
+
+                            FocusedUI.Focus();
+                        }
+                        else
+                        {
+                            if (FocusedUI != null)
+                            {
+                                FocusedUI.UnFocus();
+                            }
+                        }
+                    }
+                    pressed = true;
                 }
             }
 
-            canvas.RenderCanvas();
-            Utilitys.CheckGLError("End Of Canvas Draw");
+            if (Input.GetKeyDown(Key.Escape) || Input.GetKeyDown(Key.Enter) || Input.GetKeyDown(Key.KeypadEnter))
+            {
+                if (FocusedUI != null)
+                {
+                    FocusedUI.UnFocus();
+                }
+            }
+
+            /*for (int i = 0; i < GuiBaseList.Count; i++)
+            {
+                GuiBaseList[i].Tick();
+            }*/
         }
 
-        public void Dispose()
+        public void TickRender()
         {
-            canvas.Dispose();
-            skin.Dispose();
-            renderer.Dispose();
+            for (int i = 0; i < GuiBaseList.Count; i++)
+            {
+                GuiBaseList[i].TickRender();
+            }
+        }
+
+        public void OnResize()
+        {
+            for (int i = 0; i < GuiBaseList.Count; i++)
+            {
+                for (int v = 0; v < 2; v++)//Check the size changes twice
+                {
+                    GuiBaseList[i].OnResize();
+                }
+            }
+        }
+
+        public void OnMouseMove(MouseMoveEventArgs e)
+        {
+            if (!EvllyEngine.MouseCursor.MouseLocked)
+            {
+                Point point = new Point(e.X, e.Y);
+
+                foreach (var item in GuiBaseList)
+                {
+                    if (item.IsInteract)
+                    {
+                        if (item.IsEnabled)
+                        {
+                            if (item.GetRectangle.Contains(point))
+                            {
+                                UpUI = item;
+
+                                item.UnHover();
+                                //item.UnFocus();
+                            }
+                            else
+                            {
+                                item.UnHover();
+                                //item.UnFocus();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        item.UnHover();
+                        item.UnFocus();
+                    }
+                }
+
+                if (UpUI != null)
+                {
+                    if (UpUI.GetRectangle.Contains(point))
+                    {
+                        UpUI.Hover();
+                    }
+                    else
+                    {
+                        UpUI.UnHover();
+                    }
+                }
+            }
+        }
+
+        public void OnKeyPress(KeyPressEventArgs e)
+        {
+            if (!EvllyEngine.MouseCursor.MouseLocked)
+            {
+                if (FocusedUI != null)
+                {
+                    FocusedUI.OnKeyPress(e.KeyChar);
+                }
+            }
+        }
+
+        public virtual void Dispose()
+        {
+            GuiBaseList.Clear();
+        }
+
+        public static void AddGuiElement(GUIBase baseGui)
+        {
+            GUI.Instance.GuiBaseList.Add(baseGui);
+        }
+
+        public static void RemoveGuiElement(GUIBase baseGui)
+        {
+            GUI.Instance.GuiBaseList.Remove(baseGui);
+        }
+
+        public static Shader GetShader { get { return GUI.Instance._Shader; } }
+        public static Shader GetFontShader { get { return GUI.Instance._FontShader; } }
+    }
+
+    public enum UIDock : byte
+    {
+        Free,
+        Cennter, CenterTop, CenterBottom, CenterLeft, CenterRight,
+        TopLeft, TopRight,
+        BottomLeft, BottomRight,
+
+        SizeBottom, SizeTop, SizeLeft, SizeRight,//this is for dock position, but resize the ui element
+        ScreenSize, ScreenSizeRatio
+    }
+
+    public enum TextureType
+    {
+        Empty, AssetTexture, BitMapTextures
+    }
+
+    public struct UIRectangle
+    {
+        public float x;
+        public float y;
+        public float w;
+        public float h;
+
+        public UIRectangle(float x, float y, float w, float h)
+        {
+            this.x = x;
+            this.y = y;
+            this.w = w;
+            this.h = h;
+        }
+
+        public bool In(Rectangle rec, Point Point)
+        {
+            return Point.X >= rec.Location.X && rec.Y >= rec.Location.Y &&
+                Point.X < rec.Location.X + rec.Size.Width && Point.Y < rec.Location.Y + rec.Size.Height;
         }
     }
 }

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using ProjectEvlly.src;
 using System.Windows;
 using ProjectEvlly.src.User;
+using System.Runtime.InteropServices;
 
 namespace EvllyEngine
 {
@@ -20,6 +21,16 @@ namespace EvllyEngine
         {
 #if Client
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+
+            if (CheckLibrary("openal32.dll"))
+            {
+                Debug.Log("You Have OpenAL, you good to go!");
+            }
+            else
+            {
+                GoToSite("https://www.openal.org/");
+                return;
+            }
 
             using (Window game = new Window(1000, 600, GlobalData.AppName + " : " + GlobalData.Version))
             {
@@ -46,6 +57,8 @@ namespace EvllyEngine
                     }
                 }
             }
+
+            AppDomain.CurrentDomain.UnhandledException -= new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 #endif
 
 #if Server
@@ -76,6 +89,19 @@ namespace EvllyEngine
             }
 
             // It should terminate our main thread so Application.Exit() is unnecessary here
+        }
+
+        public static void GoToSite(string url)
+        {
+            System.Diagnostics.Process.Start(url);
+        }
+
+        [DllImport("kernel32", SetLastError = true)]
+        static extern IntPtr LoadLibrary(string lpFileName);
+
+        static bool CheckLibrary(string fileName)
+        {
+            return LoadLibrary(fileName) != IntPtr.Zero;
         }
     }
 }

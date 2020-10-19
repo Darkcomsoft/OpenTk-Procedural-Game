@@ -69,6 +69,9 @@ namespace ProjectEvlly.src
         TemperateRainforest,
         BorealForest,
         Tundra,
-        Ice
+        Ice,
+
+
+        Ocean
     }
 }

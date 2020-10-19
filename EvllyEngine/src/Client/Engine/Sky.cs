@@ -15,7 +15,6 @@ namespace ProjectEvlly
     {
         public Mesh _mesh;
         public Shader _shader;
-        public CubeMapTexture _texture;
 
         private Transform _transform;
 
@@ -23,12 +22,11 @@ namespace ProjectEvlly
 
         public Transform transform;
 
-        public Sky(Shader shader, CubeMapTexture texture)
+        public Sky(Shader shader)
         {
             _mesh = AssetsManager.GetMesh("SkySphere");
 
             _shader = shader;
-            _texture = texture;
 
             _transform = new Transform();
 
@@ -82,11 +80,6 @@ namespace ProjectEvlly
 
                 GL.BindVertexArray(VAO);
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, IBO);
-
-                if (_texture != null)
-                {
-                    _texture.Use();
-                }
 
                 _shader.Use();
 

@@ -12,11 +12,11 @@ uniform vec4 SKY_HoriColor;
 void main()
 {
     //color = texture(texture0, texCoord);
-	float dis = length(texCoord.y) / 0.5;
+	float dis = length(texCoord.y);
 	
 	if (texCoord.y < 0){
 		dis = 0;
 	}
 	
-	color += mix(SKY_HoriColor, SKY_Color, dis);
+	color += mix(SKY_HoriColor, SKY_Color, abs(dis));
 }

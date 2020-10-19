@@ -9,7 +9,7 @@ using System.Drawing;
 
 namespace EvllyEngine
 {
-    public class Mesh
+    public class Mesh : IDisposable
     {
         public Vector3[] _vertices;
         public int[] _indices;
@@ -161,12 +161,22 @@ namespace EvllyEngine
             return normals;
         }
 
-        public void Clear()
+        public void Dispose()
+        {
+            _vertices = null;
+            _indices = null;
+            _texCoords = null;
+            _Colors = null;
+            _Normals = null;
+        }
+
+        public void ClearMesh()
         {
             _vertices = new Vector3[] { };
             _indices = new int[] { };
             _texCoords = new Vector2[] { };
             _Colors = new Color4[] { };
+            _Normals = new Vector3[] { };
         }
     }
 }

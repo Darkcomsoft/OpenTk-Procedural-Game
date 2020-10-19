@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Drawing;
 using ProjectEvlly;
 using ProjectEvlly.src;
+using ProjectEvlly.src.Engine.Sound;
 
 namespace EvllyEngine
 {
@@ -18,6 +19,8 @@ namespace EvllyEngine
         public Transform _cameraTrnasform;
 
         public static Camera Main;
+
+        private AudioListener _audioListener;
 
         public float _fildOfView = 75;
         public float _nearPlane = 0.1f;
@@ -48,6 +51,8 @@ namespace EvllyEngine
             _aspectRatio = (float)Window.Instance.Width / (float)Window.Instance.Height;
             _projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(_fildOfView), _aspectRatio, _nearPlane, _farPlane);
 
+            _audioListener = new AudioListener();//Start a camera lister for audio
+
             UpdateViewMatrix();
         }
 
@@ -63,7 +68,8 @@ namespace EvllyEngine
             cameraUp = Vector3.Cross(cameraDirection, cameraRight);*/
 
             UpdateViewMatrix();
-		}
+            _audioListener.UpdatePosition(-viewMatrix.ExtractTranslation());
+        }
 
         private void UpdateViewMatrix()
         {
@@ -81,6 +87,8 @@ namespace EvllyEngine
 
         public void Dispose()
         {
+            _audioListener.Dispose();
+
             _transformParent = null;
             _cameraTrnasform = null;
             Main = null;

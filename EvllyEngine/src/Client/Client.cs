@@ -15,6 +15,7 @@ using ProjectEvlly.src.Engine.Render;
 using ProjectEvlly.src.Engine;
 using ProjectEvlly.src.User;
 using System.Threading;
+using ProjectEvlly.src.Engine.Sound;
 
 namespace ProjectEvlly.src
 {
@@ -38,11 +39,21 @@ namespace ProjectEvlly.src
 
         public Action<FrameEventArgs> UIDrawUpdate;
 
+        private AudioSource audioSource;
+        private Transform audioSourceTransform;
+
+        private ShowCaseModel ShipModel;
+
         public Client()
         {
             Game.Client = this;
 
+            audioSourceTransform = new Transform(new Vector3(0, 2, 0), Quaternion.Identity, Vector3.One);
+            audioSource = new AudioSource(audioSourceTransform.Position, "Teste", true, 1, 0.0f, 1.0f);
+
             _RenderSystem = new TickSystem();
+
+            ShipModel = new ShowCaseModel("Ship01", "Default", "TextureTeste04", true);
 
             EvllyEngine.MouseCursor.UnLockCursor();
 
@@ -60,8 +71,6 @@ namespace ProjectEvlly.src
         public void Tick()
         {
             Network.NetworkTick();
-
-            ProjectEvlly.src.Engine.Render.Environment.AmbienceColor = OpenTK.Graphics.Color4.White;
 
             if (_isPlaying)
             {
@@ -103,6 +112,10 @@ namespace ProjectEvlly.src
         public void Dispose()
         {
             Network.Disconnect();
+
+            audioSource.Dispose();
+
+            ShipModel.Dispose();
 
             if (!_isPlaying)
             {
@@ -221,7 +234,6 @@ namespace ProjectEvlly.src
     public class Game
     {
         public static Client Client;
-        public static GUI GUI;
         public static MidleWorld MidleWorld;
         public static Window Window;
         public static GamePlay GamePlay;

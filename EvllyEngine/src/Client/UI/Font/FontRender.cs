@@ -62,14 +62,14 @@ namespace ProjectEvlly.src.UI.Font
 				GL.BindVertexArray(VAO);
 				GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
 
-				GUIRender.GetFontShader.Use();
+				GUI.GetFontShader.Use();
 
 				font.AtlasTexture.Use();
 
-				GUIRender.GetFontShader.Setbool("HaveTexture", true);
-				GUIRender.GetFontShader.SetColor("MainColor", colour);
+				GUI.GetFontShader.Setbool("HaveTexture", true);
+				GUI.GetFontShader.SetColor("MainColor", colour);
 
-				GUIRender.GetFontShader.SetMatrix4("projection", Matrix4.CreateOrthographicOffCenter(Window.Instance.ClientRectangle.Left, Window.Instance.ClientRectangle.Right, Window.Instance.ClientRectangle.Bottom, Window.Instance.ClientRectangle.Top, 0f, 5.0f));
+				GUI.GetFontShader.SetMatrix4("projection", Matrix4.CreateOrthographicOffCenter(Window.Instance.ClientRectangle.Left, Window.Instance.ClientRectangle.Right, Window.Instance.ClientRectangle.Bottom, Window.Instance.ClientRectangle.Top, 0f, 5.0f));
 
 				GL.DrawArrays(PrimitiveType.Triangles, 0, textMeshData.getVertexLength());
 

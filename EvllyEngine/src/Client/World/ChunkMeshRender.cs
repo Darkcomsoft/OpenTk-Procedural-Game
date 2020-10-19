@@ -68,7 +68,7 @@ namespace ProjectEvlly.src.World
 
                 //Colors(Vectro4|Color)
                 GL.BindBuffer(BufferTarget.ArrayBuffer, dbo);
-                GL.BufferData(BufferTarget.ArrayBuffer, _Mesh._Colors.Length * sizeof(float), _Mesh._Colors, BufferUsageHint.StreamDraw);
+                GL.BufferData(BufferTarget.ArrayBuffer, _Mesh._Colors.Length * Vector4.SizeInBytes, _Mesh._Colors, BufferUsageHint.StreamDraw);
                 GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, 0, 0);
                 GL.EnableVertexAttribArray(1);
 
@@ -183,7 +183,7 @@ namespace ProjectEvlly.src.World
                 Utilitys.CheckGLError("Destroy Chunk MeshRender");
                 isReady = false;
 
-                _Mesh.Clear();
+                _Mesh.Dispose();
                 _Mesh = null;
             }
 
@@ -214,7 +214,7 @@ namespace ProjectEvlly.src.World
 
                 //Colors(Vectro4|Color)
                 GL.BindBuffer(BufferTarget.ArrayBuffer, dbo);
-                GL.BufferData(BufferTarget.ArrayBuffer, _Mesh._Colors.Length * sizeof(float), _Mesh._Colors, BufferUsageHint.StreamDraw);
+                GL.BufferData(BufferTarget.ArrayBuffer, _Mesh._Colors.Length * Vector4.SizeInBytes, _Mesh._Colors, BufferUsageHint.StreamDraw);
                 GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, 0, 0);
                 GL.EnableVertexAttribArray(1);
 
@@ -242,7 +242,7 @@ namespace ProjectEvlly.src.World
 
                 isReady = false;
 
-                _Mesh.Clear();
+                _Mesh.Dispose();
                 _Mesh = null;
 
                 /*_mesh.Clear();
