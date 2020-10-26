@@ -250,50 +250,26 @@ namespace ProjectEvlly.src.UI
             }
         }
 
-        public virtual void OnResize()
+        public void Resize()
         {
-            if (IsReady)
+            _projection = Matrix4.CreateOrthographicOffCenter(Window.Instance.ClientRectangle.Left, Window.Instance.ClientRectangle.Right, Window.Instance.ClientRectangle.Bottom, Window.Instance.ClientRectangle.Top, 0f, 5.0f);
+
+            IsReady = false;
+
+            SetFinalRectangle();
+
+            if (ShowBackGround)
             {
-                _projection = Matrix4.CreateOrthographicOffCenter(Window.Instance.ClientRectangle.Left, Window.Instance.ClientRectangle.Right, Window.Instance.ClientRectangle.Bottom, Window.Instance.ClientRectangle.Top, 0f, 5.0f);
-
-                IsReady = false;
-
-                SetFinalRectangle();
-
-                if (ShowBackGround)
-                {
-                    GL.BindVertexArray(VAO);
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-                    GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * Vector2.SizeInBytes, _vertices, BufferUsageHint.StreamDraw);
-                    GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 0, 0);
-                    GL.EnableVertexAttribArray(0);
-                }
-
-                IsReady = true;
+                GL.BindVertexArray(VAO);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+                GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * Vector2.SizeInBytes, _vertices, BufferUsageHint.StreamDraw);
+                GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 0, 0);
+                GL.EnableVertexAttribArray(0);
             }
-        }
 
-        private void RefreshData()
-        {
-            if (IsReady)
-            {
-                _projection = Matrix4.CreateOrthographicOffCenter(Window.Instance.ClientRectangle.Left, Window.Instance.ClientRectangle.Right, Window.Instance.ClientRectangle.Bottom, Window.Instance.ClientRectangle.Top, 0f, 5.0f);
+            OnResize();
 
-                IsReady = false;
-
-                SetFinalRectangle();
-
-                if (ShowBackGround)
-                {
-                    GL.BindVertexArray(VAO);
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-                    GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * Vector2.SizeInBytes, _vertices, BufferUsageHint.StreamDraw);
-                    GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 0, 0);
-                    GL.EnableVertexAttribArray(0);
-                }
-
-                IsReady = true;
-            }
+            IsReady = true;
         }
 
         private void TickRenderCustom()
@@ -505,7 +481,7 @@ namespace ProjectEvlly.src.UI
             _Rectangle.X = x;
             _Rectangle.Y = y;
 
-            OnResize();
+            Resize();
         }
 
         public virtual void SetSize(int Width, int Height)
@@ -513,7 +489,7 @@ namespace ProjectEvlly.src.UI
             _Rectangle.Width = Width;
             _Rectangle.Height = Height;
 
-            OnResize();
+            Resize();
         }
 
         public void SetBackColors(Color4 nColor, Color4 hColor, Color4 cColor, Color4 fColor)
@@ -554,6 +530,8 @@ namespace ProjectEvlly.src.UI
                 GL.DeleteVertexArray(VAO);
             }
         }
+
+        public virtual void OnResize() { }
 
         public Rectangle GetRectangle { get { return _FinalRectangle; } }
         public Rectangle GetLocalRectangle { get { return _Rectangle; } }

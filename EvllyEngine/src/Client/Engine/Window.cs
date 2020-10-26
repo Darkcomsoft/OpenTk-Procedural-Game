@@ -155,6 +155,7 @@ namespace EvllyEngine
             if (EngineIsReady)
             {
                 _GUIRender.OnMouseMove(e);
+                Input.SetMousePos(e.Position);
             }
             base.OnMouseMove(e);
         }

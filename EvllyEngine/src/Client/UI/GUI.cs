@@ -109,7 +109,7 @@ namespace ProjectEvlly.src.UI
             {
                 for (int v = 0; v < 2; v++)//Check the size changes twice
                 {
-                    GuiBaseList[i].OnResize();
+                    GuiBaseList[i].Resize();
                 }
             }
         }

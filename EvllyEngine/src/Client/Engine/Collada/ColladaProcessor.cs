@@ -76,7 +76,7 @@ namespace EvllyEngine
 
 				Textures = new List<Vector2>();
 				Textures = readVecArray<Vector2>(texCoordId);
-			}
+            }
 
 			// Colors
 			var colors = xMesh

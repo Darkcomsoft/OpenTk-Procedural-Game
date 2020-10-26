@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +16,9 @@ namespace EvllyEngine
         private static List<Key> keyToggleList = new List<Key>();
         private static List<MouseButton> mouseButtomToggleList = new List<MouseButton>();
 
-        public static int ScrollWheelValue
+        private static Point _mousePosition;
+
+        internal static int ScrollWheelValue
         { 
             get 
             {
@@ -24,7 +27,9 @@ namespace EvllyEngine
             } 
         }
 
-        public static bool GetKeyDown(Key key)
+        internal static Point GetMousePosition { get { return _mousePosition; } }
+
+        internal static bool GetKeyDown(Key key)
         {
             if (!Window.Instance.Focused) { return false; }
 
@@ -43,7 +48,7 @@ namespace EvllyEngine
                 return false;
             }
         }
-        public static bool GetKeyDown(MouseButton buttom)
+        internal static bool GetKeyDown(MouseButton buttom)
         {
             if (!Window.Instance.Focused) { return false; }
 
@@ -63,7 +68,7 @@ namespace EvllyEngine
             }
         }
 
-        public static bool GetKeyUp(MouseButton buttom)
+        internal static bool GetKeyUp(MouseButton buttom)
         {
             if (!Window.Instance.Focused) { return false; }
 
@@ -82,7 +87,7 @@ namespace EvllyEngine
                 return false;
             }
         }
-        public static bool GetKeyUp(Key key)
+        internal static bool GetKeyUp(Key key)
         {
             if (!Window.Instance.Focused) { return false; }
 
@@ -102,18 +107,22 @@ namespace EvllyEngine
             }
         }
 
-
-        public static bool GetKey(Key key)
+        internal static bool GetKey(Key key)
         {
             if (!Window.Instance.Focused) { return false; }
 
             return Keyboard.GetState().IsKeyDown(key);
         }
-        public static bool GetKey(MouseButton buttom)
+        internal static bool GetKey(MouseButton buttom)
         {
             if (!Window.Instance.Focused) { return false; }
 
             return Mouse.GetState().IsButtonDown(buttom);
+        }
+
+        internal static void SetMousePos(Point position)
+        {
+            _mousePosition = position;
         }
     }
 }

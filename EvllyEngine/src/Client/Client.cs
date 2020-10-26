@@ -42,7 +42,7 @@ namespace ProjectEvlly.src
         private AudioSource audioSource;
         private Transform audioSourceTransform;
 
-        private ShowCaseModel ShipModel;
+        private List<ShowCaseModel> showCaseModelsList = new List<ShowCaseModel>();
 
         public Client()
         {
@@ -53,7 +53,8 @@ namespace ProjectEvlly.src
 
             _RenderSystem = new TickSystem();
 
-            ShipModel = new ShowCaseModel("Ship01", "Default", "TextureTeste04", true);
+            //showCaseModelsList.Add(new ShowCaseModel("Ship01", "Default", "Wood02", true));
+            showCaseModelsList.Add(new ShowCaseModel("Table", "Default", "Wood01", true));
 
             EvllyEngine.MouseCursor.UnLockCursor();
 
@@ -115,7 +116,12 @@ namespace ProjectEvlly.src
 
             audioSource.Dispose();
 
-            ShipModel.Dispose();
+            foreach (var item in showCaseModelsList)
+            {
+                item.Dispose();
+            }
+
+            showCaseModelsList.Clear();
 
             if (!_isPlaying)
             {

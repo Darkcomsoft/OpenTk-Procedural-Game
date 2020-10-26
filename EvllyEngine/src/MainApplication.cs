@@ -28,6 +28,7 @@ namespace EvllyEngine
             }
             else
             {
+                Debug.LogError("You don't Have OpanAL(Audio Library), you need to Download: https://www.openal.org/");
                 GoToSite("https://www.openal.org/");
                 return;
             }

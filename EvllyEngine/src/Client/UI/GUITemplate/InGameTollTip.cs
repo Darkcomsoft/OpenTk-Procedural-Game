@@ -19,16 +19,18 @@ namespace ProjectEvlly.src.UI.GUITemplate
             texttest.Disable();
         }
 
-        public void Enable()
+        public void Enable(int x, int y)
         {
             MouseCursor.UnLockCursor();
             texttest.Enable();
+            texttest.SetPosition(x, y);
         }
 
-        public void Disable()
+        public void Disable(int x, int y)
         {
             MouseCursor.LockCursor();
             texttest.Disable();
+            texttest.SetPosition(x, y);
         }
 
         public void Dispose()

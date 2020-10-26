@@ -9,6 +9,7 @@ using EvllyEngine;
 using ProjectEvlly.src.UI.GUITemplate;
 using ProjectEvlly.src.save;
 using OpenTK.Input;
+using OpenTK;
 
 namespace ProjectEvlly.src.UI
 {
@@ -92,16 +93,16 @@ namespace ProjectEvlly.src.UI
 
         private void MenusInput()
         {
-            if (Input.GetKeyDown(MouseButton.Middle))
+            if (Input.GetKeyDown(MouseButton.Right))
             {
                 if (TollTip)
                 {
-                    inGameTollTip.Disable();
+                    inGameTollTip.Disable(Input.GetMousePosition.X, Input.GetMousePosition.Y);
                     TollTip = false;
                 }
                 else
                 {
-                    inGameTollTip.Enable();
+                    inGameTollTip.Enable(Input.GetMousePosition.X, Input.GetMousePosition.Y);
                     TollTip = true;
                 }
             }

@@ -54,44 +54,46 @@ namespace EvllyEngine
             _Models.Add("SwordMetal", LoadModel("Assets/Models/", "SwordMetal"));
             _Models.Add("SkySphere", LoadModel("Assets/Models/", "SkySphere"));
             _Models.Add("Ship01", LoadModel("Assets/Models/", "Ship01"));
+            _Models.Add("Table", LoadModel("Assets/Models/Teste/", "Table"));
 
             SplashScreen.SetState("Loading Textures", SplashScreenStatus.Loading);
-            _Textures.Add("devTexture", new Texture(AssetsManager.LoadImage("Assets/Texture/", "devTexture", "jpg")));
-            _Textures.Add("devTexture2", new Texture(AssetsManager.LoadImage("Assets/Texture/", "devTexture2", "png")));
-            _Textures.Add("TileAtlas", new Texture(AssetsManager.LoadImage("Assets/Texture/", "TileAtlas", "png")));
-            _Textures.Add("SpritesTreeHigt", new Texture(AssetsManager.LoadImage("Assets/Texture/", "SpritesTreeHigt", "png")));
-            _Textures.Add("SpritesTreeHigt_Snow", new Texture(AssetsManager.LoadImage("Assets/Texture/", "SpritesTreeHigt_Snow", "png")));
-            _Textures.Add("MetalSword", new Texture(AssetsManager.LoadImage("Assets/Texture/", "MetalSword", "png")));
-            _Textures.Add("Water", new Texture(AssetsManager.LoadImage("Assets/Texture/", "Water", "png")));
-            _Textures.Add("Water2", new Texture(AssetsManager.LoadImage("Assets/Texture/", "Water2", "png")));
-            _Textures.Add("Cloud", new Texture(AssetsManager.LoadImage("Assets/Texture/", "Cloud", "png")));
-            _Textures.Add("TextureTeste04", new Texture(AssetsManager.LoadImage("Assets/Texture/", "TextureTeste04", "png")));
+            _Textures.Add("devTexture", new Texture(LoadImage("Assets/Texture/", "devTexture", "jpg")));
+            _Textures.Add("devTexture2", new Texture(LoadImage("Assets/Texture/", "devTexture2", "png")));
+            _Textures.Add("TileAtlas", new Texture(LoadImage("Assets/Texture/", "TileAtlas", "png")));
+            _Textures.Add("SpritesTreeHigt", new Texture(LoadImage("Assets/Texture/", "SpritesTreeHigt", "png")));
+            _Textures.Add("SpritesTreeHigt_Snow", new Texture(LoadImage("Assets/Texture/", "SpritesTreeHigt_Snow", "png")));
+            _Textures.Add("MetalSword", new Texture(LoadImage("Assets/Texture/", "MetalSword", "png")));
+            _Textures.Add("Water", new Texture(LoadImage("Assets/Texture/", "Water", "png")));
+            _Textures.Add("Water2", new Texture(LoadImage("Assets/Texture/", "Water2", "png")));
+            _Textures.Add("Cloud", new Texture(LoadImage("Assets/Texture/", "Cloud", "png")));
+            _Textures.Add("Wood02", new Texture(LoadImage("Assets/Texture/", "Wood02", "png")));
+            _Textures.Add("Wood01", new Texture(LoadImage("Assets/Texture/", "Wood01", "png")));
 
             SplashScreen.SetState("Loading Sounds", SplashScreenStatus.Loading);
             _Sounds.Add("Teste", new AudioClip("Assets/Sound/", "Teste"));
 
             SplashScreen.SetState("Loading CubeMaps", SplashScreenStatus.Loading);
-            _CubeTextures.Add("Example", new CubeMapTexture(AssetsManager.LoadCubeImages("Assets/Texture/CubeMap/", "Example", "png")));
+            _CubeTextures.Add("Example", new CubeMapTexture(LoadCubeImages("Assets/Texture/CubeMap/", "Example", "png")));
 
             SplashScreen.SetState("Loading Images", SplashScreenStatus.Loading);
-            _Textures.Add("Darkcomsoft", new Texture(AssetsManager.LoadImage("Assets/Images/", "Darkcomsoft", "png")));
-            _Textures.Add("VaKLogoYellow", new Texture(AssetsManager.LoadImage("Assets/Images/", "VaKLogoYellow", "png")));
-            _Textures.Add("BackGround", new Texture(AssetsManager.LoadImage("Assets/Images/", "BackGround", "png")));
+            _Textures.Add("Darkcomsoft", new Texture(LoadImage("Assets/Images/", "Darkcomsoft", "png")));
+            _Textures.Add("VaKLogoYellow", new Texture(LoadImage("Assets/Images/", "VaKLogoYellow", "png")));
+            _Textures.Add("BackGround", new Texture(LoadImage("Assets/Images/", "BackGround", "png")));
 
             SplashScreen.SetState("Loading GUI Assets", SplashScreenStatus.Loading);
-            _Textures.Add("Buttom", new Texture(AssetsManager.LoadImage("Assets/UI/", "Buttom", "png")));
-            _Textures.Add("SidePanel", new Texture(AssetsManager.LoadImage("Assets/UI/", "SidePanel", "png")));
-            _Textures.Add("Panel01", new Texture(AssetsManager.LoadImage("Assets/UI/", "Panel01", "png")));
+            _Textures.Add("Buttom", new Texture(LoadImage("Assets/UI/", "Buttom", "png")));
+            _Textures.Add("SidePanel", new Texture(LoadImage("Assets/UI/", "SidePanel", "png")));
+            _Textures.Add("Panel01", new Texture(LoadImage("Assets/UI/", "Panel01", "png")));
 
             SplashScreen.SetState("Loading Shaders", SplashScreenStatus.Loading);
-            _Shaders.Add("Default", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "Default")));
-            _Shaders.Add("TerrainDefault", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "TerrainDefault")));
-            _Shaders.Add("UI", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "UI")));
-            _Shaders.Add("Water", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "Water")));
-            _Shaders.Add("GUI", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "GUI")));
-            _Shaders.Add("Sky", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "Sky")));
-            _Shaders.Add("Cloud", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "Cloud")));
-            _Shaders.Add("Font", new Shader(AssetsManager.LoadShader("Assets/Shaders/", "Font")));
+            _Shaders.Add("Default", new Shader(LoadShader("Assets/Shaders/", "Default")));
+            _Shaders.Add("TerrainDefault", new Shader(LoadShader("Assets/Shaders/", "TerrainDefault")));
+            _Shaders.Add("UI", new Shader(LoadShader("Assets/Shaders/", "UI")));
+            _Shaders.Add("Water", new Shader(LoadShader("Assets/Shaders/", "Water")));
+            _Shaders.Add("GUI", new Shader(LoadShader("Assets/Shaders/", "GUI")));
+            _Shaders.Add("Sky", new Shader(LoadShader("Assets/Shaders/", "Sky")));
+            _Shaders.Add("Cloud", new Shader(LoadShader("Assets/Shaders/", "Cloud")));
+            _Shaders.Add("Font", new Shader(LoadShader("Assets/Shaders/", "Font")));
 
             SplashScreen.SetState("Setting-UP Tile UVs", SplashScreenStatus.Loading);
             AddTileUv("Grass", new Vector2(0.15f, 0.066667f), new Vector2(0.15f, 0f), new Vector2(0.2f, 0.066667f), new Vector2(0.2f, 0f));
