@@ -1,5 +1,5 @@
 # ProjectEvllyOpenTK
-This is a simple "game", i have made to learn OpenTk/OpenGL
+Simple Procedural "game", I have made for learning OpenTK/OpenGL
 
 GamePlay : Soon
 
